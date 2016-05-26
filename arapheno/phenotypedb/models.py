@@ -39,7 +39,7 @@ class Accession(models.Model):
     country = models.CharField(max_length=255,blank=True,null=True) #country of accession if available
     sitename = models.TextField(blank=True,null=True) #name of site if available
     collector = models.TextField(blank=True,null=True) #collector if available
-    collection_date = models.DateTimeField(auto_now_add=True) #date of phenotype integration/submission
+    collection_date = models.DateTimeField(blank=True,null=True) #date of phenotype integration/submission
     longitude = models.FloatField(null=True,blank=True,db_index=True) #longitude of accession
     latitude = models.FloatField(null=True,blank=True,db_index=True) #latitude of accession
 

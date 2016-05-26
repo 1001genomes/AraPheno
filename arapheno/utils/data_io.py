@@ -1,10 +1,49 @@
 import scipy as sp
 
+
+'''
+Accession Class
+'''
+class AccessionClass(object):
+    def __init__(self):
+        self.accession_id = None
+        self.accession_name = None
+        self.accession_description = None
+        self.url = None
+        self.source = None
+        self.country = None
+        self.sitename = None
+        self.collector = None
+        self.collection_data = None
+        self.longitude = None
+        self.latitude = None
+
 '''
 Parse Accession File Including Meta-Information (e.g. 1001 Genomes Master Table)
 Input: filename: filename of accession file
-Output: 
+Output: accession list: list of accession classes
 '''
+def parseAccessionFile(filename=None):
+    if filename==None:
+        return None
+    accession_list = []
+    f = open(filename,'r')
+    for i,line in enumerate(f):
+        if not i==0:
+            sv = line.strip().split(",")
+            accession = AccessionClass()
+            accession.accession_id = sv[0].strip()
+            accession.source = sv[1].strip()
+            accession.accession_name = sv[2].strip()
+            accession.country = sv[3].strip()
+            accession.sitename = sv[4].strip()
+            accession.latitude = float(sv[5].strip())
+            accession.longitude = float(sv[6].strip())
+            accession.collector = sv[7].strip()
+            accession.collection_data = None #add collection data from file
+            accession_list.append(accession)
+    f.close()
+    return accession_list
 
 '''
 Parse Phenotype File in PLINK format
