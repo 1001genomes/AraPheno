@@ -21,7 +21,7 @@ class Study(models.Model):
     study_description = models.TextField(blank=True,null=True) #short study description
 
     species = models.ForeignKey("Species") #foreign key to species
-    publications = models.ManyToManyField("Publication",blank=True,null=True)
+    publications = models.ManyToManyField("Publication",blank=True)
 
 
 '''
@@ -37,11 +37,14 @@ class Accession(models.Model):
     #meta-information fields for accession
     source = models.TextField(blank=True,null=True) #source of accession if available
     country = models.CharField(max_length=255,blank=True,null=True) #country of accession if available
+    sitename = models.TextField(blank=True,null=True) #name of site if available
+    collector = models.TextField(blank=True,null=True) #collector if available
+    collection_date = models.DateTimeField(auto_now_add=True) #date of phenotype integration/submission
     longitude = models.FloatField(null=True,blank=True,db_index=True) #longitude of accession
     latitude = models.FloatField(null=True,blank=True,db_index=True) #latitude of accession
 
     species = models.ForeignKey("Species") #species foreign key
-    publications = models.ManyToManyField("Publication",blank=True,null=True)
+    publications = models.ManyToManyField("Publication",blank=True)
 
 
 '''
@@ -67,7 +70,7 @@ class Phenotype(models.Model):
     study = models.ForeignKey('Study')
     accessions = models.ManyToManyField('Accession')
     dynamic_metainformations = models.ManyToManyField('PhenotypeMetaDynamic')
-    publications = models.ManyToManyField("Publication",blank=True,null=True)
+    publications = models.ManyToManyField("Publication",blank=True)
 
 
 '''
