@@ -17,7 +17,7 @@ Study Model
 each phenotype is grouped into a study and a study is linked to a certain phenotype
 '''
 class Study(models.Model):
-    study_name = models.CharFild(max_length=255) #name of study/experiment
+    study_name = models.CharField(max_length=255) #name of study/experiment
     study_description = models.TextField(blank=True,null=True) #short study description
 
     species = models.ForeignKey("Species") #foreign key to species
