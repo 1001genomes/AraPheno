@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="index-banner" class="parallax-container" style="height:420px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <br>
+            <h1 class="header center white-text text-lighten-2">AraPheno</h1>
+            <div class="row center">
+                <h5 class="header col s12 m12 l12 light">AraPheno is a public database collection of <em>Arabidopsis thaliana</em> phenotypes.</h5>
+                <br>
+                <br>
+                <h5 class="header col s12 m12 l12 light">This Database allows to search and filter for public phenotypes and to obtain additional meta-information.</h5>
+            </div>
+            <!--<div class="card-panel">
+                <div class="row center">
+                    <div class="input-field col s12 m12 l12">-->
+                        <!-- <i class="material-icons prefix">search</i>
+                        <input id="icon_prefix" type="text" class="validate">
+                        <label for="icon_prefix">Search for Phenotypes by Name or Accessions</label> -->
+                        <nav class="white">
+                            <div class="nav-wrapper">
+                                <form>
+                                    <div class="input-field">
+                                        <input id="search" type="search" required>
+                                        <label for="search"><i class="material-icons green-text">search</i></label>
+                                        <i class="material-icons">close</i>
+                                    </div>
+                                </form>
+                            </div>
+                        </nav>
+                        <!--</div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+    <div class="parallax"><img src="static/img/ara1.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div class="container">
+    <div class="section">
+        <div class="row center">
+            <div class="col s12 m6 l3">
+                <div class="icon-block">
+                    <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">view_list</i></h3>
+                    <h5 class="center">Public Phenotypes</h5>
+                    <p class="light justify">Here, you can view all available public phenotypes. You can apply different filters to group phenotypes by ontologies, countries or type. Write some more text ...</p>
+                </div>
+                <a class="waves-effect waves-light btn-large brown"><i class="material-icons left">view_list</i>View Phenotypes</a>
+            </div>
+            
+            <div class="col s12 m6 l3">
+                <div class="icon-block">
+                    <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">backup</i></h3>
+                    <h5 class="center">Upload Phenotypes</h5>
+                    <p class="light">Here, you can view all available public phenotypes. You can apply different filters to group phenotypes by ontologies, countries or type. Write some more text ...</p>
+                </div>
+                <a class="waves-effect waves-light btn-large brown"><i class="material-icons left">backup</i>Upload Phenotypes</a>
+            </div>
+            
+            <div class="col s12 m6 l3">
+                <div class="icon-block">
+                    <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">code</i></h3>
+                    <h5 class="center">REST API</h5>
+                    <p class="light">Here, you can view all available public phenotypes. You can apply different filters to group phenotypes by ontologies, countries or type. Write some more text ...</p>
+                </div>
+                <a class="waves-effect waves-light btn-large brown"><i class="material-icons left">code</i>REST API</a>
+            </div>
+            
+            <div class="col s12 m6 l3">
+                <div class="icon-block">
+                    <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">help_outline</i></h3>
+                    <h5 class="center">FAQ & Tutorials</h5>
+                    <p class="light">Here, you can view all available public phenotypes. You can apply different filters to group phenotypes by ontologies, countries or type. Write some more text ...</p>
+                </div>
+                <a class="waves-effect waves-light btn-large brown"><i class="material-icons left">help_outline</i>FAQ</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="parallax-container" style="height:300px">
+    <div class="parallax"><img src="static/img/ara3.jpg" alt="Unsplashed background img 2"></div>
+</div>
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col s12 l12 m12">
+                <h5 class="light"><i class="material-icons brown-text" style="font-size=35px">fiber_new</i> News & Updates</h5>
+                <p class="light">Add here some news ...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+    });
+</script>
+{% endblock content %}

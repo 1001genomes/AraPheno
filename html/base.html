@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="/static/css/materialize.min.css" media="screen,projection"/>
+    </head>
+
+    <body>
+        <script type="text/javascript" src="/static/js/jquery-2.2.4.min.js"></script>
+        <script type="text/javascript" src="/static/js/materialize.min.js"></script>
+        <div class="navbar-fixed">
+        <nav class="white">
+            <div class="nav-wrapper container">
+                <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
+                <ul class="right hide-on-med-and-down black-text">
+                    <li><a class="black-text" href="#">Phenotype Search</a></li>
+                    <li><a class="black-text" href="/about">About</a></li>
+                </ul>
+
+                <ul id="nav-mobile" class="side-nav">
+                    <li><a class="black-text" href="#">Phenotype Search</a></li>
+                    <li><a class="black-text" href="/about">About</a></li>
+                </ul>
+                <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons black-text">menu</i></a>
+            </div>        
+        </nav>
+        </div>
+        {% block content %}
+
+        {% endblock content %}
+
+        <footer class="page-footer brown lighten-2">
+            <div class="container">
+
+            </div>
+            <div class="footer-copyright brown">
+                <div class="container">
+                 AraPheno is a public database for <em>Arabidopsis thaliana</em> phenotypes.
+                 <a class="white-text text-leighten-4 right" href="/about">About</a>
+                </div>
+            </div>
+        </footer>
+
+    <script type="text/javascript">
+        $(document).ready(function(){    
+            $('.button-collapse').sideNav();
+        });
+    </script>
+    </body>
+</html>

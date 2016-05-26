@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:320px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h1 class="header center white-text text-lighten-2">About AraPheno and the People Behind</h1>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara2.jpg" alt="Unsplashed background img 1"></div>
+</div>
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col s12 l12 m12">
+                <h5 class="light"><i class="material-icons brown-text" style="font-size=35px">info</i> What is AraPheno</h5>
+                <p class="light">Add here a description about AraPheno. E.g. which institutes collaborated on developing this database</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+    });
+</script>
+{% endblock content %}
