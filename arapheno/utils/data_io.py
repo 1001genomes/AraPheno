@@ -1,5 +1,5 @@
 import scipy as sp
-
+from datetime import datetime
 
 '''
 Accession Class
@@ -37,10 +37,23 @@ def parseAccessionFile(filename=None):
             accession.accession_name = sv[2].strip()
             accession.country = sv[3].strip()
             accession.sitename = sv[4].strip()
-            accession.latitude = float(sv[5].strip())
-            accession.longitude = float(sv[6].strip())
+            try:
+                accession.latitude = float(sv[5].strip())
+            except:
+                accession.latitude = None
+            try:
+                accession.longitude = float(sv[6].strip())
+            except:
+                accession.longitude = None
             accession.collector = sv[7].strip()
-            accession.collection_data = None #add collection data from file
+            if len(sv[8].strip())>0:
+                try:
+                    accession.collection_data = datetime.strptime(sv[8].strip().split(" ")[0],"%Y-%m-%d")
+                except:
+                    try:
+                        accession.collection_data = datetime.strptime(sv[8].strip().split(" ")[0],"%m/%d/%y")
+                    except:
+                        accession.collection_data = None
             accession_list.append(accession)
     f.close()
     return accession_list
