@@ -7,13 +7,13 @@ Database Model can be found in arapheno/phenotypdb/models.py
 
 Based on Django 1.9.6
 
-To run the test-server move to arapheno and use the following command:
+To run the test-server use the following command to activate a virtual python environment:
 
 1.) Activate Virtual environment
 
 > source venv/bin/activate
 
-2.) Run Development Server
+2.) Move to the arapheno directory and run the development server
 
 > ./manage runserver
 
