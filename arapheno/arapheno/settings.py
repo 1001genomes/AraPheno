@@ -57,7 +57,7 @@ ROOT_URLCONF = 'arapheno.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/home/dogrimm/AraPhenotype/html/'],
+        'DIRS': ['../html/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,5 +122,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = ['/home/dogrimm/AraPhenotype/static',]
+STATICFILES_DIRS = ['../static',]
 
