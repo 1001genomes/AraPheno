@@ -1,0 +1,175 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:320px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h1 class="header center white-text text-lighten-2">Study: {{ object.name }}</h1>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara2.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <section class="section">
+                <nav>
+                    <div class="nav-wrapper">
+                        <div class="col s12">
+                            <a class="breadcrumb" href="{% url 'study_detail' phenotype.study.id %}">{{ object.study.name }}</a>
+                            <a class="breadcrumb">{{ object.name }}</a>
+                            <ul id="nav-mobile" class="right">
+                                <li><a ><i class="material-icons">file_download</i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m5">
+            <div class="row">
+                <div class="col s2">
+                    <span>DOI:</span>
+                </div>
+                <div class="col s10">
+                    <span>{{ object.doi }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <span>Scoring:</span>
+                </div>
+                <div class="col s10">
+                    <span>{{ object.scoring }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <span>Growth conditions:</span>
+                </div>
+                <div class="col s10">
+                    <span>{{ object.growth_conditions }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <span>Trait-Ontology:</span>
+                </div>
+                <div class="col s10">
+                    <span>{{ object.to_term }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <span>Environment ontology:</span>
+                </div>
+                <div class="col s10">
+                    <span>{{ object.eo_term }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <span>Unit:</span>
+                </div>
+                <div class="col s10">
+                    <span>{{ object.uo_term }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
+                    <span>Submission date:</span>
+                </div>
+                <div class="col s10">
+                    <span>{{ object.integration_date }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 m7" style="text-align:center">
+            <span >Geographic distribution of {{ object.phenotypevalue_set.count }} accessions</span>
+            <div id="geo_chart" style="width:100%;height:100%"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <ul class="tabs">
+                <li class="tab col s3"><a href="#histogram" id="histogram_link" class="active">Histogram</a></li>
+                <li class="tab col s3"><a  href="#explorer" id="explorer_link">Explorer</a></li>
+                <li class="tab col s3"><a href="#table" id="table_link">Table</a></li>
+            </ul>
+        </div>
+        <div id="histogram" class="col s12" style="height:500px">
+            <div id="histogram_chart" class="chart"></div>
+        </div>
+        <div id="explorer" class="col s12" style="height:500px;width:100%;">
+            <div id="explorer_chart" class="chart"></div>
+        </div>
+        <div id="table" class="col s12" style="height:500px">
+            <div id="table_chart" class="chart"></div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var geoChrt,geoChartData,histogramChart,histogramData,explorerChart,explorerData, tableChart;
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+        $('ul.tabs').on('click', 'a', function(e) {
+            var target = e.currentTarget;
+            if (target.id === 'explorer_link') {
+                width = $('#explorer').width();
+                explorerChart.draw(explorerData,{width:width,height:500});
+            }
+        });
+
+    });
+    google.load('visualization', '1.0', {'packages':['corechart','geochart','motionchart','table']});
+    google.setOnLoadCallback(drawCharts);
+
+    function drawCharts() {
+        geoChart =  new google.visualization.GeoChart(document.getElementById('geo_chart'));
+        histogramChart =  new google.visualization.Histogram(document.getElementById('histogram_chart'));
+        explorerChart = new google.visualization.MotionChart(document.getElementById('explorer_chart'));
+        tableChart = new google.visualization.Table(document.getElementById('table_chart'));
+
+        {% autoescape off %}
+        geoChartData = google.visualization.arrayToDataTable([
+          ['Country', 'Frequency'],
+          {% for geo in geo_chart_data %}
+             [ "{{ geo.country }}", {{ geo.count }} ],
+          {% endfor %}
+        ],false);
+
+        histogramData = google.visualization.arrayToDataTable([
+          ['Phenotype', 'Frequency'],
+          {% for item in object.phenotypevalue_set.all %}[ "{{ item.id }}", {{ item.value }} ],{% endfor %}
+        ],false);
+
+        explorerData = google.visualization.arrayToDataTable([
+          ['ID Name Phenotype','Date','Longitude','Latitude','Phenotype','Accession','Country'],
+          {% for item in pheno_acc_infos %}
+             [ "{{ item.obs_unit.accession.name }} ID:{{ item.obs_unit.accession.id }} Phenotype: {{ item.value }}"
+              ,new Date(1900,1,1), {{ item.obs_unit.accession.longitude }}, {{ item.obs_unit.accession.latitude }}, 
+              {{ item.value }}, "{{item.obs_unit.accession.name }}", "{{ item.obs_unit.accession.country }}"
+            ],
+          {% endfor %}
+          ],false);
+
+        {% endautoescape %}
+
+        var geoOptions = {};
+        var histogramOptions = {height:500,width:"100%"};
+        var explorerOptions = {height:500};
+        var tableOptions = {height:500, width:"100%"};
+
+        geoChart.draw(geoChartData, geoOptions);
+        histogramChart.draw(histogramData,histogramOptions)
+        tableChart.draw(explorerData,tableOptions);
+    }
+    
+
+</script> 
+{% endblock content %}
