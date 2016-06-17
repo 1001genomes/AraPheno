@@ -1,0 +1,12 @@
+[
+  {
+    "model": "phenotypedb.Species",
+    "pk": 1,
+    "fields": {
+      "ncbi_id": 3702,
+      "genus": "Arabidopsis",
+      "species":"thaliana",
+      "description": ""
+    }
+  }
+]

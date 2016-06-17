@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:320px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h1 class="header center white-text text-lighten-2">Study: {{ study.name }}</h1>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara2.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <section class="section">
+                <nav>
+                    <div class="nav-wrapper">
+                        <div class="col s12">
+                            <a class="breadcrumb">{{ study.name }}</a>
+                        </div>
+                    </div>
+                </nav>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="row">
+                <div class="col s12"><h5>Description</h5></div>
+                <div class="col s12">{{ study.description }}</div>
+                <div class="col s12"><h5>Statistics</h5></div>
+                <div class="col s12">
+                    <ul class="tabs">
+                        <li class="tab col s3"><a href="#to" id="to_link" class="active">Trait ontology</a></li>
+                        <li class="tab col s3"><a  href="#eo" id="eo_link">Environment Ontology</a></li>
+                        <li class="tab col s3"><a href="#uo" id="uo_link">Unit</a></li>
+                    </ul>
+                </div>
+                <div id="to" class="col s12">
+                   <div id="to_chart" class="chart"></div>
+                </div>
+                <div id="eo" class="col s12"><div class="chart" id="eo_chart"></div></div>
+                <div id="uo" class="col s12"><div class="chart" id="uo_chart"></div></div>
+            </div>
+        </div>
+        <div class="col s12 m6">
+            <ul class="pagination center-align">
+                    <li>
+                        {% if page_obj.has_previous %}
+                        <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}"><i class="material-icons">chevron_left</i></a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        <span class="page-current">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} [{{ study.phenotype_set.count }}].
+                        </span> 
+                    </li>
+                    <li class="waves-effect">
+                         {% if page_obj.has_next %}
+                          <a href="{{ request.path }}?page={{ page_obj.next_page_number }}"><i class="material-icons">chevron_right</i></a>
+                        {% endif %}
+                    </li>
+                </ul>
+                <table>
+                    <thead>
+                    <tr>
+                        <th data-field="name">Name</th>
+                        <th data-field="name">TO</th>
+                        <th data-field="name">EO</th>
+                        <th data-field="name">UO</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for phenotype in page_obj %}
+                            <tr>
+                                <td><a href="{% url 'phenotype_detail' phenotype.id %}">{{ phenotype.name }}</a></td>
+                                <td>{{ phenotype.to_term }}</td>
+                                <td>{{ phenotype.eo_term }}</td>
+                                <td>{{ phenotype.uo_term }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        </div>
+    </div>
+    <div class="row">
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var chartEO,chartTO,chartUO,dataEO,dataTO,dataUO;
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+        $('ul.tabs').on('click', 'a', function(e) {
+            var target = e.currentTarget;
+            var chart = null;
+            var data = null;
+            if (target.id === 'to_link') {
+                chart = chartTO;
+                data = dataTO;
+            }
+            else if (target.id === 'eo_link') {
+                chart = chartEO;
+                data = dataEO;
+            }
+            else if (target.id === 'uo_link') {
+                chart = chartUO;
+                data = dataUO;
+            }
+            if (chart !== null && data !== null) {
+                chart.draw(data,{width:"100%",height:400});
+            }
+        });
+    });
+    
+    google.load('visualization', '1.0', {'packages':['corechart']});
+    google.setOnLoadCallback(drawCharts);
+    
+    function drawCharts() {
+        {% autoescape off %}
+        dataTO = google.visualization.arrayToDataTable([
+            ['TO', '# Number'],
+            
+            {% for to in to_data %}
+                [ "{{ to.to_term }}", {{ to.count }} ],
+            {% endfor %}],
+            false);
+
+         dataEO = google.visualization.arrayToDataTable([
+            ['EO', '# Number'],
+            
+            {% for eo in eo_data %}
+                [ "{{ eo.eo_term }}", {{ eo.count }} ],
+            {% endfor %}],
+            false);
+        dataUO = google.visualization.arrayToDataTable([
+            ['UO', '# Number'],
+            
+            {% for uo in uo_data %}
+                [ "{{ uo.uo_term }}", {{ uo.count }} ],
+            {% endfor %}],
+            false);
+        chartTO = new google.visualization.PieChart(document.getElementById('to_chart'));
+        chartEO = new google.visualization.PieChart(document.getElementById('eo_chart'));
+        chartUO = new google.visualization.PieChart(document.getElementById('uo_chart'));
+        chartTO.draw(dataTO,{width:"100%",height:400});
+        {% endautoescape %}
+    }
+</script>
+{% endblock content %}

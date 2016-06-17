@@ -5,6 +5,23 @@
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link type="text/css" rel="stylesheet" href="/static/css/materialize.min.css" media="screen,projection"/>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <style>
+             body {
+                display: flex;
+                min-height: 100vh;
+                flex-direction: column;
+            }
+
+            main {
+                flex: 1 0 auto;
+            }
+            .chart {
+                height:400px;
+                width:100%;
+            }
+        </style>
     </head>
 
     <body>
@@ -27,10 +44,9 @@
             </div>        
         </nav>
         </div>
-        {% block content %}
-
-        {% endblock content %}
-
+        <main>
+        {% block content %}{% endblock content %}
+        </main>
         <footer class="page-footer brown lighten-2">
             <div class="container">
 
