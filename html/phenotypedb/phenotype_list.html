@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load render_table from django_tables2 %}
 
 {% block content %}
 <div id="index-banner" class="parallax-container" style="height:140px">
@@ -16,50 +17,7 @@
     <div class="section">
         <div class="row">
             <div class="col s12">
-                  <ul class="pagination center-align">
-                    <li>
-                        {% if page_obj.has_previous %}
-                        <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}"><i class="material-icons">chevron_left</i></a>
-                        {% endif %}
-                    </li>
-                    <li>
-                        <span class="page-current">
-                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                        </span> 
-                    </li>
-                    <li class="waves-effect">
-                         {% if page_obj.has_next %}
-                          <a href="{{ request.path }}?page={{ page_obj.next_page_number }}"><i class="material-icons">chevron_right</i></a>
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col s12 l12 m12">
-                <table>
-                    <thead>
-                    <tr>
-                        <th data-field="name">Name</th>
-                        <th data-field="name">Study</th>
-                        <th data-field="name">TO</th>
-                        <th data-field="name">EO</th>
-                        <th data-field="name">UO</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {% for phenotype in phenotype_list %}
-                            <tr>
-                                <td><a href="{% url 'phenotype_detail' phenotype.id %}">{{ phenotype.name }}</a></td>
-                                <td><a href="{% url 'study_detail' phenotype.study.id %}">{{ phenotype.study.name }}</a></td>
-                                <td>{{ phenotype.to_term }}</td>
-                                <td>{{ phenotype.eo_term }}</td>
-                                <td>{{ phenotype.uo_term }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            
+                {% render_table phenotype_table %}
             </div>
         </div>
     </div>

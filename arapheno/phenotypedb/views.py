@@ -4,14 +4,17 @@ from django.core.urlresolvers import reverse
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 from models import Phenotype, Study, Accession
+from tables import PhenotypeTable
 from django.db.models import Count
+
+from django_tables2 import RequestConfig
 
 # Create your views here.
 
-class PhenotypeList(ListView):
-    model = Phenotype
-    context_object_name = 'phenotype_list'    
-    paginate_by = 20
+def PhenotypeList(request):
+    table = PhenotypeTable(Phenotype.objects.all(),order_by="-name")
+    RequestConfig(request,paginate={"per_page":20}).configure(table)
+    return render(request,'phenotypedb/phenotype_list.html',{"phenotype_table":table})
 
 
 class PhenotypeDetail(DetailView):
