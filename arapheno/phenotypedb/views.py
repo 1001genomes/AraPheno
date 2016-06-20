@@ -32,21 +32,15 @@ class StudyList(ListView):
     paginate_by = 20
 
 
-class StudyDetail(SingleObjectMixin, ListView):
-    template_name = 'phenotypedb/study_detail.html'
-    paginate_by = 20
+def StudyDetail(request,pk=None):
+    study = Study.objects.get(id=pk)
+    phenotype_table = PhenotypeTable(Phenotype.objects.filter(study__id=pk),order_by="-name")
+    RequestConfig(request,paginate={"per_page":20}).configure(phenotype_table)
+    variable_dict = {}
+    variable_dict["phenotype_table"] = phenotype_table
+    variable_dict["study"] = study
+    variable_dict['to_data'] = study.phenotype_set.values('to_term').annotate(count=Count('to_term'))
+    variable_dict['eo_data'] = study.phenotype_set.values('eo_term').annotate(count=Count('eo_term'))
+    variable_dict['uo_data'] = study.phenotype_set.values('uo_term').annotate(count=Count('uo_term'))
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object(queryset=Study.objects.all())
-        return super(StudyDetail, self).get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(StudyDetail, self).get_context_data(**kwargs)
-        context['study'] = self.object
-        context['to_data'] = self.object.phenotype_set.values('to_term').annotate(count=Count('to_term'))
-        context['eo_data'] = self.object.phenotype_set.values('eo_term').annotate(count=Count('eo_term'))
-        context['uo_data'] = self.object.phenotype_set.values('uo_term').annotate(count=Count('uo_term'))
-        return context
-
-    def get_queryset(self):
-        return self.object.phenotype_set.all()
+    return render(request,'phenotypedb/study_detail.html',variable_dict)
