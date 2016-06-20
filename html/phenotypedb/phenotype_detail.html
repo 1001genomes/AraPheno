@@ -1,10 +1,10 @@
 {% extends "base.html" %} 
 
 {% block content %}
-<div id="index-banner" class="parallax-container" style="height:320px">
+<div id="index-banner" class="parallax-container" style="height:140px">
     <div class="section no-pad-bot">
         <div class="container">
-            <h1 class="header center white-text text-lighten-2">Study: {{ object.name }}</h1>
+            <h2 class="header center white-text text-lighten-2">Study: {{ object.name }}</h2>
         </div>
     </div>
     <div class="parallax"><img src="/static/img/ara2.jpg" alt="Unsplashed background img 1"></div>
@@ -15,7 +15,7 @@
         <div class="col s12">
             <section class="section">
                 <nav>
-                    <div class="nav-wrapper">
+                    <div class="nav-wrapper brown">
                         <div class="col s12">
                             <a class="breadcrumb" href="{% url 'study_detail' phenotype.study.id %}">{{ object.study.name }}</a>
                             <a class="breadcrumb">{{ object.name }}</a>
@@ -95,9 +95,9 @@
     <div class="row">
         <div class="col s12">
             <ul class="tabs">
-                <li class="tab col s3"><a href="#histogram" id="histogram_link" class="active">Histogram</a></li>
-                <li class="tab col s3"><a  href="#explorer" id="explorer_link">Explorer</a></li>
-                <li class="tab col s3"><a href="#table" id="table_link">Table</a></li>
+                <li class="tab col s3"><a href="#histogram" id="histogram_link" class="active brown-text">Histogram</a></li>
+                <li class="tab col s3"><a  href="#explorer" id="explorer_link" class="brown-text">Explorer</a></li>
+                <li class="tab col s3"><a href="#table" id="table_link" class="brown-text">Table</a></li>
             </ul>
         </div>
         <div id="histogram" class="col s12" style="height:500px">
