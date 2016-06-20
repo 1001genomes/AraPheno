@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.utils.safestring import mark_safe
 
 from django.db import models
 
@@ -22,6 +23,9 @@ class Study(models.Model):
 
     species = models.ForeignKey("Species") #foreign key to species
     publications = models.ManyToManyField("Publication",blank=True)
+    
+    def __unicode__(self):
+        return u"%s (Study)" % (mark_safe(self.name))
 
 
 '''
@@ -78,6 +82,9 @@ class Phenotype(models.Model):
     study = models.ForeignKey('Study')
     dynamic_metainformations = models.ManyToManyField('PhenotypeMetaDynamic')
     publications = models.ManyToManyField("Publication",blank=True)
+
+    def __unicode__(self):
+        return u"%s (Phenotype)" % (mark_safe(self.name))
 
 
 '''

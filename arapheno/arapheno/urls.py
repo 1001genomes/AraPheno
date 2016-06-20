@@ -19,8 +19,11 @@ from django.contrib import admin
 import home.views
 import phenotypedb.views
 
+import autocomplete_light.shortcuts as al
+al.autodiscover()
 
 urlpatterns = [
+    url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$',home.views.home),
     url(r'phenotypes/$',phenotypedb.views.PhenotypeList,name="phenotypes"),
     url(r'phenotype/(?P<pk>[0-9]+)/$',phenotypedb.views.PhenotypeDetail.as_view(),name="phenotype_detail"),

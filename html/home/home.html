@@ -13,26 +13,14 @@
                 <br>
                 <h5 class="header col s12 m12 l12 light">This Database allows to search and filter for public phenotypes and to obtain additional meta-information.</h5>
             </div>
-            <!--<div class="card-panel">
-                <div class="row center">
-                    <div class="input-field col s12 m12 l12">-->
-                        <!-- <i class="material-icons prefix">search</i>
-                        <input id="icon_prefix" type="text" class="validate">
-                        <label for="icon_prefix">Search for Phenotypes by Name or Accessions</label> -->
-                        <nav class="white">
-                            <div class="nav-wrapper">
-                                <form>
-                                    <div class="input-field">
-                                        <input id="search" type="search" required>
-                                        <label for="search"><i class="material-icons green-text">search</i></label>
-                                        <i class="material-icons">close</i>
-                                    </div>
-                                </form>
-                            </div>
-                        </nav>
-                        <!--</div>
-                </div>
-            </div>-->
+            <form method="post" action="." name="_submit_form">
+                {% csrf_token %}
+                    <div class="valign-wrapper white">
+                    <i class="material-icons prefix left valign">search</i>
+                    {{ search_form.global_search }}
+                    <li class="waves-effect"><a href="#!"><i class="material-icons prefix right valign">chevron_right</i></a></li>
+                    </div>
+            </form>
         </div>
     </div>
     <div class="parallax"><img src="static/img/ara1.jpg" alt="Unsplashed background img 1"></div>
