@@ -1,0 +1,12 @@
+.arabadge {
+    display: inline;
+    padding: .2em .6em .3em;
+    line-weight: 500;
+    line-height: 1;
+    font-size: 80%;
+    text-align: center;
+    color: #ffffff;
+    white-space: nowrap;
+    border-radius: .30em;
+    background-color: rgb(121,85,72);
+}
