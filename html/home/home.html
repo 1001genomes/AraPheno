@@ -87,5 +87,10 @@
     $(document).ready(function(){    
         $('.parallax').parallax();
     });
-</script>
+
+    $('#id_global_search-autocomplete').yourlabsAutocomplete({
+        choiceSelector: '[data-url]'
+    });
+
+    </script>
 {% endblock content %}
