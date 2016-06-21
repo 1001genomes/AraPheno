@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'search_results/(?P<query>[\w.@-_?!$&/\=]+)/$',home.views.SearchResults,name="searchresults"),
     url(r'phenotypes/$',phenotypedb.views.PhenotypeList,name="phenotypes"),
     url(r'phenotype/(?P<pk>[0-9]+)/$',phenotypedb.views.PhenotypeDetail.as_view(),name="phenotype_detail"),
-    url(r'studies/$',phenotypedb.views.StudyList.as_view(),name="studies"),
+    url(r'studies/$',phenotypedb.views.StudyList,name="studies"),
     url(r'study/(?P<pk>[0-9]+)$',phenotypedb.views.StudyDetail,name="study_detail"),
     url(r'about/$',home.views.about),
 ]

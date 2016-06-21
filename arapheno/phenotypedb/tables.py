@@ -16,7 +16,10 @@ class PhenotypeTable(tables.Table):
 class StudyTable(tables.Table):
     name = tables.LinkColumn("study_detail",args=[A('id')],text=lambda record: record.name,verbose_name="Study Name",order_by="name")
     description = tables.Column(accessor="description",verbose_name="Description",order_by="description")
-    #phenotypes = tables.Column(accessor="phenotype_set",verbose_name="# Phenotypes",order_by="phenotype_set")
+    phenotypes = tables.Column(accessor="phenotype_set",verbose_name="#Phenotypes",order_by="phenotype_set")
     
+    def render_phenotypes(self,record):
+        return mark_safe("#" + str(record.phenotype_set.count()))
+
     class Meta:
         attrs = {"class": "striped"}

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 from models import Phenotype, Study, Accession
-from tables import PhenotypeTable
+from tables import PhenotypeTable, StudyTable
 from forms import GlobalSearchForm
 from django.db.models import Count
 
@@ -27,10 +27,13 @@ class PhenotypeDetail(DetailView):
         context['geo_chart_data'] = Accession.objects.filter(observationunit__phenotypevalue__phenotype_id=1).values('country').annotate(count=Count('country'))
         return context
 
-class StudyList(ListView):
-    queryset = Study.objects.all().annotate(phenotype_count=Count('phenotype'))
-    context_object_name = 'study_list'
-    paginate_by = 20
+def StudyList(request):
+    #queryset = Study.objects.all().annotate(phenotype_count=Count('phenotype'))
+    #context_object_name = 'study_list'
+    #paginate_by = 20
+    table = StudyTable(Study.objects.all(),order_by="-name")
+    RequestConfig(request,paginate={"per_page":20}).configure(table)
+    return render(request,'phenotypedb/study_list.html',{"study_table":table})
 
 
 def StudyDetail(request,pk=None):
