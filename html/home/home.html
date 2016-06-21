@@ -13,12 +13,12 @@
                 <br>
                 <h5 class="header col s12 m12 l12 light">This Database allows to search and filter for public phenotypes and to obtain additional meta-information.</h5>
             </div>
-            <form method="post" action="." name="_submit_form">
+            <form method="post" action="." name="_search_form">
                 {% csrf_token %}
                     <div class="valign-wrapper white">
                     <i class="material-icons prefix left valign">search</i>
                     {{ search_form.global_search }}
-                    <li class="waves-effect"><a href="#!"><i class="material-icons prefix right valign">chevron_right</i></a></li>
+                    <li class="waves-effect"><a href="#!"><i class="material-icons prefix right valign" id="submit_search">chevron_right</i></a></li>
                     </div>
             </form>
         </div>
@@ -90,6 +90,10 @@
 
     $('#id_global_search-autocomplete').yourlabsAutocomplete({
         choiceSelector: '[data-url]'
+    });
+
+    $('#submit_search').click(function(){
+        document.forms['_search_form'].submit(); 
     });
 
     </script>

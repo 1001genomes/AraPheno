@@ -5,34 +5,7 @@
 {% if table.page %}
 <div class="table-container">
 
-{% if table.page %}
-{% block pagination %}
-{% if table.paginator.num_pages != 1 %}
-<ul class="pagination center-align">
-    
-    {% if table.page.has_previous %}
-    {% block pagination.previous %}
-    <!--<li class="waves-effect"><a href="{% querystring table.prefixed_page_field=1%}">First</a></li>
-    <li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.page.previous_page_number %}">{% trans "Previous" %}</a></li>-->
-    <li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.page.previous_page_number %}"><i class="material-icons">chevron_left</i></a></li>
-    {% endblock pagination.previous %}
-    {% endif %}
-    {% block pagination.current %}
-    	<li class="active brown"><a href="#">{% blocktrans with current=table.page.number total=table.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</a></li>
-    {% endblock pagination.current %}
-    {% if table.page.has_next %}
-    {% block pagination.next %}
 
-    <li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.page.next_page_number %}"><i class="material-icons">chevron_right</i></a></li>
-    <!--<li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.page.next_page_number %}">{% trans "Next" %}</a></li>
-    <li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.paginator.num_pages%}">Last</a></li>-->
-    {% endblock pagination.next %}
-    {% endif %}
-{% endif %}
-</ul>
-{% endblock pagination %}
-
-{% endif %}
 {% block table %}
 <table width=100% {% if table.attrs %} {{ table.attrs.as_html }}{% endif %}>
     {% block table.thead %}
@@ -72,6 +45,33 @@
     {% endblock table.tfoot %}
 </table>
 {% endblock table %}
+{% if table.page %}
+{% block pagination %}
+{% if table.paginator.num_pages != 1 %}
+<ul class="pagination center-align">
+    
+    {% if table.page.has_previous %}
+    {% block pagination.previous %}
+    <!--<li class="waves-effect"><a href="{% querystring table.prefixed_page_field=1%}">First</a></li>
+    <li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.page.previous_page_number %}">{% trans "Previous" %}</a></li>-->
+    <li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.page.previous_page_number %}"><i class="material-icons">chevron_left</i></a></li>
+    {% endblock pagination.previous %}
+    {% endif %}
+    {% block pagination.current %}
+    	<li class="active brown"><a href="#">{% blocktrans with current=table.page.number total=table.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</a></li>
+    {% endblock pagination.current %}
+    {% if table.page.has_next %}
+    {% block pagination.next %}
+
+    <li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.page.next_page_number %}"><i class="material-icons">chevron_right</i></a></li>
+    <!--<li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.page.next_page_number %}">{% trans "Next" %}</a></li>
+    <li class="waves-effect"><a href="{% querystring table.prefixed_page_field=table.paginator.num_pages%}">Last</a></li>-->
+    {% endblock pagination.next %}
+    {% endif %}
+{% endif %}
+</ul>
+{% endblock pagination %}
+{% endif %}
 
 </div>
 {% endif %}

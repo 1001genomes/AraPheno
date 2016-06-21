@@ -8,7 +8,7 @@ class GlobalSearchAutocomplete(autocomplete_light.AutocompleteGenericBase):
     search_fields = (('name',), #phenotype search field
                      ('name',)) #study search field
 
-    attrs = {'placeholder':'Search a phenotype or study by name ...',
+    attrs = {'placeholder':'Search a phenotype or study by name (e.g. type FRI for phenotype, or Atwell for study)',
              'data-autocomplete-minimum-characters':1}
 
     widget_attrs={'data-widget-maximum-values':1,'class':'','style':'width:95%;height:50px'}

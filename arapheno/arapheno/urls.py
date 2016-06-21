@@ -25,6 +25,9 @@ al.autodiscover()
 urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$',home.views.home),
+    url(r'search_results/$',home.views.SearchResults,name="searchresults"),
+    url(r'search_results//$',home.views.SearchResults,name="searchresults"),
+    url(r'search_results/(?P<query>[\w.@-_?!$&/\=]+)/$',home.views.SearchResults,name="searchresults"),
     url(r'phenotypes/$',phenotypedb.views.PhenotypeList,name="phenotypes"),
     url(r'phenotype/(?P<pk>[0-9]+)/$',phenotypedb.views.PhenotypeDetail.as_view(),name="phenotype_detail"),
     url(r'studies/$',phenotypedb.views.StudyList.as_view(),name="studies"),

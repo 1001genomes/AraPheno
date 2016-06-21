@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:120px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h3 class="header center white-text text-lighten-2">Search Results for Query: {{ query }}</h3>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara1.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col l12 m12 s12">
+            <ul class="tabs">
+                <li class="tab col s3"><a class="active brown-text" href="#phenotypes">Search Results: Phenotypes
+                {% if nphenotypes == 1 %}
+                       <div class="right"><span class="arabadge">{{nphenotypes}} Result</span></div>
+                    {% else %}
+                       <div class="right"><span class="arabadge">{{nphenotypes}} Results</span></div>
+                    {% endif %}
+                </a></li>
+                <li class="tab col s3"><a href="#studies" class="brown-text">Search Results: Studies
+                    {% if nstudies == 1 %}
+                       <div class="right"><span class="arabadge">{{nstudies}} Result</span></div>
+                    {% else %}
+                       <div class="right"><span class="arabadge">{{nstudies}} Results</span></div>
+                    {% endif %}
+                </a></li>
+                <div class="indicator brown" style="z-index:1"></div>
+            </ul>
+            <div id="phenotypes" class="col s12"><br>
+                {% if nphenotypes == 0 %}
+                    <h5 class="brown-text center">No Phenotypes found for query: {{query}}</h5>
+                {% else %}
+                    {% render_table phenotype_table %}
+                {% endif %}
+            </div>
+            <div id="studies" class="col s12"><br>
+                {% if nstudies == 0 %}
+                        <h5 class="brown-text center">No Studies found for query: {{query}}</h5>
+                {% else %}
+                    {% render_table study_table %}
+                {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+    });
+</script>
+{% endblock content %}
