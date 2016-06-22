@@ -13,6 +13,16 @@ class PhenotypeTable(tables.Table):
     class Meta:
         attrs = {"class": "striped"}
 
+class ReducedPhenotypeTable(tables.Table):
+    name = tables.LinkColumn("phenotype_detail",args=[A('id')],text=lambda record: record.name,verbose_name="Phenotype Name",order_by="name")
+    to = tables.Column(accessor="to_term",verbose_name="TO",order_by="to_term")
+    eo = tables.Column(accessor="eo_term",verbose_name="EO",order_by="eo_term")
+    uo = tables.Column(accessor="uo_term",verbose_name="UO",order_by="uo_term")
+    
+    class Meta:
+        attrs = {"class": "striped"}
+
+
 class StudyTable(tables.Table):
     name = tables.LinkColumn("study_detail",args=[A('id')],text=lambda record: record.name,verbose_name="Study Name",order_by="name")
     description = tables.Column(accessor="description",verbose_name="Description",order_by="description")

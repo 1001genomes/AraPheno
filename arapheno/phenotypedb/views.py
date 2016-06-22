@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 from models import Phenotype, Study, Accession
-from tables import PhenotypeTable, StudyTable
+from tables import PhenotypeTable, ReducedPhenotypeTable, StudyTable
 from home.forms import GlobalSearchForm
 from django.db.models import Count
 
@@ -28,9 +28,6 @@ class PhenotypeDetail(DetailView):
         return context
 
 def StudyList(request):
-    #queryset = Study.objects.all().annotate(phenotype_count=Count('phenotype'))
-    #context_object_name = 'study_list'
-    #paginate_by = 20
     table = StudyTable(Study.objects.all(),order_by="-name")
     RequestConfig(request,paginate={"per_page":20}).configure(table)
     return render(request,'phenotypedb/study_list.html',{"study_table":table})
@@ -38,7 +35,7 @@ def StudyList(request):
 
 def StudyDetail(request,pk=None):
     study = Study.objects.get(id=pk)
-    phenotype_table = PhenotypeTable(Phenotype.objects.filter(study__id=pk),order_by="-name")
+    phenotype_table = ReducedPhenotypeTable(Phenotype.objects.filter(study__id=pk),order_by="-name")
     RequestConfig(request,paginate={"per_page":20}).configure(phenotype_table)
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
