@@ -25,6 +25,12 @@ def about(request):
     return render(request,'home/about.html',{})
 
 '''
+FAQ View of AraPhen
+'''
+def faq(request):
+    return render(request,'home/faq.html',{})
+
+'''
 Search Result View for Global Search in AraPheno
 '''
 def SearchResults(request,query=None):
