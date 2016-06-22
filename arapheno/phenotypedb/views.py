@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 from models import Phenotype, Study, Accession
 from tables import PhenotypeTable, StudyTable
-from forms import GlobalSearchForm
+from home.forms import GlobalSearchForm
 from django.db.models import Count
 
 from django_tables2 import RequestConfig
