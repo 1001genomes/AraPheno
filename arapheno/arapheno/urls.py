@@ -35,4 +35,7 @@ urlpatterns = [
     url(r'about/$',home.views.about),
     url(r'faq/$',home.views.faq),
     url(r'faq/content/$',home.views.faqcontent),
+    url(r'faq/tutorials/$',home.views.faqtutorial),
+    url(r'faq/rest/$',home.views.faqrest),
+    url(r'faq/cite/$',home.views.faqcite),
 ]
