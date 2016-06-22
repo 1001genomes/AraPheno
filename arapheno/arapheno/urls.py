@@ -34,4 +34,5 @@ urlpatterns = [
     url(r'study/(?P<pk>[0-9]+)$',phenotypedb.views.StudyDetail,name="study_detail"),
     url(r'about/$',home.views.about),
     url(r'faq/$',home.views.faq),
+    url(r'faq/content/$',home.views.faqcontent),
 ]

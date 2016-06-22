@@ -31,6 +31,12 @@ def faq(request):
     return render(request,'home/faq.html',{})
 
 '''
+FAQ Content View of AraPhen
+'''
+def faqcontent(request):
+    return render(request,'home/faqcontent.html',{})
+
+'''
 Search Result View for Global Search in AraPheno
 '''
 def SearchResults(request,query=None):
