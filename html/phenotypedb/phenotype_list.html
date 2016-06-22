@@ -26,6 +26,30 @@
 <script type="text/javascript">
     $(document).ready(function(){    
         $('.parallax').parallax();
+
     });
+    if (RegExp('multipage', 'gi').test(window.location.search)) {
+        var steps = [
+            {
+                element: '.table-container',
+                intro: 'The phenotype table displays all public phenotypes across all studies.',
+                position: 'top'
+            },
+            {
+                element: 'thead',
+                intro: 'The phenotype list can be sorted by any of the table columns'
+            },
+            {
+                element: 'td.study',
+                intro: 'Clicking on a study will display more information about the corresponding study '
+            }
+
+        ];
+        var intro = introJs();
+        intro.setOptions({doneLabel:'Next page',steps:steps});
+        intro.start().oncomplete(function() {
+          window.location.href = '/study/1?multipage=true';
+        });
+    }
 </script>
 {% endblock content %}

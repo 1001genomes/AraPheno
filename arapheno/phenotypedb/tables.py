@@ -9,7 +9,7 @@ class PhenotypeTable(tables.Table):
     to = tables.Column(accessor="to_term",verbose_name="Trait Ontology (TO)",order_by="to_term")
     eo = tables.Column(accessor="eo_term",verbose_name="Environmental Ontoloy (EO)",order_by="eo_term")
     uo = tables.Column(accessor="uo_term",verbose_name="Unit Ontology (UO)",order_by="uo_term")
-    
+
     class Meta:
         attrs = {"class": "striped"}
 
@@ -18,7 +18,7 @@ class ReducedPhenotypeTable(tables.Table):
     to = tables.Column(accessor="to_term",verbose_name="Trait Ontology (TO)",order_by="to_term")
     eo = tables.Column(accessor="eo_term",verbose_name="Environmental Ontoloy (EO)",order_by="eo_term")
     uo = tables.Column(accessor="uo_term",verbose_name="Unit Ontology (UO)",order_by="uo_term")
-    
+
     class Meta:
         attrs = {"class": "striped"}
 

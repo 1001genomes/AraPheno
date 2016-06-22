@@ -15,7 +15,7 @@
             </div>
             <form method="post" action="." name="_search_form">
                 {% csrf_token %}
-                    <div class="valign-wrapper white">
+                    <div class="valign-wrapper white" id="search_box">
                     <i class="material-icons prefix left valign brown-text">search</i>
                     {{ search_form.global_search }}
                     <li class="waves-effect"><a href="#!"><i class="material-icons prefix right valign brown-text" id="submit_search">chevron_right</i></a></li>
@@ -35,7 +35,7 @@
                     <h5 class="center">Public Phenotypes</h5>
                     <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> phenotypes and studies and rretrive additional information.</p>
                 </div>
-                <a class="waves-effect waves-light btn-large brown" href="{% url 'phenotypes' %}"><i class="material-icons left">view_list</i>View Phenotypes</a>
+                <a class="waves-effect waves-light btn-large brown" href="{% url 'phenotypes' %}" id="view_phenotypes_button"><i class="material-icons left">view_list</i>View Phenotypes</a>
             </div>
             
             
@@ -45,7 +45,7 @@
                     <h5 class="center">REST API</h5>
                     <p class="light">The REST API can be used to retrive phenotype data and meta-information from AraPheno via URLs.</p>
                 </div>
-                <a class="waves-effect waves-light btn-large brown"><i class="material-icons left">code</i>REST API</a>
+                <a class="waves-effect waves-light btn-large brown" id="rest_button"><i class="material-icons left">code</i>REST API</a>
             </div>
             
             <div class="col s12 m6 l3">
@@ -55,7 +55,7 @@
                     <p class="light">
                     Take a guided tour through Arapheno and familiarise yourself with all available public functions. </p>
                 </div>
-                <a class="waves-effect waves-light btn-large brown"><i class="material-icons left">rowing</i>Take a Tour</a>
+                <a class="waves-effect waves-light btn-large brown" id="start_tour" ><i class="material-icons left">rowing</i>Take a Tour</a>
             </div>
             
             <div class="col s12 m6 l3">
@@ -64,7 +64,7 @@
                     <h5 class="center">FAQ & Tutorials</h5>
                     <p class="light">Here, you can find detailed help about the functions of AraPheno, its integrated data and frequently asked questions.</p>
                 </div>
-                <a class="waves-effect waves-light btn-large brown modal-trigger" href="#faqmodal"><i class="material-icons left">help_outline</i>FAQ</a>
+                <a class="waves-effect waves-light btn-large brown modal-trigger" href="#faqmodal" id="faq_button"><i class="material-icons left">help_outline</i>FAQ</a>
             </div>
         </div>
     </div>
@@ -103,6 +103,37 @@
 
     $('#submit_search').click(function(){
         document.forms['_search_form'].submit(); 
+    });
+
+    $('#start_tour').click(function() {
+        var steps = [
+            {
+                element: '.header',
+                intro: 'AraPheno is a public database collection of <em>Arabidopsis thaliana</em> phenotypes. This tour will show the important features'
+            },
+            {
+                element: '#search_box',
+                intro: 'The global search form allows the user to search across all phenotypes and studies'
+            },
+            {
+                element: '#faq_button',
+                intro: 'The FAQ section provides tutorials of the various features of AraPheno'
+            },
+            {
+                element: '#rest_button',
+                intro: 'AraPheno provides a well-documented REST API for programmatic access to the data'
+            },
+            {
+                element: '#view_phenotypes_button',
+                intro: 'Users can view a list of public phenotypes and studies'
+            }
+
+        ];
+        var intro = introJs();
+        intro.setOptions({doneLabel:'Next page',steps:steps});
+        intro.start().oncomplete(function() {
+          window.location.href = 'phenotypes/?multipage=true';
+        });
     });
 
     </script>
