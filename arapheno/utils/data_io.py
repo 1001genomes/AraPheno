@@ -21,6 +21,18 @@ class AccessionClass(object):
         fields = {'name':self.name,'country':self.country}
         return {'model':'phenotypedb.Accession','pk':self.id,'fields':fields}
 
+
+'''
+Parse a country-codes map and creates a dictionary with the passed in key as key
+'''
+def parse_country_map(filename,key='ISO3166-1-Alpha-3'):
+    map = {}
+    with open(filename,'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            map[row[key]] = row['name']
+    return map
+
 '''
 Parse Accession File Including Meta-Information (e.g. 1001 Genomes Master Table)
 Input: filename: filename of accession file
@@ -60,10 +72,13 @@ def parseAccessionFile(filename=None, species=1):
     return accession_list
 
 
-def convertAccessionsToJson(accessions):
+def convertAccessionsToJson(accessions,country_map = {}):
     accession_dict = []
+    if country_map is None:
+        country_map =  {}
     for acc in accessions:
-        fields = {'name':acc.name,'country':acc.country,'sitename':acc.sitename,
+        country = country_map.get(acc.country,acc.country)
+        fields = {'name':acc.name,'country':country,'sitename':acc.sitename,
         'collector':acc.collector,'collection_date':acc.collection_date,'latitude':acc.latitude,'longitude':acc.longitude,'cs_number':acc.cs_number,'species':acc.species}
         acc_dict = {'model':'phenotypedb.Accession','pk':acc.id,'fields':fields}
         accession_dict.append(acc_dict)
