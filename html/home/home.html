@@ -16,9 +16,9 @@
             <form method="post" action="." name="_search_form">
                 {% csrf_token %}
                     <div class="valign-wrapper white">
-                    <i class="material-icons prefix left valign">search</i>
+                    <i class="material-icons prefix left valign brown-text">search</i>
                     {{ search_form.global_search }}
-                    <li class="waves-effect"><a href="#!"><i class="material-icons prefix right valign" id="submit_search">chevron_right</i></a></li>
+                    <li class="waves-effect"><a href="#!"><i class="material-icons prefix right valign brown-text" id="submit_search">chevron_right</i></a></li>
                     </div>
             </form>
         </div>
@@ -64,7 +64,7 @@
                     <h5 class="center">FAQ & Tutorials</h5>
                     <p class="light">Here, you can find detailed help about the functions of AraPheno, its integrated data and frequently asked questions.</p>
                 </div>
-                <a class="waves-effect waves-light btn-large brown" href="faq/"><i class="material-icons left">help_outline</i>FAQ</a>
+                <a class="waves-effect waves-light btn-large brown modal-trigger" href="#faqmodal"><i class="material-icons left">help_outline</i>FAQ</a>
             </div>
         </div>
     </div>
