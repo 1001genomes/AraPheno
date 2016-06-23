@@ -51,7 +51,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        #'rest_framework.renderers.BrowsableAPIRenderer', #can be added if necessary (provides a nice browser interface)
         'rest_framework_csv.renderers.CSVRenderer',
     ),
 }
