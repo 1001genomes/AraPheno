@@ -16,8 +16,11 @@ Including another URLconf
 from django.conf.urls import url,include
 from django.contrib import admin
 
+from rest_framework.urlpatterns import format_suffix_patterns
+
 import home.views
 import phenotypedb.views
+import phenotypedb.rest as rest
 
 import autocomplete_light.shortcuts as al
 al.autodiscover()
@@ -39,3 +42,18 @@ urlpatterns = [
     url(r'faq/rest/$',home.views.faqrest),
     url(r'faq/cite/$',home.views.faqcite),
 ]
+'''    
+REST URLS
+'''
+restpatterns = [
+    url(r'rest/phenotype/list/$',rest.phenotype_list),
+    url(r'rest/phenotype/detail/id/(?P<pk>[0-9]+)/$',rest.phenotype_detail),
+    url(r'rest/study/list/$',rest.study_list),
+]
+#extend restpatterns with suffix options
+restpatterns = format_suffix_patterns(restpatterns,allowed=['json','api','csv'])
+'''
+Add REST patterns to urlpatterns
+'''
+urlpatterns += restpatterns
+
