@@ -51,11 +51,13 @@ restpatterns = [
     url(r'rest/search/(?P<query_term>[\w.@-_?!$&/\=]+)/$',rest.search),
     url(r'rest/phenotype/list/$',rest.phenotype_list),
     url(r'rest/phenotype/detail/id/(?P<pk>[0-9]+)/$',rest.phenotype_detail),
+    url(r'rest/phenotype/detail/doi/(?P<doi>[\w.@-_?!$&/\=]+)/$',rest.phenotype_detail),
     url(r'rest/study/list/$',rest.study_list),
-    #url(r'rest/study/detail/id/(?P<pk>[0-9]+)/$',rest.phenotype_detail),
+    url(r'rest/study/detail/id/(?P<pk>[0-9]+)/$',rest.study_detail),
+    url(r'rest/study/detail/doi/(?P<doi>[\w.@-_?!$&/\=]+)/$',rest.study_detail),
 ]
 #extend restpatterns with suffix options
-restpatterns = format_suffix_patterns(restpatterns,allowed=['json','api','csv'])
+restpatterns = format_suffix_patterns(restpatterns,allowed=['json','csv'])
 '''
 Add REST patterns to urlpatterns
 '''

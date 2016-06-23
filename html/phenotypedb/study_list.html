@@ -3,10 +3,13 @@
 {% load render_table from django_tables2 %}
 
 {% block content %}
-<div id="index-banner" class="parallax-container" style="height:140px">
+<div id="index-banner" class="parallax-container" style="height:80px">
     <div class="section no-pad-bot">
         <div class="container">
-            <h2 class="header center white-text text-lighten-2">List of studies</h2>
+            <h5 class="white-text">List of all studies</h5>
+             <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block;bottom:13px;">
+            <a class="btn-floating btn-large waves-effect white" href="/rest/study/list.csv"><i class="material-icons brown-text" id="download_btn">file_download</i></a>
+            </div>
         </div>
     </div>
     <div class="parallax"><img src="/static/img/ara2.jpg" alt="Unsplashed background img 1"></div>

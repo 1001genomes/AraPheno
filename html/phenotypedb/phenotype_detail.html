@@ -20,7 +20,7 @@
                             <a class="breadcrumb" href="{% url 'study_detail' phenotype.study.id %}">{{ object.study.name }}</a>
                             <a class="breadcrumb">{{ object.name }}</a>
                             <ul id="nav-mobile" class="right">
-                                <li><a ><i class="material-icons" id="download_btn">file_download</i></a></li>
+                                <li><a href="/rest/phenotype/detail/id/{{object.id}}.csv"><i class="material-icons" id="download_btn">file_download</i></a></li>
                             </ul>
                         </div>
                     </div>

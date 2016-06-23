@@ -58,13 +58,16 @@ Detailed phenotype list via id
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
 @renderer_classes((PhenotypeValueRenderer,JSONRenderer))
-def phenotype_detail(request,pk=None,format=None):
+def phenotype_detail(request,pk=None,doi=None,format=None):
     """
     Details of phenotype
     Read-Only Response Supported
     """
     try:
-        phenotype = Phenotype.objects.get(pk=pk)
+        if not pk == None:
+            phenotype = Phenotype.objects.get(pk=pk)
+        else:
+            phenotype = Phenotype.objects.get(doi=doi)
     except:
         return HttpResponse(status=404)
 
@@ -89,3 +92,25 @@ def study_list(request,format=None):
         serializer = StudyListSerializer(studies,many=True)
         return Response(serializer.data)
 
+'''
+Detailed study list via id
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeListRenderer,JSONRenderer))
+def study_detail(request,pk=None,doi=None,format=None):
+    """
+    Details of phenotype
+    Read-Only Response Supported
+    """
+    try:
+        if not pk==None:
+            study = Study.objects.get(pk=pk)
+        else:
+            study = Study.objects.get(doi=doi)
+    except:
+        return HttpResponse(status=404)
+
+    if request.method == "GET":
+        serializer = PhenotypeListSerializer(study.phenotype_set.all(),many=True)
+        return Response(serializer.data)

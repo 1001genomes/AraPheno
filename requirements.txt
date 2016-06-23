@@ -6,3 +6,4 @@ djangorestframework==3.3.3
 markdown==2.6.6
 django-filter==0.13.0
 djangorestframework-csv==1.4.1
+django_rest_swagger==0.3.7

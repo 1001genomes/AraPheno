@@ -61,9 +61,11 @@ def SearchResults(request,query=None):
     if query==None:
         phenotypes = Phenotype.objects.all()
         studies = Study.objects.all()
+        download_url = "/rest/search.json"
     else:
         phenotypes = Phenotype.objects.filter(name__icontains=query)
         studies = Study.objects.filter(name__icontains=query)
+        download_url = "/rest/search/" + str(query) + ".json"
     
     phenotype_table = PhenotypeTable(phenotypes,order_by="-name")
     RequestConfig(request,paginate={"per_page":10}).configure(phenotype_table)
@@ -77,5 +79,6 @@ def SearchResults(request,query=None):
     variable_dict['phenotype_table'] = phenotype_table
     variable_dict['study_table'] = study_table
     variable_dict['nstudies'] = studies.count()
-    
+    variable_dict['download_url'] = download_url
+
     return render(request,'home/search_results.html',variable_dict)
