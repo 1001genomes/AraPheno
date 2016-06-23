@@ -25,6 +25,9 @@ import phenotypedb.rest as rest
 import autocomplete_light.shortcuts as al
 al.autodiscover()
 
+id_regex = r"^[0-9]+$"
+doi_regex = "(10\.[^/]+/([^(\s\>\"\<})])+)"
+
 urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$',home.views.home),
@@ -50,11 +53,12 @@ restpatterns = [
     url(r'rest/search/$',rest.search),
     url(r'rest/search/(?P<query_term>[\w.@-_?!$&/\=]+)/$',rest.search),
     url(r'rest/phenotype/list/$',rest.phenotype_list),
-    url(r'rest/phenotype/detail/id/(?P<pk>[0-9]+)/$',rest.phenotype_detail),
-    url(r'rest/phenotype/detail/doi/(?P<doi>[\w.@-_?!$&/\=]+)/$',rest.phenotype_detail),
+    url(r'rest/phenotype/(?P<q>[0-9]+)/$',rest.phenotype_list), #Only supports PK for now
+    url(r'rest/phenotype/(?P<q>[0-9]+)/values/$',rest.phenotype_detail), #Only supports PK for now
     url(r'rest/study/list/$',rest.study_list),
-    url(r'rest/study/detail/id/(?P<pk>[0-9]+)/$',rest.study_detail),
-    url(r'rest/study/detail/doi/(?P<doi>[\w.@-_?!$&/\=]+)/$',rest.study_detail),
+    url(r'rest/study/(?P<q>[0-9]+)/$',rest.study_list),
+    url(r'rest/study/(?P<q>[0-9]+)/phenotypes/$',rest.study_all_pheno),
+    #url(r'rest/study/id/(?P<pk>[0-9]+)/values/$',rest.study_all_pheno_values),
 ]
 #extend restpatterns with suffix options
 restpatterns = format_suffix_patterns(restpatterns,allowed=['json','csv'])

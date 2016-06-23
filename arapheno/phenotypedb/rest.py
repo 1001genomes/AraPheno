@@ -14,6 +14,12 @@ from phenotypedb.serializers import PhenotypeValueSerializer
 
 from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer
 
+import re
+
+#GLOBALS
+id_regex = r"^[0-9]+$"
+doi_regex = "(10\.[^/]+/([^(\s\>\"\<})])+)"
+
 '''
 Search Endpoint
 '''
@@ -42,14 +48,29 @@ List all phenotypes
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
 @renderer_classes((PhenotypeListRenderer,JSONRenderer))
-def phenotype_list(request,format=None):
+def phenotype_list(request,q=None,format=None):
     """
     List all available phenotypes
     Read-Only Response Supported
     """
-    if request.method == "GET":
+    if not q==None:
+        try:
+            qfilter = re.search(id_regex,q).group(0)   
+            phenotypes = Phenotype.objects.get(pk=qfilter)
+            many = False
+        except:
+            try:
+                qfilter = re.search(doi_regex,q).group(0)   
+                phenotypes = Phenotype.objects.get(doi=qfilter)
+                many = False
+            except:
+                return HttpResponse(status=404)
+    else:
         phenotypes = Phenotype.objects.all()
-        serializer = PhenotypeListSerializer(phenotypes,many=True)
+        many = True
+    
+    if request.method == "GET":
+        serializer = PhenotypeListSerializer(phenotypes,many=many)
         return Response(serializer.data)
 
 '''
@@ -58,18 +79,23 @@ Detailed phenotype list via id
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
 @renderer_classes((PhenotypeValueRenderer,JSONRenderer))
-def phenotype_detail(request,pk=None,doi=None,format=None):
+def phenotype_detail(request,q=None,format=None):
     """
     Details of phenotype
     Read-Only Response Supported
     """
-    try:
-        if not pk == None:
-            phenotype = Phenotype.objects.get(pk=pk)
-        else:
-            phenotype = Phenotype.objects.get(doi=doi)
-    except:
+    if q==None:
         return HttpResponse(status=404)
+
+    try:
+        qfilter = re.search(id_regex,q).group(0)   
+        phenotype = Phenotype.objects.get(pk=qfilter)
+    except:
+        try:
+            qfilter = re.search(doi_regex,q).group(0)   
+            phenotype = Phenotype.objects.get(doi=qfilter)
+        except:
+            return HttpResponse(status=404)
 
     if request.method == "GET":
         pheno_acc_infos = phenotype.phenotypevalue_set.prefetch_related('obs_unit__accession')
@@ -82,35 +108,63 @@ List all studies
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
 @renderer_classes((StudyListRenderer,JSONRenderer))
-def study_list(request,format=None):
+def study_list(request,q=None,format=None):
     """
     List all available studies
     Read-Only Response Supported
     """
+    if not q==None:
+        try:
+            qfilter = re.search(id_regex,q).group(0)   
+            studies = Study.objects.get(pk=qfilter)
+            many = False
+        except:
+            try:
+                qfilter = re.search(doi_regex,q).group(0)   
+                studies = Study.objects.get(doi=qfilter)
+                many = False
+            except:
+                return HttpResponse(status=404)
+    else:
+        studies = Studies.objects.all()
+        many = True
+
     if request.method == "GET":
-        studies = Study.objects.all()
-        serializer = StudyListSerializer(studies,many=True)
+        serializer = StudyListSerializer(studies,many=many)
         return Response(serializer.data)
 
 '''
-Detailed study list via id
+List all phenotypes for study id/doi
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
 @renderer_classes((PhenotypeListRenderer,JSONRenderer))
-def study_detail(request,pk=None,doi=None,format=None):
+def study_all_pheno(request,q=None,format=None):
     """
     Details of phenotype
     Read-Only Response Supported
     """
     try:
-        if not pk==None:
-            study = Study.objects.get(pk=pk)
-        else:
-            study = Study.objects.get(doi=doi)
+        qfilter = re.search(id_regex,q).group(0)   
+        study = Study.objects.get(pk=qfilter)
+        many = False
     except:
-        return HttpResponse(status=404)
+        try:
+            qfilter = re.search(doi_regex,q).group(0)   
+            study = Study.objects.get(doi=qfilter)
+            many = False
+        except:
+            return HttpResponse(status=404)
 
     if request.method == "GET":
         serializer = PhenotypeListSerializer(study.phenotype_set.all(),many=True)
         return Response(serializer.data)
+
+'''
+List all phenotype values in big matrix for study id/doi
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeListRenderer,JSONRenderer))
+def study_all_pheno_values(request,pk=None,doi=None,format=None):
+    pass

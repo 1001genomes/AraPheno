@@ -15,4 +15,4 @@ class StudyListRenderer(CSVRenderer):
         
 class PhenotypeValueRenderer(CSVRenderer):
     header = ['accession_id','accession_name','accession_cs_number','accession_longitude',
-              'accession_latitude','accession_country','phenotype_value']
+              'accession_latitude','accession_country','phenotype_value','obs_unit_id']

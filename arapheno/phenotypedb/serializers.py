@@ -37,11 +37,12 @@ class PhenotypeValueSerializer(serializers.ModelSerializer):
     accession_latitude = serializers.SerializerMethodField()
     accession_country = serializers.SerializerMethodField()
     phenotype_value = serializers.SerializerMethodField()
+    obs_unit_id = serializers.SerializerMethodField()
 
     class Meta:
         model = PhenotypeValue
         fields = ('accession_id','accession_name','accession_cs_number','accession_longitude',
-                  'accession_latitude','accession_country','phenotype_value')
+                  'accession_latitude','accession_country','phenotype_value','obs_unit_id')
     
     def get_accession_name(self,obj):
         return obj.obs_unit.accession.name
@@ -63,6 +64,9 @@ class PhenotypeValueSerializer(serializers.ModelSerializer):
     
     def get_phenotype_value(self,obj):
         return obj.value
+    
+    def get_obs_unit_id(self,obj):
+        return obj.obs_unit.id
 
 '''
 Study List Serializer Class (read-only: might be extended to also allow integration of new data)
