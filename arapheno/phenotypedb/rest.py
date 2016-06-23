@@ -11,6 +11,28 @@ from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer
 from phenotypedb.serializers import PhenotypeDetailSerializer
 
 '''
+Search Endpoint
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+def search(request,query_term=None,format=None):
+    """
+    Search for a phenotype or study
+    Read-Only Response Supported
+    """
+    if request.method == "GET":
+        if query_term==None:
+            studies = Study.objects.all()
+            phenotypes = Phenotype.objects.all()
+        else:
+            studies = Study.objects.filter(name__icontains=query_term)
+            phenotypes = Phenotype.objects.filter(name__icontains=query_term)
+        study_serializer = StudyListSerializer(studies,many=True)
+        phenotype_serializer = PhenotypeListSerializer(phenotypes,many=True)
+        return Response({'phenotype_search_results':phenotype_serializer.data,
+                         'study_search_results':study_serializer.data})
+
+'''
 List all phenotypes 
 '''
 @api_view(['GET'])

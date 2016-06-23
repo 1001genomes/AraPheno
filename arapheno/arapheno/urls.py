@@ -46,6 +46,8 @@ urlpatterns = [
 REST URLS
 '''
 restpatterns = [
+    url(r'rest/search/$',rest.search),
+    url(r'rest/search/(?P<query_term>[\w.@-_?!$&/\=]+)/$',rest.search),
     url(r'rest/phenotype/list/$',rest.phenotype_list),
     url(r'rest/phenotype/detail/id/(?P<pk>[0-9]+)/$',rest.phenotype_detail),
     url(r'rest/study/list/$',rest.study_list),
