@@ -3,10 +3,21 @@
 {% load render_table from django_tables2 %}
 
 {% block content %}
-<div id="index-banner" class="parallax-container" style="height:140px">
+<div id="index-banner" class="parallax-container" style="height:80px">
     <div class="section no-pad-bot">
         <div class="container">
-            <h2 class="header center white-text text-lighten-2">Study: {{ study.name }}</h2>
+            <h5 class="white-text">Study: {{ study.name }}</h5>
+                <div style="position: relative;">
+                <div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block; bottom: -4px; right: 0px;">
+                    <a class="btn-floating btn-large white">
+                        <i class="large material-icons brown-text" id="download_btn">file_download</i>
+                    </a>
+                    <ul>
+                        <li><a href="/rest/study/{{study.id}}.csv" class="btn-floating yellow darken-3 black-text" style="font-size:10px;text-align:center;font-weight:bold">Study</a></li>
+                        <li><a href="/rest/study/{{study.id}}/phenotypes.csv" class="btn-floating green black-text" style="font-size:10px;text-align:center;font-weight:bold">Pheno</a></li>
+                    </ul>
+                </div>
+                </div>
         </div>
     </div>
     <div class="parallax"><img src="/static/img/ara2.jpg" alt="Unsplashed background img 1"></div>
@@ -14,24 +25,9 @@
 
 <div class="container">
     <div class="row">
-        <div class="col s12">
-            <section class="section">
-                <nav>
-                    <div class="nav-wrapper brown" id="breadcrumb">
-                        <div class="col s12">
-                            <a class="breadcrumb">{{ study.name }}</a>
-                            <ul id="nav-mobile" class="right">
-                                <li><a href="/rest/study/detail/id/{{study.id}}.csv"><i class="material-icons" id="download_btn">file_download</i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-            </section>
-        </div>
-    </div>
-    <div class="row">
         <div class="col s12 m6">
             <div class="row">
+                <br>
                 <div class="col s12"><h5>Description</h5></div>
                 <div class="col s12" id="description">{{ study.description }}</div>
                 <div class="col s12"><h5>Statistics</h5></div>
@@ -51,6 +47,7 @@
             </div>
         </div>
         <div class="col s12 m6">
+            <br>
             {% render_table phenotype_table %}
         </div>
     </div>

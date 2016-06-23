@@ -126,7 +126,7 @@ def study_list(request,q=None,format=None):
             except:
                 return HttpResponse(status=404)
     else:
-        studies = Studies.objects.all()
+        studies = Study.objects.all()
         many = True
 
     if request.method == "GET":
