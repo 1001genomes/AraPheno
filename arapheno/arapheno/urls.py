@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'faq/content/$',home.views.faqcontent),
     url(r'faq/tutorials/$',home.views.faqtutorial),
     url(r'faq/rest/$',home.views.faqrest),
-    #url(r'^faq/rest/api/',include('rest_framework_swagger.urls')),
+    url(r'^faq/rest/swagger/',include('rest_framework_swagger.urls')),
     url(r'faq/cite/$',home.views.faqcite),
 ]
 '''    
