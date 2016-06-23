@@ -1,14 +1,18 @@
 from django.http import HttpResponse
 #from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+from rest_framework.views import APIView
+
 from phenotypedb.models import Phenotype, Study
 from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer
-from phenotypedb.serializers import PhenotypeDetailSerializer
+from phenotypedb.serializers import PhenotypeValueSerializer
+
+from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer
 
 '''
 Search Endpoint
@@ -37,6 +41,7 @@ List all phenotypes
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeListRenderer,JSONRenderer))
 def phenotype_list(request,format=None):
     """
     List all available phenotypes
@@ -52,6 +57,7 @@ Detailed phenotype list via id
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeValueRenderer,JSONRenderer))
 def phenotype_detail(request,pk=None,format=None):
     """
     Details of phenotype
@@ -63,14 +69,16 @@ def phenotype_detail(request,pk=None,format=None):
         return HttpResponse(status=404)
 
     if request.method == "GET":
-        serializer = PhenotypeDetailSerializer(phenotype)
-        return Response(serializer.data)
+        pheno_acc_infos = phenotype.phenotypevalue_set.prefetch_related('obs_unit__accession')
+        value_serializer = PhenotypeValueSerializer(pheno_acc_infos,many=True)
+        return Response(value_serializer.data)
 
 '''
 List all studies
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((StudyListRenderer,JSONRenderer))
 def study_list(request,format=None):
     """
     List all available studies

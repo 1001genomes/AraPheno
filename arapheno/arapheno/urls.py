@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'faq/content/$',home.views.faqcontent),
     url(r'faq/tutorials/$',home.views.faqtutorial),
     url(r'faq/rest/$',home.views.faqrest),
+    #url(r'^faq/rest/api/',include('rest_framework_swagger.urls')),
     url(r'faq/cite/$',home.views.faqcite),
 ]
 '''    
@@ -51,6 +52,7 @@ restpatterns = [
     url(r'rest/phenotype/list/$',rest.phenotype_list),
     url(r'rest/phenotype/detail/id/(?P<pk>[0-9]+)/$',rest.phenotype_detail),
     url(r'rest/study/list/$',rest.study_list),
+    #url(r'rest/study/detail/id/(?P<pk>[0-9]+)/$',rest.phenotype_detail),
 ]
 #extend restpatterns with suffix options
 restpatterns = format_suffix_patterns(restpatterns,allowed=['json','api','csv'])

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'phenotypedb',
     'django_tables2',
     'rest_framework',
+    'rest_framework_swagger',
 ]
 
 REST_FRAMEWORK = {
@@ -50,9 +51,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissions',
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
         #'rest_framework.renderers.BrowsableAPIRenderer', #can be added if necessary (provides a nice browser interface)
         'rest_framework_csv.renderers.CSVRenderer',
+        'rest_framework.renderers.JSONRenderer',
     ),
 }
 
