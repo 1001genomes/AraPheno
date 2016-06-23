@@ -27,6 +27,14 @@
         <div class="col s12 m5" id="infos">
             <div class="row">
                 <div class="col s2">
+                    <span>Study:</span>
+                </div>
+                <div class="col s10">
+                    <a href="/study/{{object.study.id}}"><span>{{ object.study.name }}</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s2">
                     <span>DOI:</span>
                 </div>
                 <div class="col s10">
@@ -123,10 +131,6 @@
 
         if (RegExp('multipage', 'gi').test(window.location.search)) {
             var steps = [
-                {
-                    element: '#breadcrumb',
-                    intro: 'The breadcrumbs helps you keep the orientation, when you navigate from studies to phenotypes'
-                },
                 {
                     element: '#download_btn',
                     intro: 'The user can download the phenotype values in CSV format'
