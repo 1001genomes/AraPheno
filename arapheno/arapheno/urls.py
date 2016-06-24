@@ -31,9 +31,10 @@ doi_regex = "(10\.[^/]+/([^(\s\>\"\<})])+)"
 urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$',home.views.home),
-    url(r'search_results/$',home.views.SearchResults,name="searchresults"),
-    url(r'search_results//$',home.views.SearchResults,name="searchresults"),
-    url(r'search_results/(?P<query>[\w.@-_?!$&/\=]+)/$',home.views.SearchResults,name="searchresults"),
+    url(ur'search_results/$',home.views.SearchResults,name="searchresults"),
+    url(ur'search_results//$',home.views.SearchResults,name="searchresults"),
+    #url(r'search_results/(?P<query>[\w.@-_?!$&/\=]+)/$',home.views.SearchResults,name="searchresults"),
+    url(ur'search_results/(?P<query>.*)/$',home.views.SearchResults,name="searchresults"),
     url(r'phenotypes/$',phenotypedb.views.PhenotypeList,name="phenotypes"),
     url(r'phenotype/(?P<pk>[0-9]+)/$',phenotypedb.views.PhenotypeDetail.as_view(),name="phenotype_detail"),
     url(r'studies/$',phenotypedb.views.StudyList,name="studies"),
@@ -51,7 +52,7 @@ REST URLS
 '''
 restpatterns = [
     url(r'rest/search/$',rest.search),
-    url(r'rest/search/(?P<query_term>[\w.@-_?!$&/\=]+)/$',rest.search),
+    url(ur'rest/search/(?P<query_term>.*)/$',rest.search),
     url(r'rest/phenotype/list/$',rest.phenotype_list),
     url(r'rest/phenotype/(?P<q>[0-9]+)/$',rest.phenotype_list), #Only supports PK for now
     url(r'rest/phenotype/(?P<q>[0-9]+)/values/$',rest.phenotype_value), #Only supports PK for now
