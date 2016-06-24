@@ -3,8 +3,6 @@ from rest_framework import serializers
 from phenotypedb.models import Phenotype,PhenotypeValue,Study
 from phenotypedb.models import ObservationUnit
 
-
-
 '''
 Phenotype List Serializer Class (read-only: might be extended to also allow integration of new data)
 '''
@@ -30,6 +28,7 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
 Phenotype Value Serializer Class
 '''
 class PhenotypeValueSerializer(serializers.ModelSerializer):
+    phenotype_name = serializers.SerializerMethodField()
     accession_name = serializers.SerializerMethodField()
     accession_id = serializers.SerializerMethodField()
     accession_cs_number = serializers.SerializerMethodField()
@@ -41,8 +40,11 @@ class PhenotypeValueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PhenotypeValue
-        fields = ('accession_id','accession_name','accession_cs_number','accession_longitude',
+        fields = ('phenotype_name','accession_id','accession_name','accession_cs_number','accession_longitude',
                   'accession_latitude','accession_country','phenotype_value','obs_unit_id')
+    
+    def get_phenotype_name(self,obj):
+        return obj.phenotype.name
     
     def get_accession_name(self,obj):
         return obj.obs_unit.accession.name
@@ -67,6 +69,7 @@ class PhenotypeValueSerializer(serializers.ModelSerializer):
     
     def get_obs_unit_id(self,obj):
         return obj.obs_unit.id
+
 
 '''
 Study List Serializer Class (read-only: might be extended to also allow integration of new data)

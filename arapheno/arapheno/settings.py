@@ -54,6 +54,7 @@ REST_FRAMEWORK = {
         #'rest_framework.renderers.BrowsableAPIRenderer', #can be added if necessary (provides a nice browser interface)
         'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework.renderers.JSONRenderer',
+        'phenotypedb.renderer.PLINKRenderer',
     ),
 }
 

@@ -8,13 +8,15 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
-from phenotypedb.models import Phenotype, Study
+from phenotypedb.models import Phenotype, Study, PhenotypeValue
 from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer
 from phenotypedb.serializers import PhenotypeValueSerializer
 
 from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer
+from phenotypedb.renderer import PLINKRenderer
 
 import re
+import pandas as pd
 
 #GLOBALS
 id_regex = r"^[0-9]+$"
@@ -78,8 +80,8 @@ Detailed phenotype list via id
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
-@renderer_classes((PhenotypeValueRenderer,JSONRenderer))
-def phenotype_detail(request,q=None,format=None):
+@renderer_classes((PhenotypeValueRenderer,JSONRenderer,PLINKRenderer,))
+def phenotype_value(request,q=None,format=None):
     """
     Details of phenotype
     Read-Only Response Supported
@@ -138,7 +140,7 @@ List all phenotypes for study id/doi
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
-@renderer_classes((PhenotypeListRenderer,JSONRenderer))
+@renderer_classes((PhenotypeListRenderer,JSONRenderer,))
 def study_all_pheno(request,q=None,format=None):
     """
     Details of phenotype
@@ -160,11 +162,3 @@ def study_all_pheno(request,q=None,format=None):
         serializer = PhenotypeListSerializer(study.phenotype_set.all(),many=True)
         return Response(serializer.data)
 
-'''
-List all phenotype values in big matrix for study id/doi
-'''
-@api_view(['GET'])
-@permission_classes((IsAuthenticatedOrReadOnly,))
-@renderer_classes((PhenotypeListRenderer,JSONRenderer))
-def study_all_pheno_values(request,pk=None,doi=None,format=None):
-    pass

@@ -12,13 +12,51 @@
                 </a>
                 <ul>
                     <li><a href="/rest/phenotype/{{object.id}}.csv" class="btn-floating yellow darken-3 black-text" style="font-size:10px;text-align:center;font-weight:bold">Meta</a></li>
-                    <li><a href="/rest/phenotype/{{object.id}}/values.csv" class="btn-floating green black-text" style="font-size:10px;text-align:center;font-weight:bold">Values</a></li>
+                    <li><a href="#downloadmodal" class="btn-floating green black-text waves-effect modal-trigger" style="font-size:10px;text-align:center;font-weight:bold">Values</a></li>
                 </ul>
             </div>
             </div>
         </div>
     </div>
     <div class="parallax"><img src="/static/img/ara2.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div id="downloadmodal" class="modal">
+    <div class="modal-content">
+        <h4>Choose a download format</h4>
+        <ul class="collection">
+            <a href="/rest/phenotype/{{object.id}}/values.csv">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle brown">file_download</i>
+                <span class="title black-text">CSV</span>
+                <p class="black-text light">
+                Download the phenotypic values for the phenotype <strong>{{object.name}}</strong> in CSV format<br>
+                </p>
+                </li></div>
+            </a>
+            <a href="/rest/phenotype/{{object.id}}/values.plink">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle amber">file_download</i>
+                <span class="title black-text">PLINK</span>
+                <p class="black-text light">
+                Download the phenotypic values for the phenotype <strong>{{object.name}}</strong> in PLINK format<br>
+                </p>
+                </li></div>
+            </a>
+            <a href="/rest/phenotype/{{object.id}}/values.json">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle light-blue">file_download</i>
+                <span class="title black-text">JSON</span>
+                <p class="black-text light">
+                Download the phenotypic values for the phenotype <strong>{{object.name}}</strong> in JSON format<br>
+                </p>
+                </li></div>
+            </a>
+        </ul>
+    </div>
 </div>
 
 <div class="container">
@@ -121,6 +159,12 @@
     var geoChrt,geoChartData,histogramChart,histogramData,explorerChart,explorerData, tableChart;
     $(document).ready(function(){    
         $('.parallax').parallax();
+        
+        $('.modal-trigger').leanModal({
+            dimissible:true,
+            in_duration: 300,
+        });
+
         $('ul.tabs').on('click', 'a', function(e) {
             var target = e.currentTarget;
             if (target.id === 'explorer_link') {
