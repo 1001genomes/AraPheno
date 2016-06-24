@@ -9,7 +9,7 @@
             <h5>Search results for query: {{ query }}</h5>
             <div style="position:relative;">
              <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block;bottom:-5px;">
-            <a class="btn-floating btn-large waves-effect white" href="{{download_url}}"><i class="material-icons brown-text" id="download_btn">file_download</i></a>
+            <a class="btn-floating btn-large waves-effect white modal-trigger" href="#downloadmodal"><i class=" material-icons brown-text" id="download_btn">file_download</i></a>
             </div>
             </div>
         </div>
@@ -17,6 +17,33 @@
     <div class="parallax"><img src="/static/img/ara1.jpg" alt="Unsplashed background img 1"></div>
 </div>
 
+<div id="downloadmodal" class="modal">
+    <div class="modal-content">
+        <h4>Choose a download format</h4>
+        <ul class="collection">
+            <a href="{{download_url}}.csv">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle brown">file_download</i>
+                <span class="title black-text">CSV</span>
+                <p class="black-text light">
+                Download the phenotypic values for the phenotype <strong>{{object.name}}</strong> in CSV format<br>
+                </p>
+                </li></div>
+            </a>
+            <a href="{{download_url}}.json">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle light-blue">file_download</i>
+                <span class="title black-text">JSON</span>
+                <p class="black-text light">
+                Download the phenotypic values for the phenotype <strong>{{object.name}}</strong> in JSON format<br>
+                </p>
+                </li></div>
+            </a>
+        </ul>
+    </div>
+</div>
 
 <div class="container">
     <div class="section">
@@ -62,6 +89,10 @@
 <script type="text/javascript">
     $(document).ready(function(){    
         $('.parallax').parallax();
+        $('.modal-trigger').leanModal({
+            dimissible:true,
+            in_duration: 300,
+        });
     });
 </script>
 {% endblock content %}
