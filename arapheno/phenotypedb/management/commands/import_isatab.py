@@ -10,10 +10,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         filename = options['filename']
-        try: 
+        try:
             isatab  = parse_isatab(filename)
-            import pdb
-            pdb.set_trace()
             studies = save_isatab(isatab)
         except Exception as err:
             raise CommandError('Error importing ISA-TAB file. Reason: %s' % str(err))

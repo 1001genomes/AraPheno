@@ -6,7 +6,7 @@ import csv
 import shutil
 import codecs
 import pdb
-from phenotypedb.models import Study,Phenotype,PhenotypeValue,Publication, Accession, Species, Author, ObservationUnit
+from phenotypedb.models import Study,Phenotype,PhenotypeValue,Publication, Accession, Species, Author, ObservationUnit, OntologyTerm
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
@@ -55,12 +55,12 @@ def parse_isatab(filename):
     return rec
 
 
-def _create_publication(isatab_pub):
+def _create_publication(isatab_pub,type):
     publication = Publication()
-    publication.doi = isatab_pub['Study Publication DOI']
-    publication.title = isatab_pub['Study Publication Title']
-    publication.author_order = isatab_pub['Study Publication Author List']
-    publication.pubmed_id = isatab_pub['Study PubMed ID']
+    publication.doi = isatab_pub['%s Publication DOI' % type]
+    publication.title = isatab_pub['%s Publication Title' % type]
+    publication.author_order = isatab_pub['%s Publication Author List' %type]
+    publication.pubmed_id = isatab_pub['%s PubMed ID' % type]
     return publication
 
 def _get_accession_map(study):
@@ -126,14 +126,17 @@ def save_isatab(isatab):
         studies.append(study.save())
         # initialize publications
         pubs = {}
-        for p in s.publications:
-            doi_to_check = p['Study Publication DOI']
+        for p in isatab.publications + s.publications:
+            type = 'Investigation'
+            if 'Study Publication DOI' in p:
+                type = 'Study'
+            doi_to_check = p['%s Publication DOI' % type]
             publication = pubs.get(doi_to_check,None)
             if publication is None:
                 try:
                     publication = Publication.objects.get(doi=doi_to_check)
                 except Publication.DoesNotExist:
-                    publication = _create_publication(p)
+                    publication = _create_publication(p,type)
                     publication.save();
                 pubs[doi_to_check] = publication
             study.publications.add(publication)
@@ -144,7 +147,16 @@ def save_isatab(isatab):
         for trait_def_file,trait_def_data in s.trait_def_map.items():
             pheno_map = {}
             for trait_id,trait in trait_def_data.items():
-                phenotype = Phenotype(name=trait['Trait'],scoring=trait['Method'],to_term = trait.get('TO',None),eo_term=trait.get('EO',None),uo_term=trait.get('UO',None),study=study,species=study.species)
+                to_term = None
+                eo_term = None
+                uo_term = None
+                if 'TO' in trait:
+                    to_term = OntologyTerm.objects.filter(id=trait['TO'],source_id=1).first()
+                if 'EO' in trait:
+                    eo_term = OntologyTerm.objects.filter(id=trait['EO'],source_id=2).first()
+                if 'UO' in trait:
+                    uo_term = OntologyTerm.objects.filter(id=trait['UO'],source_id=3).first()
+                phenotype = Phenotype(name=trait['Trait'],scoring=trait['Method'],to_term = to_term,eo_term=eo_term,uo_term=uo_term,study=study,species=study.species)
                 phenotype.save()
                 pheno_map[trait_id] = phenotype
             phenotype_map[trait_def_file] = pheno_map 

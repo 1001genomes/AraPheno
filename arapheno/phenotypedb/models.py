@@ -70,18 +70,17 @@ class Phenotype(models.Model):
     source = models.TextField(blank=True,null=True) #person who colleted the phenotype. or from which website was the phenotype
     type = models.CharField(max_length=255,blank=True,null=True) #type/category of the phenotype
     growth_conditions = models.TextField(blank=True,null=True) #description of the growth conditions of the phenotype
-    eo_term = models.CharField(max_length=255,db_index=True,blank=True,null=True) # environmental ontology terms from gramene
-    to_term = models.CharField(max_length=255,db_index=True,blank=True,null=True) # trait ontology terms from gramene
-    uo_term = models.CharField(max_length=255,db_index=True,blank=True,null=True) # unit of measure ontology terms from bioportal
     shapiro_test_statistic = models.FloatField(blank=True,null=True) #Shapiro Wilk test for normality
     shapiro_p_value = models.FloatField(blank=True,null=True) #p-value of Shapiro Wilk test
     number_replicates = models.IntegerField(default=0) #number of replicates for this phenotype
     integration_date = models.DateTimeField(auto_now_add=True) #date of phenotype integration/submission
     
+    eo_term = models.ForeignKey('OntologyTerm',related_name='eo_term',null=True,blank=True)
+    uo_term = models.ForeignKey('OntologyTerm',related_name='uo_term',null=True,blank=True)
+    to_term = models.ForeignKey('OntologyTerm',related_name='to_term',null=True,blank=True)
     species = models.ForeignKey('Species')
     study = models.ForeignKey('Study')
     dynamic_metainformations = models.ManyToManyField('PhenotypeMetaDynamic')
-    publications = models.ManyToManyField("Publication",blank=True)
 
     def __unicode__(self):
         return u"%s (Phenotype)" % (mark_safe(self.name))
@@ -123,3 +122,21 @@ class Publication(models.Model):
     pubmed_id = models.CharField(max_length=255, db_index=True,blank=True,null=True) #pubmed id
     
     authors = models.ManyToManyField("Author") #author link
+
+'''
+Ontology Term
+'''
+class OntologyTerm(models.Model):
+    id = models.CharField(max_length=50,primary_key=True)
+    name = models.CharField(max_length=255)
+    definition = models.TextField(blank=True,null=True)
+    comment = models.TextField(blank=True,null=True)
+    source = models.ForeignKey('OntologySource')
+
+'''
+Ontology Term
+'''
+class OntologySource(models.Model):
+    acronym = models.CharField(max_length=50)
+    name = models.CharField(max_length=255)
+    url = models.URLField()

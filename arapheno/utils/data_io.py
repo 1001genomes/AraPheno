@@ -1,5 +1,6 @@
 from datetime import datetime
 import csv
+import ontology_parser
 
 '''
 Accession Class
@@ -117,3 +118,25 @@ def parsePhenotypePLINKFile(filename=None):
     accession_ids = sp.array(accession_ids)
     pmatrix = sp.array(pmatrix)
     return [pmatrix,accession_ids,names]
+
+
+'''
+Parse an Ontology file as a dictionary
+Input: filename: filename of the ontology file
+Output: List of ontology terms
+'''
+def parse_ontology_file(filename):
+    return ontology_parser.parseGOOBO(filename)
+
+'''
+Converts ontologies to fixture format
+'''
+def convert_ontologies_to_json(ontologies,ontology_source):
+    source_map = {'TO':1,'EO':2,'UO':3}
+    source_id = source_map[ontology_source]
+    ontology_dict = []
+    for ontology in ontologies:
+        fields = {'name':ontology['name'],'definition':ontology.get('def',None),'comment':ontology.get('comment',None),'source_id':source_id}
+        ont_dict = {'model':'phenotypedb.OntologyTerm','pk':ontology['id'],'fields':fields}
+        ontology_dict.append(ont_dict)
+    return ontology_dict

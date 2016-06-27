@@ -100,7 +100,11 @@
                     <span>Trait-Ontology:</span>
                 </div>
                 <div class="col s10">
-                    <span>{{ object.to_term }}</span>
+                    <span>
+                        {% if object.to_term %}
+                            {{ object.to_term.name }} ({{ object.to_term.id }})
+                        {% endif %}
+                    </span>
                 </div>
             </div>
             <div class="row">
@@ -108,7 +112,11 @@
                     <span>Environment ontology:</span>
                 </div>
                 <div class="col s10">
-                    <span>{{ object.eo_term }}</span>
+                    <span>
+                        {% if object.eo_term %}
+                            {{ object.eo_term.name }} ({{ object.eo_term.id }})
+                        {% endif %}
+                    </span>
                 </div>
             </div>
             <div class="row">
@@ -116,7 +124,11 @@
                     <span>Unit:</span>
                 </div>
                 <div class="col s10">
-                    <span>{{ object.uo_term }}</span>
+                    <span>
+                        {% if object.uo_term %}
+                            {{ object.uo_term.name }} ({{ object.uo_term.id }})
+                        {% endif %}
+                    </span>
                 </div>
             </div>
             <div class="row">

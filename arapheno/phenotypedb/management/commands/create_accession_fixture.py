@@ -21,8 +21,6 @@ class Command(BaseCommand):
         filename = options['filename']
         outputfile = options['outputfile']
         countryfile = options['countryfile']
-        import pdb
-        pdb.set_trace()
         try: 
             country_map = {}
             if countryfile:

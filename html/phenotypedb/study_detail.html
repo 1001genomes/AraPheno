@@ -92,7 +92,7 @@
             ['TO', '# Number'],
             
             {% for to in to_data %}
-                [ "{{ to.to_term }}", {{ to.count }} ],
+                [ "{{ to.to_term__name }}", {{ to.count }} ],
             {% endfor %}],
             false);
 
@@ -100,14 +100,14 @@
             ['EO', '# Number'],
             
             {% for eo in eo_data %}
-                [ "{{ eo.eo_term }}", {{ eo.count }} ],
+                [ "{{ eo.eo_term__name }}", {{ eo.count }} ],
             {% endfor %}],
             false);
         dataUO = google.visualization.arrayToDataTable([
             ['UO', '# Number'],
             
             {% for uo in uo_data %}
-                [ "{{ uo.uo_term }}", {{ uo.count }} ],
+                [ "{{ uo.uo_term__name }}", {{ uo.count }} ],
             {% endfor %}],
             false);
         chartTO = new google.visualization.PieChart(document.getElementById('to_chart'));

@@ -40,8 +40,7 @@ def StudyDetail(request,pk=None):
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
     variable_dict["study"] = study
-    variable_dict['to_data'] = study.phenotype_set.values('to_term').annotate(count=Count('to_term'))
-    variable_dict['eo_data'] = study.phenotype_set.values('eo_term').annotate(count=Count('eo_term'))
-    variable_dict['uo_data'] = study.phenotype_set.values('uo_term').annotate(count=Count('uo_term'))
-
+    variable_dict['to_data'] = study.phenotype_set.values('to_term__name').annotate(count=Count('to_term__name'))
+    variable_dict['eo_data'] = study.phenotype_set.values('eo_term__name').annotate(count=Count('eo_term__name'))
+    variable_dict['uo_data'] = study.phenotype_set.values('uo_term__name').annotate(count=Count('uo_term__name'))
     return render(request,'phenotypedb/study_detail.html',variable_dict)

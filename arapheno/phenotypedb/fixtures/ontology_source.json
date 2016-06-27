@@ -1,0 +1,29 @@
+[
+  {
+    "model": "phenotypedb.OntologySource",
+    "pk": 1,
+    "fields": {
+      "acronym": "PTO",
+      "name": "Plant Trait Ontology",
+      "url":"https://bioportal.bioontology.org/ontologies/PTO"
+    }
+  },
+  {
+    "model": "phenotypedb.OntologySource",
+    "pk": 2,
+    "fields": {
+      "acronym": "PECO",
+      "name": "Plant Environmental Conditions",
+      "url":"https://bioportal.bioontology.org/ontologies/PECO"
+    }
+  },
+  {
+    "model": "phenotypedb.OntologySource",
+    "pk": 3,
+    "fields": {
+      "acronym": "UO",
+      "name": "Units of Measurement",
+      "url":"https://bioportal.bioontology.org/ontologies/UO"
+    }
+  }
+]
