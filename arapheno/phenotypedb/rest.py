@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -36,7 +37,9 @@ def search(request,query_term=None,format=None):
             phenotypes = Phenotype.objects.all()
         else:
             studies = Study.objects.filter(name__icontains=query_term)
-            phenotypes = Phenotype.objects.filter(name__icontains=query_term)
+            phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
+                                                  Q(to_term__id__icontains=query_term) |
+                                                  Q(to_term__name__icontains=query_term))
         study_serializer = StudyListSerializer(studies,many=True)
         phenotype_serializer = PhenotypeListSerializer(phenotypes,many=True)
         return Response({'phenotype_search_results':phenotype_serializer.data,
