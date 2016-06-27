@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.db.models import Q
 
 from forms import GlobalSearchForm
 
@@ -63,7 +64,9 @@ def SearchResults(request,query=None):
         studies = Study.objects.all()
         download_url = "/rest/search"
     else:
-        phenotypes = Phenotype.objects.filter(name__icontains=query)
+        phenotypes = Phenotype.objects.filter(Q(name__icontains=query) |
+                                              Q(to_term__id__icontains=query) |
+                                              Q(to_term__name__icontains=query))
         studies = Study.objects.filter(name__icontains=query)
         download_url = "/rest/search/" + str(query)
     

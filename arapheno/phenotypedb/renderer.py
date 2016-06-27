@@ -7,7 +7,8 @@ Renderer class for alternative ordering of the CSV output
 class PhenotypeListRenderer(CSVRenderer):
     header = ['species','phenotype_id','name','doi','study','scoring',
               'source','type','growth_conditions',
-              'eo_term','to_term','uo_term',
+              'to_term','to_name','to_definition','to_comment',
+              'to_source_acronym','to_source_name','to_source_url','eo_term','uo_term',
               'integration_date','number_replicates']
 
 class StudyListRenderer(CSVRenderer):

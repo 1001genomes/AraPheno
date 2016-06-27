@@ -15,7 +15,6 @@ from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, Pheno
 from phenotypedb.renderer import PLINKRenderer
 
 import re
-import pandas as pd
 
 #GLOBALS
 id_regex = r"^[0-9]+$"

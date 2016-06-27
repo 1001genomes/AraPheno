@@ -10,12 +10,19 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
     study = serializers.SlugRelatedField(slug_field="name",read_only=True)
     species = serializers.SerializerMethodField()
     phenotype_id = serializers.SerializerMethodField()
+    to_name = serializers.SerializerMethodField()
+    to_definition = serializers.SerializerMethodField()
+    to_comment = serializers.SerializerMethodField()
+    to_source_acronym = serializers.SerializerMethodField()
+    to_source_name = serializers.SerializerMethodField()
+    to_source_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Phenotype
         fields = ('species','phenotype_id','name','doi','study','scoring',
                   'source','type','growth_conditions',
-                  'eo_term','to_term','uo_term',
+                  'eo_term','to_term','to_name','to_comment',
+                  'to_definition','to_source_acronym','to_source_name','to_source_url','uo_term',
                   'integration_date','number_replicates')
     
     def get_species(self,obj):
@@ -23,6 +30,24 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
     
     def get_phenotype_id(self,obj):
         return obj.id
+
+    def get_to_name(self,obj):
+        return obj.to_term.name
+    
+    def get_to_comment(self,obj):
+        return obj.to_term.comment
+    
+    def get_to_definition(self,obj):
+        return obj.to_term.definition
+    
+    def get_to_source_acronym(self,obj):
+        return obj.to_term.source.acronym
+    
+    def get_to_source_name(self,obj):
+        return obj.to_term.source.name
+    
+    def get_to_source_url(self,obj):
+        return obj.to_term.source.url
 
 '''
 Phenotype Value Serializer Class

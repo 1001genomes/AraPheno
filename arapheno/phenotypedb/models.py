@@ -83,7 +83,10 @@ class Phenotype(models.Model):
     dynamic_metainformations = models.ManyToManyField('PhenotypeMetaDynamic')
 
     def __unicode__(self):
-        return u"%s (Phenotype)" % (mark_safe(self.name))
+        if self.to_term == None:
+            return u"%s (Phenotype)" % (mark_safe(self.name))
+        else:
+            return u"%s (Phenotype, TO: %s [%s])" % (mark_safe(self.name),mark_safe(self.to_term.name),mark_safe(self.to_term.id))
 
 
 '''

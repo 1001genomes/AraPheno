@@ -4,11 +4,11 @@ from phenotypedb.models import Phenotype, Study
 
 class GlobalSearchAutocomplete(autocomplete_light.AutocompleteGenericBase):
     choices = (Phenotype.objects.all(),
-           Study.objects.all())
-    search_fields = (('name',), #phenotype search field
+               Study.objects.all())
+    search_fields = (('name','to_term__id','to_term__name',), #phenotype search field
                      ('name',)) #study search field
 
-    attrs = {'placeholder':'Search a phenotype or study by name (e.g. type FRI for phenotype, or Atwell for study)',
+    attrs = {'placeholder':'Search a phenotype, study or trait ontology (e.g. type FRI for phenotype, Atwell for study, or concentration for ontology)',
              'data-autocomplete-minimum-characters':1}
 
     widget_attrs={'data-widget-maximum-values':1,'class':'','style':'width:95%;height:50px'}
