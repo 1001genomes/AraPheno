@@ -1,12 +1,14 @@
 {% extends "base.html" %} 
 
+{% block title %}AraPheno - Phenotype {{object.name}} {% endblock title %}
+
 {% block content %}
 <div id="index-banner" class="parallax-container" style="height:80px">
     <div class="section no-pad-bot">
         <div class="container">
             <h5 class="white-text">Phenotype: {{ object.name }}</h5>
             <div style="position: relative;">
-            <div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block; bottom: -4px; right: 0px;">
+            <div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block; bottom: -4px; right: 0px;z-index:1;">
                 <a class="btn-floating btn-large white">
                     <i class="large material-icons brown-text" id="download_btn">file_download</i>
                 </a>
@@ -64,42 +66,42 @@
         <div class="row">
         <div class="col s12 m5" id="infos">
             <div class="row">
-                <div class="col s2">
+                <div class="col s3">
                     <span>Study:</span>
                 </div>
-                <div class="col s10">
+                <div class="col s9">
                     <a href="/study/{{object.study.id}}"><span>{{ object.study.name }}</span></a>
                 </div>
             </div>
             <div class="row">
-                <div class="col s2">
+                <div class="col s3">
                     <span>DOI:</span>
                 </div>
-                <div class="col s10">
+                <div class="col s9">
                     <span>{{ object.doi }}</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col s2">
+                <div class="col s3">
                     <span>Scoring:</span>
                 </div>
-                <div class="col s10">
+                <div class="col s9">
                     <span>{{ object.scoring }}</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col s2">
+                <div class="col s3">
                     <span>Growth conditions:</span>
                 </div>
-                <div class="col s10">
+                <div class="col s9">
                     <span>{{ object.growth_conditions }}</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col s2">
+                <div class="col s3">
                     <span>Trait-Ontology:</span>
                 </div>
-                <div class="col s10">
+                <div class="col s9">
                     <span>
                         {% if object.to_term %}
                             {{ object.to_term.name }} ({{ object.to_term.id }})
@@ -108,10 +110,10 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s2">
+                <div class="col s3">
                     <span>Environment ontology:</span>
                 </div>
-                <div class="col s10">
+                <div class="col s9">
                     <span>
                         {% if object.eo_term %}
                             {{ object.eo_term.name }} ({{ object.eo_term.id }})
@@ -120,10 +122,10 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s2">
+                <div class="col s3">
                     <span>Unit:</span>
                 </div>
-                <div class="col s10">
+                <div class="col s9">
                     <span>
                         {% if object.uo_term %}
                             {{ object.uo_term.name }} ({{ object.uo_term.id }})
@@ -132,10 +134,10 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s2">
+                <div class="col s3">
                     <span>Submission date:</span>
                 </div>
-                <div class="col s10">
+                <div class="col s9">
                     <span>{{ object.integration_date }}</span>
                 </div>
             </div>

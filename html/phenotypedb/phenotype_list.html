@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}AraPheno - Public Phenotypes {% endblock title %}
+
 {% load render_table from django_tables2 %}
 
 {% block content %}
@@ -8,7 +10,7 @@
         <div class="container">
             <h5>List of all phenotypes</h5>
             <div style="position:relative;">
-             <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block;bottom:-5px;">
+             <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block;bottom:-5px;z-index:1;">
             <a class="btn-floating btn-large waves-effect white" href="/rest/phenotype/list.csv"><i class="material-icons brown-text" id="download_btn">file_download</i></a>
             </div>
             </div>
