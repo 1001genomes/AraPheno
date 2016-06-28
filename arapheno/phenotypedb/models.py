@@ -136,6 +136,9 @@ class OntologyTerm(models.Model):
     comment = models.TextField(blank=True,null=True)
     source = models.ForeignKey('OntologySource')
 
+    def get_info_url(self):
+        return 'https://bioportal.bioontology.org/ontologies/%s?p=classes&conceptid=http://purl.obolibrary.org/obo/%s' % (self.source.acronym,self.id.replace(':','_'))
+
 '''
 Ontology Term
 '''

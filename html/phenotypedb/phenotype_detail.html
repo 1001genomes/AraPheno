@@ -104,7 +104,7 @@
                 <div class="col s9">
                     <span>
                         {% if object.to_term %}
-                            {{ object.to_term.name }} ({{ object.to_term.id }})
+                            <a href="{{ object.to_term.get_info_url }}" target="_blank">{{ object.to_term.name }} ({{ object.to_term.id }})</a>
                         {% endif %}
                     </span>
                 </div>
@@ -116,7 +116,7 @@
                 <div class="col s9">
                     <span>
                         {% if object.eo_term %}
-                            {{ object.eo_term.name }} ({{ object.eo_term.id }})
+                            <a href="{{ object.eo_term.get_info_url }}" target="_blank">{{ object.eo_term.name }} ({{ object.eo_term.id }})</a>
                         {% endif %}
                     </span>
                 </div>
@@ -128,7 +128,7 @@
                 <div class="col s9">
                     <span>
                         {% if object.uo_term %}
-                            {{ object.uo_term.name }} ({{ object.uo_term.id }})
+                            <a href="{{ object.uo_term.get_info_url }}" target="_blank">{{ object.uo_term.name }} ({{ object.uo_term.id }})</a>
                         {% endif %}
                     </span>
                 </div>
