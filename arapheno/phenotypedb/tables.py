@@ -33,3 +33,15 @@ class StudyTable(tables.Table):
 
     class Meta:
         attrs = {"class": "striped"}
+
+
+class PublicationTable(tables.Table):
+    doi =  tables.TemplateColumn('<a href="{{record.url}}" target="_blank">{{record.doi}}</a>')
+    pubmed =  tables.TemplateColumn('<a href="{{record.url}}" target="_blank">{{record.doi}}</a>')
+    journal = tables.Column(accessor="journal",verbose_name="Journal",order_by="journal")
+    volume = tables.Column(accessor="volume",verbose_name="Volume",order_by="volume")
+    pub_year = tables.Column(accessor="pub_year",verbose_name="Year",order_by="pub_year")
+    title = tables.Column(accessor="title",verbose_name="Title",order_by="title")
+
+    class Meta:
+        attrs = {"class": "striped"}
