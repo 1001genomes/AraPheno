@@ -16,13 +16,29 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
     to_source_acronym = serializers.SerializerMethodField()
     to_source_name = serializers.SerializerMethodField()
     to_source_url = serializers.SerializerMethodField()
+    eo_name = serializers.SerializerMethodField()
+    eo_definition = serializers.SerializerMethodField()
+    eo_comment = serializers.SerializerMethodField()
+    eo_source_acronym = serializers.SerializerMethodField()
+    eo_source_name = serializers.SerializerMethodField()
+    eo_source_url = serializers.SerializerMethodField()
+    uo_name = serializers.SerializerMethodField()
+    uo_definition = serializers.SerializerMethodField()
+    uo_comment = serializers.SerializerMethodField()
+    uo_source_acronym = serializers.SerializerMethodField()
+    uo_source_name = serializers.SerializerMethodField()
+    uo_source_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Phenotype
         fields = ('species','phenotype_id','name','doi','study','scoring',
                   'source','type','growth_conditions',
-                  'eo_term','to_term','to_name','to_comment',
-                  'to_definition','to_source_acronym','to_source_name','to_source_url','uo_term',
+                  'to_term','to_name','to_comment',
+                  'to_definition','to_source_acronym','to_source_name','to_source_url',
+                  'eo_term','eo_name','eo_comment',
+                  'eo_definition','eo_source_acronym','eo_source_name','eo_source_url',
+                  'uo_term','uo_name','uo_comment',
+                  'uo_definition','uo_source_acronym','uo_source_name','uo_source_url',
                   'integration_date','number_replicates')
     
     def get_species(self,obj):
@@ -32,22 +48,112 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
         return obj.id
 
     def get_to_name(self,obj):
-        return obj.to_term.name
+        try:
+            return obj.to_term.name
+        except:
+            return ""
     
     def get_to_comment(self,obj):
-        return obj.to_term.comment
+        try:
+            return obj.to_term.comment
+        except:
+            return ""
     
     def get_to_definition(self,obj):
-        return obj.to_term.definition
+        try:
+            return obj.to_term.definition
+        except:
+            return ""
     
     def get_to_source_acronym(self,obj):
-        return obj.to_term.source.acronym
+        try:
+            return obj.to_term.source.acronym
+        except:
+            return ""
     
     def get_to_source_name(self,obj):
-        return obj.to_term.source.name
+        try:
+            return obj.to_term.source.name
+        except:
+            return ""
     
     def get_to_source_url(self,obj):
-        return obj.to_term.source.url
+        try:
+            return obj.to_term.source.url
+        except:
+            return ""
+    
+    def get_eo_name(self,obj):
+        try:
+            return obj.eo_term.name
+        except:
+            return ""
+    
+    def get_eo_comment(self,obj):
+        try:
+            return obj.eo_term.comment
+        except:
+            return ""
+    
+    def get_eo_definition(self,obj):
+        try:
+            return obj.eo_term.definition
+        except:
+            return ""
+    
+    def get_eo_source_acronym(self,obj):
+        try:
+            return obj.eo_term.source.acronym
+        except:
+            return ""
+    
+    def get_eo_source_name(self,obj):
+        try:
+            return obj.eo_term.source.name
+        except:
+            return ""
+    
+    def get_eo_source_url(self,obj):
+        try:
+            return obj.eo_term.source.url
+        except:
+            return ""
+    
+    def get_uo_name(self,obj):
+        try:
+            return obj.uo_term.name
+        except:
+            return ""
+    
+    def get_uo_comment(self,obj):
+        try:
+            return obj.uo_term.comment
+        except:
+            return ""
+    
+    def get_uo_definition(self,obj):
+        try:
+            return obj.uo_term.definition
+        except:
+            return ""
+    
+    def get_uo_source_acronym(self,obj):
+        try:
+            return obj.uo_term.source.acronym
+        except:
+            return ""
+    
+    def get_uo_source_name(self,obj):
+        try:
+            return obj.uo_term.source.name
+        except:
+            return ""
+    
+    def get_uo_source_url(self,obj):
+        try:
+            return obj.uo_term.source.url
+        except:
+            return ""
 
 '''
 Phenotype Value Serializer Class
@@ -69,31 +175,58 @@ class PhenotypeValueSerializer(serializers.ModelSerializer):
                   'accession_latitude','accession_country','phenotype_value','obs_unit_id')
     
     def get_phenotype_name(self,obj):
-        return obj.phenotype.name
+        try:
+            return obj.phenotype.name
+        except:
+            return ""
     
     def get_accession_name(self,obj):
-        return obj.obs_unit.accession.name
+        try:
+            return obj.obs_unit.accession.name
+        except:
+            return ""
     
     def get_accession_id(self,obj):
-        return obj.obs_unit.accession.id
+        try:
+            return obj.obs_unit.accession.id
+        except:
+            return ""
     
     def get_accession_cs_number(self,obj):
-        return obj.obs_unit.accession.cs_number
+        try:
+            return obj.obs_unit.accession.cs_number
+        except:
+            return ""
     
     def get_accession_longitude(self,obj):
-        return obj.obs_unit.accession.longitude
+        try:
+            return obj.obs_unit.accession.longitude
+        except:
+            return ""
     
     def get_accession_latitude(self,obj):
-        return obj.obs_unit.accession.latitude
+        try:
+            return obj.obs_unit.accession.latitude
+        except:
+            return ""
     
     def get_accession_country(self,obj):
-        return obj.obs_unit.accession.country
+        try:
+            return obj.obs_unit.accession.country
+        except:
+            return ""
     
     def get_phenotype_value(self,obj):
-        return obj.value
+        try:
+            return obj.value
+        except:
+            return ""
     
     def get_obs_unit_id(self,obj):
-        return obj.obs_unit.id
+        try:
+            return obj.obs_unit.id
+        except:
+            return ""
 
 
 '''
@@ -107,5 +240,8 @@ class StudyListSerializer(serializers.ModelSerializer):
         fields = ('name','description','phenotype_count')
 
     def get_phenotype_count(self,obj):
-        return obj.phenotype_set.count()
+        try:
+            return obj.phenotype_set.count()
+        except:
+            return ""
 
