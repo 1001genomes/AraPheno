@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.utils.safestring import mark_safe
 
 from django.db import models
+import pandas as pd
 
 '''
 Species Model
@@ -23,6 +24,29 @@ class Study(models.Model):
 
     species = models.ForeignKey("Species") #foreign key to species
     publications = models.ManyToManyField("Publication",blank=True)
+
+    def value_as_dataframe(self):
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT v.id,o.id,o.accession_id,a.name,s.ncbi_id,p.id as phenotype_id,p.name as phenotype_name, v.value
+            FROM phenotypedb_phenotypevalue as v
+            LEFT JOIN phenotypedb_observationunit o ON v.obs_unit_id = o.id
+            LEFT JOIN phenotypedb_phenotype as p ON p.id = v.phenotype_id
+            LEFT JOIN phenotypedb_accession as a ON a.id = o.accession_id
+            LEFT JOIN phenotypedb_species as s ON s.id = a.species_id
+            WHERE s.id = %s ORDER BY o.accession_id,p.id ASC """ % self.id)
+        df = pd.DataFrame(cursor.fetchall(),columns=['id','obs_unit_id','accession_id','accession_name','ncbi_id','phenotype_id','phenotype_name','value']).set_index(['id'])
+        return df
+
+    def get_matrix_and_accession_map(self,column = 'phenotype_name'):
+        df = self.value_as_dataframe()
+        df.set_index(['obs_unit_id'],inplace=True)
+        df_pivot = df.pivot(columns=column, values='value')
+        df.drop(['value','phenotype_id','phenotype_name'],axis=1,inplace=True)
+        df = df[~df.index.duplicated(keep='first')]
+        return (df,df_pivot)
+
     
     def __unicode__(self):
         return u"%s (Study)" % (mark_safe(self.name))

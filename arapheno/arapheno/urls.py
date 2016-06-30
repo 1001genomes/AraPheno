@@ -21,12 +21,13 @@ from rest_framework.urlpatterns import format_suffix_patterns
 import home.views
 import phenotypedb.views
 import phenotypedb.rest as rest
+from phenotypedb.rest import doi_regex
 
 import autocomplete_light.shortcuts as al
 al.autodiscover()
 
-id_regex = r"^[0-9]+$"
-doi_regex = "(10\.[^/]+/([^(\s\>\"\<})])+)"
+id_regex = r"[0-9]+"
+regex =id_regex +"|" + doi_regex
 
 urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
@@ -36,9 +37,9 @@ urlpatterns = [
     #url(r'search_results/(?P<query>[\w.@-_?!$&/\=]+)/$',home.views.SearchResults,name="searchresults"),
     url(ur'search_results/(?P<query>.*)/$',home.views.SearchResults,name="searchresults"),
     url(r'phenotypes/$',phenotypedb.views.PhenotypeList,name="phenotypes"),
-    url(r'phenotype/(?P<pk>[0-9]+)/$',phenotypedb.views.PhenotypeDetail.as_view(),name="phenotype_detail"),
+    url(r'phenotype/(?P<pk>%s)/$' % id_regex,phenotypedb.views.PhenotypeDetail.as_view(),name="phenotype_detail"),
     url(r'studies/$',phenotypedb.views.StudyList,name="studies"),
-    url(r'study/(?P<pk>[0-9]+)/$',phenotypedb.views.StudyDetail,name="study_detail"),
+    url(r'study/(?P<pk>%s)/$' % id_regex,phenotypedb.views.StudyDetail,name="study_detail"),
     url(r'about/$',home.views.about),
     url(r'faq/$',home.views.faq),
     url(r'faq/content/$',home.views.faqcontent),
@@ -51,18 +52,30 @@ urlpatterns = [
 REST URLS
 '''
 restpatterns = [
+    #search
     url(r'rest/search/$',rest.search),
     url(ur'rest/search/(?P<query_term>.*)/$',rest.search),
+
+    # phenotype list
     url(r'rest/phenotype/list/$',rest.phenotype_list),
-    url(r'rest/phenotype/(?P<q>[0-9]+)/$',rest.phenotype_list), #Only supports PK for now
-    url(r'rest/phenotype/(?P<q>[0-9]+)/values/$',rest.phenotype_value), #Only supports PK for now
+
+    # phenotype detail
+    url(r'rest/phenotype/(?P<q>%s)/$' % regex,rest.phenotype_detail),
+
+    url(r'rest/phenotype/(?P<q>%s)/values/$' %regex,rest.phenotype_value),
+
     url(r'rest/study/list/$',rest.study_list),
-    url(r'rest/study/(?P<q>[0-9]+)/$',rest.study_list),
-    url(r'rest/study/(?P<q>[0-9]+)/phenotypes/$',rest.study_all_pheno),
-    #url(r'rest/study/(?P<q>[0-9]+)/values/$',rest.study_all_values), #not working yet. Had some prototypes but all of them took more than 2min
+    url(r'rest/study/(?P<q>%s)/$' % regex,rest.study_detail),
+
+    url(r'rest/study/(?P<q>%s)/phenotypes/$' %regex,rest.study_all_pheno),
+
+    url(r'rest/study/(?P<q>%s)/values/$' % regex,rest.study_phenotype_value_matrix),
+
+    url(r'rest/study/(?P<q>%s)/isatab/$' % regex,rest.study_isatab),
+
 ]
 #extend restpatterns with suffix options
-restpatterns = format_suffix_patterns(restpatterns,allowed=['json','csv','plink'])
+restpatterns = format_suffix_patterns(restpatterns,allowed=['json','csv','plink','zip'])
 '''
 Add REST patterns to urlpatterns
 '''

@@ -24,10 +24,21 @@ class PhenotypeValueRenderer(CSVRenderer):
               'accession_latitude','accession_country','phenotype_value','obs_unit_id']
 
 class PhenotypeMatrixRenderer(CSVRenderer):
-    header = ['species','phenotype_id','name','doi','study','scoring',
-              'source','type','growth_conditions',
-              'eo_term','to_term','uo_term',
-              'integration_date','number_replicates','data']
+
+    def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        if type(data) == list and len(data) > 0:
+            renderer_context['header'] = self._get_sorted_headers(data[0].keys())
+        return super(PhenotypeMatrixRenderer, self).render(data, media_type, renderer_context,writer_opts)
+
+
+    def _get_sorted_headers(self,headers):
+        headers.remove('obs_unit_id')
+        headers.remove('accession_id')
+        headers.remove('accession_name')
+        headers.insert(0,'accession_name')
+        headers.insert(0,'accession_id')
+        headers.insert(0,'obs_unit_id')
+        return headers
 
 '''
 Custom File Renderer
@@ -45,3 +56,56 @@ class PLINKRenderer(renderers.BaseRenderer):
                 return "Wrong Data Format"
             plink += str(element['accession_id']) + " " + str(element['accession_id']) + " " + str(element['phenotype_value']) + "\n"
         return plink
+
+class IsaTabRenderer(CSVRenderer):
+
+    def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        renderer_context['writer_opts'] = {'delimiter':'\t'}
+        return super(IsaTabRenderer, self).render(data, media_type, renderer_context,writer_opts)
+
+
+class IsaTabStudyRenderer(IsaTabRenderer):
+    labels ={'source':'Source Name','organism':'Characteristics[Organism]','organism_ref':'Term Source REF',
+    'ncbi_id':'Term Accession Number','accession_name':'Characteristics[Infraspecific name]',
+    'accession_ref':'Term Source REF','accession_id':'Term Accession Number',
+    'seed_origin':'Characteristics[Seed origin]','study_start':'Characteristics[Study start]',
+    'study_duration':'Characteristics[Study duration]','growth_facility':'Characteristics[Growth facility]',
+    'location':'Characteristics[Geographic location]','location_ref':'Term Source REF','location_id':'Term Accession Number','sample':'Sample Name'}
+
+    header = ['source','organism','organism_ref','ncbi_id','accession_name',
+    'accession_ref','accession_id','seed_origin','study_start','study_duration','growth_facility',
+    'location','location_ref','location_id','sample']
+
+
+
+class IsaTabAssayRenderer(IsaTabRenderer):
+    header = ['sample','organism_part','organism_ref','organism_id','assay','raw_data_file','protocol_ref','trait_def_file','derived_data_file']
+    labels = {'sample':'Sample Name','organism_part':'Characteristics[Organism Part]','organism_ref':'Term Source REF','organism_id':'Term Accession Number',
+    'assay':'Assay Name','raw_data_file':'Raw Data File','protocol_ref':'Protocol REF','trait_def_file':'Parameter Value[Trait Definition File]','derived_data_file':'Derived Data File'}
+
+
+class IsaTabTraitDefinitionRenderer(IsaTabRenderer):
+    header= ['variable_id','trait','to_term_ref','to_term_id','method','method_ref','method_id','scale','scale_ref','scale_id']
+    labels = {'variable_id':'Variable ID','trait':'Trait','to_term_ref':'Term Source REF','to_term_id':'Term Accession Number','method':'Method','method_ref':'Term Source REF','method_id':'Term Accession Number','scale':'Scale','scale_ref':'Term Source REF','scale_id':'Term Accession Number'}
+
+class IsaTabDerivedDataFileRenderer(IsaTabRenderer):
+
+    labels = {'assay':'Assay Name'}
+
+    def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        if type(data) == list and len(data) > 0:
+            renderer_context['header'] = self._get_sorted_headers(map(str,data[0].keys()))
+        return super(IsaTabDerivedDataFileRenderer, self).render(data, media_type, renderer_context,writer_opts)
+
+
+    def _get_sorted_headers(self,headers):
+        headers.remove('assay')
+        headers.insert(0,'assay')
+        return headers
+
+class IsaTabFileRenderer(renderers.BaseRenderer):
+    media_type = "application/isatab"
+    format = "isatab"
+
+    def render(self,data,media_type=None,renderer_context=None):
+        pass

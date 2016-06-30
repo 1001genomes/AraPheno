@@ -8,6 +8,9 @@ import codecs
 import pdb
 from phenotypedb.models import Study,Phenotype,PhenotypeValue,Publication, Accession, Species, Author, ObservationUnit, OntologyTerm
 from django.db import transaction
+import datetime
+
+from phenotypedb.renderer import IsaTabStudyRenderer, IsaTabAssayRenderer,IsaTabDerivedDataFileRenderer,IsaTabTraitDefinitionRenderer
 
 logger = logging.getLogger(__name__)
 
@@ -186,3 +189,252 @@ def save_isatab(isatab):
                     phenotype_value = PhenotypeValue(value=value,phenotype=phenotype,obs_unit = obs_unit)
                     phenotype_value.save()
     return studies
+
+
+
+def export_isatab(study):
+    # create temorary folder
+    folder = tempfile.mkdtemp()
+    isatab_filename = tempfile.mkstemp()[1]
+
+    # create the isatab files
+    _create_isatab_files(study,folder)
+
+    # zip it
+    output_filename = shutil.make_archive(isatab_filename,"zip",folder)
+
+    # remove temporary folder
+    shutil.rmtree(folder)
+    os.unlink(isatab_filename)
+    return output_filename
+
+
+def _create_isatab_files(study,folder):
+    df,df_pivot = study.get_matrix_and_accession_map(column='phenotype_id')
+    _create_investigation_file(study,folder)
+    _create_study_file(study,df,df_pivot,folder)
+    _create_assay_file(study,df,folder)
+    _create_tdf_file(study,folder)
+    _create_data_file(df_pivot,folder)
+    pass
+
+def _create_investigation_file(study,folder):
+
+    ontology_reference = """ONTOLOGY SOURCE REFERENCE
+Term Source Name	OBI	EFO	UO	NCBITaxon	PO	GMI_accessions
+Term Source File	http://data.bioontology.org/ontologies/OBI	http://data.bioontology.org/ontologies/EFO	http://purl.obolibrary.org/obo/UO	http://data.bioontology.org/ontologies/NCBITAXON	http://data.bioontology.org/ontologies/PO	http://gwas.gmi.oeaw.ac.at/#/taxonomy/1/passports?alleleAssayId=0
+Term Source Version	23	118		6	10
+Term Source Description	Ontology for Biomedical Investigations	Experimental Factor Ontology	Unit Ontology	National Center for Biotechnology Information (NCBI) Organismal Classification	Plant Ontology	Cataloque of Arabidopsis accessions at GMI
+"""
+
+    investigation = """INVESTIGATION
+Investigation Identifier\tstudy%(study_id)s
+Investigation Title\t%(study_name)s
+Investigation Description\t%(study_description)s
+Investigation Submission Date\t%(study_submission_date)s
+Investigation Public Release Date\t%(study_publication_date)s
+Comment [Created with configuration]    isaconfig-phenotyping-basic
+Comment [Last Opened With Configuration]	isaconfig-phenotyping-basic
+""" % ({'study_id':study.id,'study_name':study.name,
+'study_description':study.description,'study_submission_date':datetime.datetime.now(),
+'study_publication_date':datetime.datetime.now()})
+
+
+
+
+
+
+    investigation_publications = """INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+"""
+
+    investigation_contacts=""""INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
+"""
+
+
+    pubmed_ids = []
+    dois =  []
+    authors = []
+    titles = []
+    status = []
+    status_terms = []
+    status_refs = []
+    for pub in study.publications.all():
+        pubmed_ids.append(pub.pubmed_id)
+        dois.append(pub.doi)
+        authors.append(pub.author_order)
+        titles.append(pub.title)
+        status.append('published')
+        status_terms.append('1796')
+        status_refs.append('EFO')
+
+
+    study_info = """STUDY
+Study Identifier    study%(study_id)s
+Study Title %(study_name)s
+Study Description
+Study Submission Date   %(study_submission_date)s
+Study Public Release Date   %(study_publication_date)s
+Study File Name s_study%(study_id)s.txt
+STUDY DESIGN DESCRIPTORS
+Study Design Type   %(study_description)s
+Study Design Type Term Accession Number
+Study Design Type Term Source REF
+""" % ({'study_id':study.id,'study_name':study.name,
+'study_description':study.description,'study_submission_date':datetime.datetime.now(),
+'study_publication_date':datetime.datetime.now()})
+
+    study_publications = """STUDY PUBLICATIONS
+STUDY PubMed ID\t%(pubmed_ids)s
+STUDY Publication DOI\t%(dois)s
+STUDY Publication Author List\t%(authors)s
+STUDY Publication Title\t%(titles)s
+STUDY Publication Status\t%(status)s
+STUDY Publication Status Term Accession Number\t%(status_terms)s
+STUDY Publication Status Term Source REF\t%(status_refs)s
+STUDY FACTORS
+Study Factor Name
+Study Factor Type
+Study Factor Type Term Accession Number
+Study Factor Type Term Source REF
+""" % {'pubmed_ids':'\t'.join(pubmed_ids),'dois':'\t'.join(dois),'authors':'\t'.join(authors),
+'titles':'\t'.join(authors),'status':'\t'.join(status),'status_terms':'\t'.join(status_terms),'status_refs':'\t'.join(status_refs)}
+
+    assays = """STUDY ASSAYS
+Study Assay File Name\ta_study%(study_id)s.txt
+Study Assay Measurement Type	phenotyping
+Study Assay Measurement Type Term Accession Number	23
+Study Assay Measurement Type Term Source REF	OBI
+Study Assay Technology Type
+Study Assay Technology Type Term Accession Number
+Study Assay Technology Type Term Source REF
+Study Assay Technology Platform
+STUDY PROTOCOLS
+Study Protocol Name	Data transformation
+Study Protocol Type	Data transformation
+Study Protocol Type Term Accession Number
+Study Protocol Type Term Source REF
+Study Protocol Description
+Study Protocol URI
+Study Protocol Version
+Study Protocol Parameters Name	Trait Definition File
+Study Protocol Parameters Name Term Accession Number
+Study Protocol Parameters Name Term Source REF
+Study Protocol Components Name
+Study Protocol Components Type
+Study Protocol Components Type Term Accession Number
+Study Protocol Components Type Term Source REF
+STUDY CONTACTS
+Study Person Last Name
+Study Person First Name
+Study Person Mid Initials
+Study Person Email
+Study Person Phone
+Study Person Fax
+Study Person Address
+Study Person Affiliation
+Study Person Roles
+Study Person Roles Term Accession Number
+Study Person Roles Term Source REF
+""" % {'study_id':study.id}
+
+    investigation_content = ontology_reference + investigation + investigation_publications + investigation_contacts + study_info + study_publications + assays
+    investigation_filename = os.path.join(folder,'i_investigation.txt')
+    with open(investigation_filename,'w') as f:
+        f.write(investigation_content.encode('utf-8'))
+    return investigation_filename
+
+
+def _create_study_file(study,df,df_pivot,folder):
+    renderer = IsaTabStudyRenderer()
+    organism = '%s %s' % (study.species.genus,study.species.species)
+    ncbi_id = study.species.ncbi_id
+
+    data = []
+    for obs_unit_id,row in df_pivot.iterrows():
+        info = df.ix[obs_unit_id]
+        accession_id = info.accession_id
+        accession_name = info.accession_name
+        csv_row = {'source':'source%s' % accession_id ,'organism':organism,'organism_ref':'NCBITaxon','ncbi_id':ncbi_id,
+        'accession_name':accession_name,'accession_ref':'GMI_accessions','accession_id':accession_id,
+        'sample':'sample%s' % obs_unit_id}
+        data.append(csv_row)
+    content = renderer.render(data)
+
+    study_filename = os.path.join(folder,'s_study%s.txt' % study.id)
+    with open(study_filename,'w') as f:
+        f.write(content)
+    return study_filename
+
+def _create_assay_file(study,df,folder):
+    renderer = IsaTabAssayRenderer()
+    data = []
+    for obs_unit_id,row in df.iterrows():
+        csv_row = {'sample':'sample%s' % obs_unit_id ,'assay':'assay%s' % obs_unit_id,
+        'protocol_ref':'Data transformation','trait_def_file':'tdf.txt','derived_data_file':'d_data.txt'}
+        data.append(csv_row)
+    content = renderer.render(data)
+
+    assay_filename = os.path.join(folder,'a_study%s.txt' % study.id)
+    with open(assay_filename,'w') as f:
+        f.write(content)
+    return assay_filename
+
+
+
+def _create_tdf_file(study,folder):
+    renderer = IsaTabTraitDefinitionRenderer()
+    data = []
+    for phenotype in study.phenotype_set.all():
+        row = {'variable_id':phenotype.id,'trait':phenotype.name,'method':phenotype.scoring}
+        if phenotype.to_term:
+            row['to_term_ref'] = phenotype.to_term.source.acronym
+            row['to_term_id'] = phenotype.to_term.id
+        if phenotype.uo_term:
+            row['scale'] = phenotype.uo_term.name
+            row['scale_ref'] = phenotype.uo_term.source.acronym
+            row['scale_id'] = phenotype.uo_term.id
+
+        data.append(row)
+
+    content = renderer.render(data)
+
+    tdf_filename = os.path.join(folder,'tdf.txt')
+    with open(tdf_filename,'w') as f:
+        f.write(content)
+    return tdf_filename
+
+def _create_data_file(df_pivot,folder):
+    df_empty = df_pivot.fillna('')
+    renderer = IsaTabDerivedDataFileRenderer()
+    data = []
+    headers = map(str,df_empty.columns.tolist())
+    for obs_unit_id,row in df_empty.iterrows():
+        csv_row = {'assay':'assay%s'% obs_unit_id}
+        for i,value in enumerate(row.values):
+            csv_row[headers[i]] = value
+        data.append(csv_row)
+
+    content = renderer.render(data)
+
+    data_filename = os.path.join(folder,'d_data.txt')
+    with open(data_filename,'w') as f:
+        f.write(content)
+    return data_filename
