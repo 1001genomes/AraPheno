@@ -142,3 +142,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '../static_deploy'
 
 STATICFILES_DIRS = ['../static',]
+
+# https://github.com/marcgibbons/django-rest-swagger/issues/220
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Needed to get     request.is_secure() == True
