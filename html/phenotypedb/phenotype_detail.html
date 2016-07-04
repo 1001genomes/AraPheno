@@ -262,7 +262,7 @@
           ['ID Name Phenotype','Date','Longitude','Latitude','Phenotype','Accession','Country'],
           {% for item in pheno_acc_infos %}
              [ "{{ item.obs_unit.accession.name }} ID:{{ item.obs_unit.accession.id }} Phenotype: {{ item.value }}"
-              ,new Date(1900,1,1), {{ item.obs_unit.accession.longitude }}, {{ item.obs_unit.accession.latitude }}, 
+              ,new Date(1900,1,1), {{ item.obs_unit.accession.longitude | default_if_none:"null" }}, {{ item.obs_unit.accession.latitude |default_if_none:"null" }},
               {{ item.value }}, "{{item.obs_unit.accession.name }}", "{{ item.obs_unit.accession.country }}"
             ],
           {% endfor %}
