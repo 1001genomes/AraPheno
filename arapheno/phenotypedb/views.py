@@ -10,6 +10,8 @@ from django.db.models import Count
 
 from django_tables2 import RequestConfig
 
+from scipy.stats import shapiro
+
 # Create your views here.
 
 def PhenotypeList(request):
@@ -25,6 +27,8 @@ class PhenotypeDetail(DetailView):
         context = super(PhenotypeDetail, self).get_context_data(**kwargs)
         context['pheno_acc_infos'] = self.object.phenotypevalue_set.prefetch_related('obs_unit__accession')
         context['geo_chart_data'] = Accession.objects.filter(observationunit__phenotypevalue__phenotype_id=1).values('country').annotate(count=Count('country'))
+        context['values'] = self.object.phenotypevalue_set.all().values_list("value",flat=True)
+        context['shapiro'] = "%.2e"%shapiro(context['values'])[1]
         return context
 
 def StudyList(request):

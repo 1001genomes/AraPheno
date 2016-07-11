@@ -46,7 +46,10 @@ class Study(models.Model):
         df.drop(['value','phenotype_id','phenotype_name'],axis=1,inplace=True)
         df = df[~df.index.duplicated(keep='first')]
         return (df,df_pivot)
-
+    
+    @property
+    def count_phenotypes(self):
+        return self.phenotype_set.count()
     
     def __unicode__(self):
         return u"%s (Study)" % (mark_safe(self.name))
@@ -105,6 +108,7 @@ class Phenotype(models.Model):
     species = models.ForeignKey('Species')
     study = models.ForeignKey('Study')
     dynamic_metainformations = models.ManyToManyField('PhenotypeMetaDynamic')
+
 
     def __unicode__(self):
         if self.to_term == None:
