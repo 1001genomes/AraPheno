@@ -21,10 +21,10 @@ function corrPlot() {
                                                              '#904E5C','#873C4D','#873C4D','#7F293D','#6E051F']);
     var __axes_data = [];
     var __data_matrix = [];
+    var __spear_matrix = [];
     var __data = [];
     var __data_scatter = [];
     var __data_venn = [];
-    var __data_manhattan = [];
 	var __svg, __box_g, __svg_scatter, __scatter_g, __axes_scatter;
 	var __x_scale, __y_scale, __x_scale_scatter, __y_scale_scatter;
     var __x_axis_scatter,__y_axis_scatter;
@@ -63,6 +63,7 @@ function corrPlot() {
         var pheno_ids = [];
         __mapping = {};
         __data_matrix = JSON.parse(__data_matrix)
+        __spear_matrix = JSON.parse(__spear_matrix)
         console.log(__data_matrix)
         for (var i=0; i<__axes_data.length; i++) {
             pheno_ids.push(__axes_data[i].pheno_id);
@@ -78,7 +79,8 @@ function corrPlot() {
                              "y_pheno_id":__axes_data[j].pheno_id, 
                              "x_label":__axes_data[i].label,
                              "y_label":__axes_data[j].label,
-                             "corr":__data_matrix[__axes_data[i].index][__axes_data[j].index]});
+                             "corr":__data_matrix[__axes_data[i].index][__axes_data[j].index],
+                             "spear":__spear_matrix[__axes_data[i].index][__axes_data[j].index]});
             }
         }
 	    __x_scale = d3.scale.ordinal().domain(pheno_ids).rangeRoundBands([0,getContainerWidth()]);
@@ -776,6 +778,50 @@ function corrPlot() {
     function getContainerHeightScatter() {
 		return __height_scatter - __margins_scatter.top - __margins_scatter.bottom;
 	}
+
+    __plot.changeCorrMethod = function(method) {
+        if (method=="spearman") {
+            d3.selectAll("circle.corr").transition().duration(500)
+                .filter(function(d,i) {
+                    return d.i > d.j;
+                })
+                .attr("class",function(d,i) {
+                    return "corr " + "corr_color_" + __colors(d.spear).replace("#","") + " id_" + d.i + "_" + d.j;
+                })
+                .attr("r",function(d){return __size_scale(d.spear*2);})
+                .attr("fill",function(d){return __colors(d.spear*2);})
+            
+            d3.selectAll("text.tcorr").transition().duration(500)
+                .filter(function(d,i) {
+                    return d.i < d.j;
+                })
+                .attr("class",function(d,i) {
+                    return "tcorr " + "corr_color_" + __colors(d.spear).replace("#","") + " id_" + d.i + "_" + d.j;
+                })
+                .text(function(d){return d.spear.toFixed(2);})
+                .style("fill",function(d,i){return __colors(d.spear)});
+        } else {
+            d3.selectAll("circle.corr").transition().duration(500)
+                .filter(function(d,i) {
+                    return d.i > d.j;
+                })
+                .attr("class",function(d,i) {
+                    return "corr " + "corr_color_" + __colors(d.corr).replace("#","") + " id_" + d.i + "_" + d.j;
+                })
+                .attr("r",function(d){return __size_scale(d.corr);})
+                .attr("fill",function(d){return __colors(d.corr);})
+
+            d3.selectAll("text.tcorr").transition().duration(500)
+                .filter(function(d,i) {
+                    return d.i < d.j;
+                })
+                .attr("class",function(d,i) {
+                    return "tcorr " + "corr_color_" + __colors(d.corr).replace("#","") + " id_" + d.i + "_" + d.j;
+                })
+                .text(function(d){return d.corr.toFixed(2);})
+                .style("fill",function(d,i){return __colors(d.corr)});
+        }
+    }
     
 	//getter and setter functions
 	__plot.width = function(w) {
@@ -813,6 +859,12 @@ function corrPlot() {
     __plot.data_matrix = function(d) {
 		if(!arguments.length) return __data_matrix;
 		__data_matrix = d;
+		return __plot;
+	}
+    
+    __plot.spear_matrix = function(d) {
+		if(!arguments.length) return __spear_matrix;
+		__spear_matrix = d;
 		return __plot;
 	}
     

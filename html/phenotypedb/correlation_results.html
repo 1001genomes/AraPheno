@@ -31,6 +31,20 @@
             </div>
             
             <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="card" id="options">
+                <div class="card-content black-text">
+                <strong>Select Correlation Method:</strong>
+                <input name="corr_group" type="radio" id="pear" checked class="with-gap" disabled onclick="updatePearMethod();"/>
+                <label for="pear" class="black-text" style="border-color:red">Pearson's Correlation Coefficent</label>
+                <input name="corr_group" type="radio" id="spear" class="with-gap" onclick="updateSpearMethod();"/>
+                <label for="spear" class="black-text">Spearman's Correlation Coefficent</label>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <div class="row">
             <div class="col s12 m12 l6">
                 <div class="card ">
                 <div class="card-content black-text">
@@ -105,6 +119,7 @@
 </div>
 
 <script type="text/javascript">
+    var corrplot;
     $(document).ready(function(){    
         $('.parallax').parallax();
         $.getJSON("/rest/correlation/{{ phenotype_ids }}/", function(data) {
@@ -113,10 +128,10 @@
             $('#scatter').html("");
             $('#venn').html("");
             var width = $('#corr').width();
-            var corrplot = corrPlot()
-                                .width(width).height(width)
+            corrplot = corrPlot().width(width).height(width)
                                 .axes_data(data.axes_data)
                                 .data_matrix(data.corr_mat)
+                                .spear_matrix(data.spear_mat)
                                 .data_scatter(data.scatter_data)
                                 .data_venn(data.sample_data)
                                 .container_corr("#corr")
@@ -125,6 +140,18 @@
             corrplot.render();
         });
     });
+
+    function updateSpearMethod() {
+        $("#pear").attr("disabled",false).attr("checked",false);
+        $("#spear").attr("disabled",true).attr("checked",true);
+        corrplot.changeCorrMethod("spearman");
+    }
+    
+    function updatePearMethod() {
+        $("#spear").attr("disabled",false).attr("checked",false);
+        $("#pear").attr("disabled",true).attr("checked",true);
+        corrplot.changeCorrMethod();
+    }
 
 </script>
 {% endblock content %}

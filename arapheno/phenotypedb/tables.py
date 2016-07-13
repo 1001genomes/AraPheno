@@ -10,6 +10,7 @@ class PhenotypeTable(tables.Table):
     eo = tables.Column(accessor="eo_term.name",verbose_name="Environmental Ontoloy (EO)",order_by="eo_term.name")
     uo = tables.Column(accessor="uo_term.name",verbose_name="Unit Ontology (UO)",order_by="uo_term.name")
 
+    ''' # Too many links in table might be confusing
     def render_to(self,record):
         try:
            return mark_safe('<a href="' + record.to_term.get_info_url() + '" target="_blank">' + str(record.to_term.name) + '</a>')
@@ -27,6 +28,7 @@ class PhenotypeTable(tables.Table):
             return mark_safe('<a href="' + record.uo_term.get_info_url() + '" target="_blank">' + str(record.uo_term.name) + '</a>')
         except:
             return record.uo_term.name
+    '''
 
     class Meta:
         attrs = {"class": "striped"}
@@ -37,6 +39,7 @@ class ReducedPhenotypeTable(tables.Table):
     eo = tables.Column(accessor="eo_term.name",verbose_name="Environmental Ontoloy (EO)",order_by="eo_term.name")
     uo = tables.Column(accessor="uo_term.name",verbose_name="Unit Ontology (UO)",order_by="uo_term.name")
     
+    ''' # Too many links in table might be confusing
     def render_to(self,record):
         try:
            return mark_safe('<a href="' + record.to_term.get_info_url() + '" target="_blank">' + str(record.to_term.name) + '</a>')
@@ -54,7 +57,7 @@ class ReducedPhenotypeTable(tables.Table):
             return mark_safe('<a href="' + record.uo_term.get_info_url() + '" target="_blank">' + str(record.uo_term.name) + '</a>')
         except:
             return record.uo_term.name
-
+    '''
     class Meta:
         attrs = {"class": "striped"}
 
