@@ -245,3 +245,25 @@ class StudyListSerializer(serializers.ModelSerializer):
         except:
             return ""
 
+'''
+Reduced Phenotype Value Serializer Class
+'''
+class ReducedPhenotypeValueSerializer(serializers.ModelSerializer):
+    accession_id = serializers.SerializerMethodField()
+    phenotype_value = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PhenotypeValue
+        fields = ('accession_id','phenotype_value')
+    
+    def get_accession_id(self,obj):
+        try:
+            return obj.obs_unit.accession.id
+        except:
+            return ""
+    
+    def get_phenotype_value(self,obj):
+        try:
+            return obj.value
+        except:
+            return ""

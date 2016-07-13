@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.utils.safestring import mark_safe
-
+from django.db import connection
 from django.db import models
 import pandas as pd
 
@@ -26,7 +26,6 @@ class Study(models.Model):
     publications = models.ManyToManyField("Publication",blank=True)
 
     def value_as_dataframe(self):
-        from django.db import connection
         cursor = connection.cursor()
         cursor.execute("""
             SELECT v.id,o.id,o.accession_id,a.name,s.ncbi_id,p.id as phenotype_id,p.name as phenotype_name, v.value

@@ -47,17 +47,60 @@
             <div class="nav-wrapper container">
                 <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
                 <ul class="right hide-on-med-and-down black-text">
-                    <li><a class="black-text" href="/phenotypes">View Phenotypes</a></li>
-                    <li><a class="black-text" href="/studies">View Studies</a></li>
+                    <li>
+                        <a class="dropdown-button black-text" href="#!" data-activates="datadropdown">Data<i class="material-icons right black-text">arrow_drop_down</i></a>
+                        <ul id="datadropdown" class="dropdown-content brown">
+                            <li><a class="white-text" href="/studies">Studies</a></li>
+                            <li class="divider"></li>
+                            <li><a class="white-text" href="/phenotypes">Phenotypes</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="dropdown-button black-text" href="#!" data-activates="toolsdropdown">Tools<i class="material-icons right black-text">arrow_drop_down</i></a>
+                        <ul id="toolsdropdown" class="dropdown-content brown">
+                            <li><a class="white-text" href="/correlation">Phenotype Correlation</a></li>
+                            <li class="divider"></li>
+                            <li><a class="white-text" href="/faq/rest/">REST API</a></li>
+                        </ul>
+                    </li>
+                    
                     <li><a class="black-text" href="/about">About</a></li>
                     <li><a class="black-text modal-trigger" href="#faqmodal">FAQ</a></li>
                 </ul>
 
                 <ul id="nav-mobile" class="side-nav">
-                    <li><a class="black-text" href="/phenotypes">View Phenotypes</a></li>
-                    <li><a class="black-text" href="/studies">View Studies</a></li>
+                    <li class="no-padding">
+                    <ul class="collapsible collapsible-accordion">
+                    <li>
+                    <a class="collapsible-header waves-effect waves-grey"><strong>AraPheno Data</strong></a>
+                    <div class="collapsible-body" style="display: block;">
+                        <ul>
+                        <li><a class="black-text" href="/phenotypes">View Phenotypes</a></li>
+                        <li><a class="black-text" href="/studies">View Studies</a></li>
+                        </ul>
+                    </div>
+                    </li>
+                    </ul>
+                    
+                    <li class="divider"></li>
+                    <ul class="collapsible collapsible-accordion">
+                    <li>
+                    <a class="collapsible-header waves-effect waves-grey"><strong>AraPheno Tools</strong></a>
+                    <div class="collapsible-body" style="display: block;">
+                        <ul>
+                            <li><a class="black-text" href="/correlation">Phenotype Correlation</a></li>
+                            <li><a class="black-text" href="/faq/rest/">REST API</a></li>
+                        </ul>
+                    </div>
+                    </li>
+                    </ul>
+                    
+                    <li class="divider"></li>
                     <li><a class="black-text" href="/about">About</a></li>
                     <li><a class="black-text" href="/faq">FAQ</a></li>
+                    
+                    </li>
+                    
                 </ul>
                 <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons black-text">menu</i></a>
             </div>        

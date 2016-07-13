@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - Phenotype Correlation Wizard {% endblock title %}
+
+{% block content %}
+<script type="text/javascript" src="/static/js/d3.min.js"></script>
+<script type="text/javascript" src="/static/js/venn.min.js"></script>
+<script type="text/javascript" src="/static/js/corr_plot.js"></script>
+
+<div id="index-banner" class="parallax-container" style="height:80px">
+    <div class="section no-pad-bot">
+        <div class="container">
+        <h5 class="black-text">Phenotype Correlation Results</h5>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col s12 m12 l12">
+            <br>
+            <div class="card grey lighten-5" id="loading_data">
+                <div class="card-content black-text">
+                <span class="card-title">Computing Phenotype-Phenotype Correlations ...</span>
+                <div class="progress brown lighten-4">
+                    <div class="indeterminate brown"></div>
+                </div>
+                </div>
+            </div>
+            
+            <div class="row">
+            <div class="col s12 m12 l6">
+                <div class="card ">
+                <div class="card-content black-text">
+                <span><strong>Phenotype-Phenotype Correlation Plot</strong></span><br><br>
+                <div style="margin:auto;display:block;text-align:center">
+                <div id="corr">
+                    <div class="preloader-wrapper big active">
+                        <div class="spinner-layer spinner-brown-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </div>
+            <div class="col s12 m12 l6">
+                <div class="card ">
+                <div class="card-content black-text">
+                    <span><strong>Phenotype-Phenotype Scatter Plot</strong></span><br><br>
+                    <div style="margin:auto;display:block;text-align:center">
+                    <div id="scatter">
+                    <div class="preloader-wrapper big active">
+                        <div class="spinner-layer spinner-brown-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+                <div class="card ">
+                <div class="card-content black-text">
+                    <span><strong>Phenotype Sample Overlap Diagram</strong></span><br><br>
+                    <div style="margin:auto;display:block;text-align:center">
+                    <div id="venn">
+                    <div class="preloader-wrapper big active">
+                        <div class="spinner-layer spinner-brown-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </div>
+            
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+        $.getJSON("/rest/correlation/{{ phenotype_ids }}/", function(data) {
+            $('#loading_data').html("");
+            $('#corr').html("");
+            $('#scatter').html("");
+            $('#venn').html("");
+            var width = $('#corr').width();
+            var corrplot = corrPlot()
+                                .width(width).height(width)
+                                .axes_data(data.axes_data)
+                                .data_matrix(data.corr_mat)
+                                .data_scatter(data.scatter_data)
+                                .data_venn(data.sample_data)
+                                .container_corr("#corr")
+                                .container_scatter("#scatter")
+                                .container_venn("#venn");
+            corrplot.render();
+        });
+    });
+
+</script>
+{% endblock content %}

@@ -5,6 +5,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 from models import Phenotype, Study, Accession
 from tables import PhenotypeTable, ReducedPhenotypeTable, StudyTable
+from forms import CorrelationWizardForm
 from home.forms import GlobalSearchForm
 from django.db.models import Count
 
@@ -48,3 +49,15 @@ def StudyDetail(request,pk=None):
     variable_dict['eo_data'] = study.phenotype_set.values('eo_term__name').annotate(count=Count('eo_term__name'))
     variable_dict['uo_data'] = study.phenotype_set.values('uo_term__name').annotate(count=Count('uo_term__name'))
     return render(request,'phenotypedb/study_detail.html',variable_dict)
+
+def CorrelationWizard(request):
+    wizard_form = CorrelationWizardForm()
+    if "phenotype_search" in request.POST:
+        query = request.POST.getlist("phenotype_search")
+        query = ",".join(map(str,query))
+        return HttpResponseRedirect("/correlation/" + query + "/")
+    return render(request,'phenotypedb/correlation_wizard.html',{"phenotype_wizard":wizard_form})
+
+def CorrelationResults(request,ids=None):
+    return render(request,'phenotypedb/correlation_results.html',{"phenotype_ids":ids})
+    

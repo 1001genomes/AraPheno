@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.db.models import Q
+from django.http import FileResponse
+
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -10,15 +12,16 @@ from rest_framework.views import APIView
 
 from phenotypedb.models import Phenotype, Study, PhenotypeValue
 from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer
-from phenotypedb.serializers import PhenotypeValueSerializer
+from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeValueSerializer
 
 from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer
 from phenotypedb.renderer import PLINKRenderer
 from utils.isa_tab import export_isatab
-from django.http import FileResponse
-import os
 
-import re
+import scipy as sp
+import scipy.stats as stats
+
+import re,os,array
 
 # based on this https://doeidoei.wordpress.com/2009/10/22/regular-expression-to-match-a-doi-digital-object-identifier/
 #doi_regex = r"10.\d{4,9}\/[-._;()/:A-Za-z0-9]+"
@@ -252,7 +255,6 @@ def study_all_pheno(request,q=None,format=None):
         serializer = PhenotypeListSerializer(study.phenotype_set.all(),many=True)
         return Response(serializer.data)
 
-# TODO migrate to pandas-rest framework
 '''
 List phenotype value matrix for entire study
 '''
@@ -286,6 +288,94 @@ def study_phenotype_value_matrix(request,q,format=None):
     if request.method == "GET":
         df = study.value_as_dataframe()
         data = _convert_dataframe_to_list(df)
+        return Response(data)
+
+'''
+Corrleation Matrix for selected phenotypes 
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((JSONRenderer,))
+def phenotype_correlations(request,q=None):
+    """
+    Return data for phenotype-phenotype correlations and between phenotype accession overlap
+    ---
+    serializer: JSONRenderer
+
+    produces:
+        - application/json
+    """
+    #id string to list
+    pids = map(int,q.split(","))
+    pheno_dict = {}
+    for i,pid in enumerate(pids):
+        try:
+            phenotype = Phenotype.objects.get(pk=pid)
+        except:
+            return Response({'message':'FAILED','not_found':pid})
+        pheno_acc_infos = phenotype.phenotypevalue_set.prefetch_related('obs_unit__accession')
+        values = sp.array(pheno_acc_infos.values_list('value',flat=True))
+        samples = sp.array(pheno_acc_infos.values_list('obs_unit__accession__id',flat=True))
+        name = str(phenotype.name.replace("<i>","").replace("</i>","") + " (" + str(phenotype.study.name) + ")")
+        pheno_dict[str(phenotype.name) + "_" + str(phenotype.study.name) + "_" + str(i)] = {'samples':samples,
+                                                                                            'y':values,
+                                                                                            'name':name,
+                                                                                            'id':str(phenotype.id)}
+                                                                                            #str(phenotype.name) + "_" + str(phenotype.study.name) + "_" + str(i)}
+    #compute correlation matrix
+    corr_mat = sp.ones((len(pheno_dict),len(pheno_dict))) * sp.nan
+    spear_mat = sp.ones((len(pheno_dict),len(pheno_dict))) * sp.nan
+    pheno_keys = pheno_dict.keys()
+    axes_data = []
+    scatter_data = []
+    sample_data = []
+    slabels = {}
+    for i,pheno1 in enumerate(pheno_keys):
+        axes_data.append({"label":pheno_dict[pheno1]['name'],
+                          "index":str(i),
+                          "pheno_id":str(pheno_dict[pheno1]['id'])})
+        samples1 = pheno_dict[pheno1]['samples']
+        y1 = pheno_dict[pheno1]['y']
+        #store scatter data
+        scatter_data.append({"label":pheno_dict[pheno1]['name'],
+                             "pheno_id":str(pheno_dict[pheno1]['id']),
+                             "samples": samples1.tolist(),
+                             "values":y1.tolist()})
+        
+        for j,pheno2 in enumerate(pheno_keys):
+            samples2 = pheno_dict[pheno2]['samples']
+            y2 = pheno_dict[pheno2]['y']
+            #match accessions
+            ind = (sp.reshape(samples1,(samples1.shape[0],1))==samples2).nonzero()
+            y_tmp = y1[ind[0]]
+            y2 = y2[ind[1]]
+            if y1.shape[0]>0 and y2.shape[0]>0:
+                corr_mat[i][j] = stats.pearsonr(y_tmp.flatten(),y2.flatten())[0]
+                spear_mat[i][j] = stats.spearmanr(y_tmp.flatten(),y2.flatten())[0]
+            #compute sample intersections
+            if pheno1==pheno2:
+                continue
+            if pheno1 + "_" + pheno2 in slabels:
+                continue
+            if pheno2 + "_" + pheno1 in slabels:
+                continue
+            slabels[pheno1 + "_" + pheno2] = True
+            A = samples1.shape[0]
+            B = samples2.shape[0]
+            C = sp.intersect1d(samples1,samples2).shape[0]
+            sample_data.append({"labelA":pheno_dict[pheno1]['name'],
+                                "labelA_id":pheno_dict[pheno1]['id'],
+                                "labelB":pheno_dict[pheno2]['name'],
+                                "labelB_id":pheno_dict[pheno2]['id'],
+                                "A":A, "B":B, "C":C})
+    data = {}
+    data['axes_data'] = axes_data
+    data['scatter_data'] = scatter_data
+    data['sample_data'] = sample_data
+    data['corr_mat'] = str(corr_mat.tolist()).replace("nan","NaN")
+    data['spear_mat'] = str(spear_mat.tolist()).replace("nan","NaN")
+    
+    if request.method == "GET":
         return Response(data)
 
 
