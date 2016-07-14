@@ -32,7 +32,7 @@ function corrPlot() {
     var __info_box;
     var __svg_venn, __venn_g, __venn_chart;
     var __mapping;
-    
+    var __method = "pearson";
 
 	__plot.render = function() {
         if (!__container) __container = "body";
@@ -64,7 +64,6 @@ function corrPlot() {
         __mapping = {};
         __data_matrix = JSON.parse(__data_matrix)
         __spear_matrix = JSON.parse(__spear_matrix)
-        console.log(__data_matrix)
         for (var i=0; i<__axes_data.length; i++) {
             pheno_ids.push(__axes_data[i].pheno_id);
             //if(!__axes_data[i].pheno_id in __mapping) {
@@ -158,7 +157,7 @@ function corrPlot() {
             .attr("transform","rotate(-90)")
             .attr("y",getContainerWidth()+__colorbarpadding/2+__colorbarwidth+2*__colorbarpadding)
             .attr("x",-getContainerHeight()/2)
-            .attr("dy","1.4em").style("text-anchor","middle").text("R");
+            .attr("dy","1.4em").style("text-anchor","middle").text("Pearson Correlation");
 
         colorbar.on("mouseover",function(d) {
             d3.select(this)
@@ -781,6 +780,7 @@ function corrPlot() {
 
     __plot.changeCorrMethod = function(method) {
         if (method=="spearman") {
+            __method = method;
             d3.selectAll("circle.corr").transition().duration(500)
                 .filter(function(d,i) {
                     return d.i > d.j;
@@ -800,7 +800,43 @@ function corrPlot() {
                 })
                 .text(function(d){return d.spear.toFixed(2);})
                 .style("fill",function(d,i){return __colors(d.spear)});
+    
+        corr_text= d3.select("text.colorbar.label")
+        corr_text.text("Spearman Correlation")
+        
+        corr_text.on("mouseover",function(d,i){
+            d3.selectAll(".id_" + d.j + "_" + d.i)
+                .transition().duration(100)
+                .attr("r",__highlight_scale(d.spear))
+                .style("fill-opacity",0.9);
+            d3.select(this)
+                .transition().duration(100)
+                .style("fill-opacity",0.9)
+                .style("font-size","18px");
+            d3.select(".colorbar_" + __colors(d.spear).replace("#",""))
+                .transition().duration(100)
+                .style("fill-opacity","0.2");
+            d3.selectAll(".info_box").transition().duration(200).style("opacity",0);
+            
+            /*Update associated plots*/
+            updateScatterPlot(d.x_pheno_id,d.y_pheno_id);
+            updateVennPlot(d.x_pheno_id,d.y_pheno_id);
+        
+        }).on("mouseout",function(d,i){
+            d3.selectAll(".id_" + d.j + "_" + d.i)
+                .transition().duration(100)
+                .attr("r",__size_scale(d.spear))
+                .style("fill-opacity",1);
+            d3.select(this)
+                .transition().duration(100)
+                .style("font-size","12px")
+                .style("fill-opacity",1);
+            d3.select(".colorbar_" + __colors(d.spear).replace("#",""))
+                .transition().duration(100)
+                .style("fill-opacity",1);
+        });
         } else {
+            __method = "pearson";
             d3.selectAll("circle.corr").transition().duration(500)
                 .filter(function(d,i) {
                     return d.i > d.j;
@@ -820,6 +856,8 @@ function corrPlot() {
                 })
                 .text(function(d){return d.corr.toFixed(2);})
                 .style("fill",function(d,i){return __colors(d.corr)});
+            
+            d3.select("text.colorbar.label").transition().duration(500).text("Pearson Correlation")
         }
     }
     

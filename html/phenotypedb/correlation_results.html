@@ -35,9 +35,9 @@
                 <div class="card" id="options">
                 <div class="card-content black-text">
                 <strong>Select Correlation Method:</strong>
-                <input name="corr_group" type="radio" id="pear" checked class="with-gap" disabled onclick="updatePearMethod();"/>
+                <input name="corr_group" type="radio" id="pear" checked class="with-gap"  onchange="updatePearMethod();"/>
                 <label for="pear" class="black-text" style="border-color:red">Pearson's Correlation Coefficent</label>
-                <input name="corr_group" type="radio" id="spear" class="with-gap" onclick="updateSpearMethod();"/>
+                <input name="corr_group" type="radio" id="spear" class="with-gap" onchange="updateSpearMethod();"/>
                 <label for="spear" class="black-text">Spearman's Correlation Coefficent</label>
                 </div>
                 </div>
@@ -142,14 +142,10 @@
     });
 
     function updateSpearMethod() {
-        $("#pear").attr("disabled",false).attr("checked",false);
-        $("#spear").attr("disabled",true).attr("checked",true);
         corrplot.changeCorrMethod("spearman");
     }
     
     function updatePearMethod() {
-        $("#spear").attr("disabled",false).attr("checked",false);
-        $("#pear").attr("disabled",true).attr("checked",true);
         corrplot.changeCorrMethod();
     }
 
