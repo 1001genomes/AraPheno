@@ -122,7 +122,25 @@
     var corrplot;
     $(document).ready(function(){    
         $('.parallax').parallax();
+        var startTime;
+        var endTime;
+        var duration;
+        if (window.performance) {
+            startTime = performance.now();
+        }
+        else {
+            startTime = new Date().getTime();
+        }
+
         $.getJSON("/rest/correlation/{{ phenotype_ids }}/", function(data) {
+            if (window.performance) {
+                endTime = performance.now();
+            }
+            else {
+                endtTime = new Date().getTime();
+            }
+            duration = Math.round(endTime - startTime);
+            ga('send', 'timing', 'Correlation', 'load', duration);
             $('#loading_data').html("");
             $('#corr').html("");
             $('#scatter').html("");
@@ -142,10 +160,12 @@
     });
 
     function updateSpearMethod() {
+        ga('send', 'event', 'Correlation', 'change_method','spearman');
         corrplot.changeCorrMethod("spearman");
     }
     
     function updatePearMethod() {
+        ga('send', 'event', 'Correlation', 'change_method','pearson');
         corrplot.changeCorrMethod();
     }
 

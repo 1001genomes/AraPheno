@@ -106,6 +106,7 @@
     });
 
     $('#start_tour').click(function() {
+        ga('send', 'event', 'Tour', 'start','Home');
         var steps = [
             {
                 element: '.header',
@@ -132,7 +133,10 @@
         var intro = introJs();
         intro.setOptions({doneLabel:'Next page',steps:steps});
         intro.start().oncomplete(function() {
+          ga('send', 'event', 'Tour', 'nextpage','Home');
           window.location.href = 'phenotypes/?multipage=true';
+        }).onexit(function() {
+          ga('send', 'event', 'Tour', 'exit','Home');  
         });
     });
 

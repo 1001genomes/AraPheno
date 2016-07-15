@@ -50,11 +50,15 @@
     $('#search_wizard').submit(function(ev){
         ev.preventDefault();
         var values = $('#id_phenotype_search').val();
-        if (values == null) {
-            $("#error-text").html("<strong><i class='material-icons tiny'>error_outline</i> Please select at least two phenotypes!</strong>");
-        } else if (values.length<2) {
+        if (values === null || values.length<2) {
+            ga('send', 'exception', {
+                'exDescription': 'No phenotypes selected',
+                'exFatal': false
+            });
+            ga('send', 'event', 'Correlation', 'error');
             $("#error-text").html("<strong><i class='material-icons tiny'>error_outline</i> Please select at least two phenotypes!</strong>");
         } else {
+            ga('send', 'event', 'Correlation', 'compute');
             this.submit()
         }
     });

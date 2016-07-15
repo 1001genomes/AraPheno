@@ -251,8 +251,10 @@
                 }
             });
             intro.start().oncomplete(function() {
-
-            });;
+                ga('send', 'event', 'Tour', 'complete','Phenotype Detail');
+            }).onexit(function() {
+                ga('send', 'event', 'Tour', 'exit','Phenotype Detail');  
+            });
         }
 
     });

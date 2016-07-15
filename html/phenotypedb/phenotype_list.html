@@ -55,8 +55,11 @@
         var intro = introJs();
         intro.setOptions({doneLabel:'Next page',steps:steps});
         intro.start().oncomplete(function() {
+          ga('send', 'event', 'Tour', 'nextpage','Phenotype List');
           window.location.href = '/study/1?multipage=true';
-        });
+        }).onexit(function() {
+          ga('send', 'event', 'Tour', 'exit','Phenotype List');  
+        });;
     }
 </script>
 {% endblock content %}
