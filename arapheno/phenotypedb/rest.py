@@ -10,11 +10,13 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
-from phenotypedb.models import Phenotype, Study, PhenotypeValue
+from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession
 from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer
 from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeValueSerializer
+from phenotypedb.serializers import AccessionListSerializer
 
-from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer
+
+from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer
 from phenotypedb.renderer import PLINKRenderer
 from utils.isa_tab import export_isatab
 
@@ -62,10 +64,14 @@ def search(request,query_term=None,format=None):
             phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
                                                   Q(to_term__id__icontains=query_term) |
                                                   Q(to_term__name__icontains=query_term))
+            accessions = Accession.objects.filter(name__icontains=query_term) 
+
         study_serializer = StudyListSerializer(studies,many=True)
         phenotype_serializer = PhenotypeListSerializer(phenotypes,many=True)
+        accession_serializer = AccessionListSerializer(accessions,many=True)
         return Response({'phenotype_search_results':phenotype_serializer.data,
-                         'study_search_results':study_serializer.data})
+                         'study_search_results':study_serializer.data,
+                         'accession_search_results':accession_serializer.data})
 
 '''
 List all phenotypes 
@@ -300,7 +306,6 @@ def phenotype_correlations(request,q=None):
     """
     Return data for phenotype-phenotype correlations and between phenotype accession overlap
     ---
-    serializer: JSONRenderer
 
     produces:
         - application/json
@@ -417,6 +422,79 @@ def study_isatab(request,q,format=None):
     os.unlink(isa_tab_file)
     return response
 
+
+'''
+List all studies
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((AccessionListRenderer,JSONRenderer))
+def accession_list(request,format=None):
+    """
+    List all accessions
+    ---
+
+    serializer: AccessionListSerializer
+    omit_serializer: false
+
+    produces:
+        - text/csv
+        - application/json
+    """
+    accessions = Accession.objects.all().prefetch_related('species')
+    if request.method == "GET":
+        serializer = AccessionListSerializer(accessions,many=True)
+        return Response(serializer.data)
+
+'''
+Get detailed information about study
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((AccessionListRenderer,JSONRenderer))
+def accession_detail(request,pk,format=None):
+    """
+    Retrieve detailed information about the accession
+    ---
+
+    serializer: AccessionListSerializer
+    omit_serializer: false
+
+    produces:
+        - text/csv
+        - application/json
+    """
+
+    accession = Accession.objects.get(pk=pk)
+
+    if request.method == "GET":
+        serializer = AccessionListSerializer(accession,many=False)
+        return Response(serializer.data)
+
+
+'''
+List all phenotypes for study id/doi
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeListRenderer,JSONRenderer,))
+def accession_phenotypes(request,pk,format=None):
+    """
+    List all phenotypes for an accession
+    ---
+
+    serializer: PhenotypeListSerializer
+    omit_serializer: false
+
+    produces:
+        - text/csv
+        - application/json
+    """
+    phenotypes = Phenotype.objects.filter(phenotypevalue__obs_unit__accession_id=pk)
+
+    if request.method == "GET":
+        serializer = PhenotypeListSerializer(phenotypes,many=True)
+        return Response(serializer.data)
 
 
 def _convert_dataframe_to_list(df):

@@ -41,6 +41,8 @@ urlpatterns = [
     url(r'^correlation/(?P<ids>[\d,]+)/$',phenotypedb.views.CorrelationResults,name="correlation-results"),
     url(r'^phenotype/(?P<pk>%s)/$' % id_regex,phenotypedb.views.PhenotypeDetail.as_view(),name="phenotype_detail"),
     url(r'^studies/$',phenotypedb.views.StudyList,name="studies"),
+    url(r'^accessions/$',phenotypedb.views.AccessionList,name="accessions"),
+    url(r'^accession/(?P<pk>%s)/$' % id_regex,phenotypedb.views.AccessionDetail,name="accession_detail"),
     url(r'^study/(?P<pk>%s)/$' % id_regex,phenotypedb.views.StudyDetail,name="study_detail"),
     url(r'^about/$',home.views.about),
     url(r'^faq/$',home.views.faq),
@@ -76,6 +78,12 @@ restpatterns = [
     url(r'^rest/study/(?P<q>%s)/isatab/$' % regex,rest.study_isatab),
     
     url(r'^rest/correlation/(?P<q>[\d,]+)/$', rest.phenotype_correlations),
+
+    url(r'^rest/accession/list/$',rest.accession_list),
+
+    url(r'^rest/accession/(?P<pk>%s)/$'% id_regex,rest.accession_detail),
+
+    url(r'^rest/accession/(?P<pk>%s)/phenotypes/$' % id_regex,rest.accession_phenotypes),
 
 ]
 #extend restpatterns with suffix options

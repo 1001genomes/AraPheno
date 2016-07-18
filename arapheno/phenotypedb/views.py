@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 from models import Phenotype, Study, Accession
-from tables import PhenotypeTable, ReducedPhenotypeTable, StudyTable
+from tables import PhenotypeTable, ReducedPhenotypeTable, StudyTable, AccessionTable
 from forms import CorrelationWizardForm
 from home.forms import GlobalSearchForm
 from django.db.models import Count
@@ -61,3 +61,22 @@ def CorrelationWizard(request):
 def CorrelationResults(request,ids=None):
     return render(request,'phenotypedb/correlation_results.html',{"phenotype_ids":ids})
     
+def AccessionList(request):
+    table = AccessionTable(Accession.objects.all(),order_by="-name")
+    RequestConfig(request,paginate={"per_page":20}).configure(table)
+    return render(request,'phenotypedb/accession_list.html',{"accession_table":table})
+
+
+def AccessionDetail(request,pk=None):
+    accession = Accession.objects.get(id=pk)
+    phenotype_table = PhenotypeTable(Phenotype.objects.filter(phenotypevalue__obs_unit__accession_id=pk),order_by="-id")
+    RequestConfig(request,paginate={"per_page":20}).configure(phenotype_table)
+    variable_dict = {}
+    variable_dict["phenotype_table"] = phenotype_table
+    variable_dict["object"] = accession
+    phenotypes = Phenotype.objects.filter(phenotypevalue__obs_unit__accession_id=pk)
+    variable_dict['phenotype_count'] = phenotypes.count()
+    variable_dict['to_data'] = phenotypes.values('to_term__name').annotate(count=Count('to_term__name'))
+    variable_dict['eo_data'] = phenotypes.values('eo_term__name').annotate(count=Count('eo_term__name'))
+    variable_dict['uo_data'] = phenotypes.values('uo_term__name').annotate(count=Count('uo_term__name'))
+    return render(request,'phenotypedb/accession_detail.html',variable_dict)

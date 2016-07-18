@@ -40,6 +40,10 @@ class PhenotypeMatrixRenderer(CSVRenderer):
         headers.insert(0,'obs_unit_id')
         return headers
 
+class AccessionListRenderer(CSVRenderer):
+    header = ['pk','name','country','latitude','longitude',
+              'collector','collection_date','cs_number','species']
+
 '''
 Custom File Renderer
 '''

@@ -66,6 +66,13 @@
                        <div class="right"><span class="arabadge">{{nstudies}} Results</span></div>
                     {% endif %}
                 </a></li>
+                 <li class="tab col s3"><a href="#accessions" class="brown-text">Search Results: Accessions
+                    {% if naccessions == 1 %}
+                       <div class="right"><span class="arabadge">{{naccessions}} Result</span></div>
+                    {% else %}
+                       <div class="right"><span class="arabadge">{{naccessions}} Results</span></div>
+                    {% endif %}
+                </a></li>
                 <div class="indicator brown" style="z-index:1"></div>
             </ul>
             <div id="phenotypes" class="col s12"><br>
@@ -80,6 +87,14 @@
                         <h5 class="brown-text center">No Studies found for query: {{query}}</h5>
                 {% else %}
                     {% render_table study_table %}
+                {% endif %}
+                </div>
+            </div>
+            <div id="accessions" class="col s12"><br>
+                {% if naccessions == 0 %}
+                        <h5 class="brown-text center">No Accessions found for query: {{query}}</h5>
+                {% else %}
+                    {% render_table accession_table %}
                 {% endif %}
                 </div>
 

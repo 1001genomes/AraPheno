@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - Accession {{object.name}} {% endblock title %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:80px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h5 class="white-text">Accession: {{ object.name }}</h5>
+                <div style="position: relative;">
+                <div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block; bottom: -4px; right: 0px;z-index:1;">
+                    <a class="btn-floating btn-large white">
+                        <i class="large material-icons brown-text" id="download_btn">file_download</i>
+                    </a>
+                    <ul>
+                        <li><a href="/rest/accession/{{accession.id}}.csv" class="btn-floating yellow darken-3 black-text" style="font-size:10px;text-align:center;font-weight:bold">Accession</a></li>
+                        <li><a href="/rest/accession/{{accession.id}}/phenotypes.csv" class="btn-floating green black-text" style="font-size:10px;text-align:center;font-weight:bold">Pheno</a></li>
+                    </ul>
+                </div>
+                </div>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div class="container">
+    <br>
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="row">
+                <div class="col s3">
+                    <span>Species:</span>
+                </div>
+                <div class="col s9">
+                    {{ object.species.genus }} {{ object.species.species }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Country:</span>
+                </div>
+                <div class="col s9">
+                    {{ object.country }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Sitename:</span>
+                </div>
+                <div class="col s9">
+                    <span>{{ object.sitename }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Collector:</span>
+                </div>
+                <div class="col s9">
+                    <span>{{ object.collector }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Collected on:</span>
+                </div>
+                <div class="col s9">
+                    {% if object.collection_date %}
+                        <span>{{ object.collection_date }}</span>
+                    {% else %}
+                        - 
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Latitude/Longitude:</span>
+                </div>
+                <div class="col s9">
+                    <span>{{ object.latitude }} / {{ object.longitude }} </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>CS number:</span>
+                </div>
+                <div class="col s9">
+                    <span>{{ object.cs_number }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <h5>Map</h5>
+                    <iframe
+                    width="100%"
+                    height="450"
+                    frameborder="0" style="border:0"
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDgSwcAx7tPUzUNba8bTx0DLwXHfpj80qo
+                        &q={{ object.latitude }},{{ object.longitude }}" allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <h5>Statistics</h5>
+                    <ul class="tabs">
+                        <li class="tab col s3"><a href="#to" id="to_link" class="active brown-text">Trait ontology</a></li>
+                        <li class="tab col s3"><a  href="#eo" id="eo_link" class="brown-text">Environment Ontology</a></li>
+                        <li class="tab col s3"><a href="#uo" id="uo_link" class="brown-text">Unit</a></li>
+                        <div class="indicator brown" style="z-index:1"></div>
+                    </ul>
+                    <div id="to" class="col s12"><div id="to_chart" class="chart"></div></div>
+                    <div id="eo" class="col s12"><div class="chart" id="eo_chart"></div></div>
+                    <div id="uo" class="col s12"><div class="chart" id="uo_chart"></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 m6">
+            <h5>Scored in {{ phenotype_count }} phenotypes:</h5>
+            {% render_table phenotype_table %}
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+        $('ul.tabs').on('click', 'a', function(e) {
+            var target = e.currentTarget;
+            var chart = null;
+            var data = null;
+            if (target.id === 'to_link') {
+                chart = chartTO;
+                data = dataTO;
+            }
+            else if (target.id === 'eo_link') {
+                chart = chartEO;
+                data = dataEO;
+            }
+            else if (target.id === 'uo_link') {
+                chart = chartUO;
+                data = dataUO;
+            }
+            if (chart !== null && data !== null) {
+                chart.draw(data,{width:"100%",height:400});
+            }
+        });
+        google.charts.load('current', {packages: ['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+    });
+    function drawCharts() {
+        {% autoescape off %}
+        dataTO = google.visualization.arrayToDataTable([
+            ['TO', '# Number'],
+            
+            {% for to in to_data %}
+                [ "{{ to.to_term__name }}", {{ to.count }} ],
+            {% endfor %}],
+            false);
+
+         dataEO = google.visualization.arrayToDataTable([
+            ['EO', '# Number'],
+            
+            {% for eo in eo_data %}
+                [ "{{ eo.eo_term__name }}", {{ eo.count }} ],
+            {% endfor %}],
+            false);
+        dataUO = google.visualization.arrayToDataTable([
+            ['UO', '# Number'],
+            
+            {% for uo in uo_data %}
+                [ "{{ uo.uo_term__name }}", {{ uo.count }} ],
+            {% endfor %}],
+            false);
+        chartTO = new google.visualization.PieChart(document.getElementById('to_chart'));
+        chartEO = new google.visualization.PieChart(document.getElementById('eo_chart'));
+        chartUO = new google.visualization.PieChart(document.getElementById('uo_chart'));
+        chartTO.draw(dataTO,{width:"100%",height:400});
+        {% endautoescape %}
+    }
+</script>
+{% endblock content %}

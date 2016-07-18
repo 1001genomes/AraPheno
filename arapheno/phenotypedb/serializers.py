@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from phenotypedb.models import Phenotype,PhenotypeValue,Study
+from phenotypedb.models import Phenotype,PhenotypeValue,Study, Accession
 from phenotypedb.models import ObservationUnit
 
 '''
@@ -265,5 +265,23 @@ class ReducedPhenotypeValueSerializer(serializers.ModelSerializer):
     def get_phenotype_value(self,obj):
         try:
             return obj.value
+        except:
+            return ""
+
+
+'''
+Accession List Serializer Class (read-only: might be extended to also allow integration of new data)
+'''
+class AccessionListSerializer(serializers.ModelSerializer):
+    species = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Accession
+        fields = ('pk','name','country','sitename','collector','collection_date','longitude','latitude','cs_number','species')
+    
+
+    def get_species(self,obj):
+        try:
+            return '%s %s' % (obj.species.genus, obj.species.species)
         except:
             return ""

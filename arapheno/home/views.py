@@ -4,8 +4,8 @@ from django.db.models import Q
 
 from forms import GlobalSearchForm
 
-from phenotypedb.models import Study, Phenotype
-from phenotypedb.tables import PhenotypeTable, StudyTable
+from phenotypedb.models import Study, Phenotype, Accession
+from phenotypedb.tables import PhenotypeTable, StudyTable, AccessionTable
 
 from django_tables2 import RequestConfig
 
@@ -62,12 +62,14 @@ def SearchResults(request,query=None):
     if query==None:
         phenotypes = Phenotype.objects.all()
         studies = Study.objects.all()
+        accessions = Accession.objects.all()
         download_url = "/rest/search"
     else:
         phenotypes = Phenotype.objects.filter(Q(name__icontains=query) |
                                               Q(to_term__id__icontains=query) |
                                               Q(to_term__name__icontains=query))
         studies = Study.objects.filter(name__icontains=query)
+        accessions = Accession.objects.filter(name__icontains=query)
         download_url = "/rest/search/" + str(query)
     
     phenotype_table = PhenotypeTable(phenotypes,order_by="-name")
@@ -75,13 +77,18 @@ def SearchResults(request,query=None):
     
     study_table = StudyTable(studies,order_by="-name")
     RequestConfig(request,paginate={"per_page":10}).configure(study_table)
+
+    accession_table = AccessionTable(accessions,order_by="-name")
+    RequestConfig(request,paginate={"per_page":10}).configure(accession_table)
     
     variable_dict = {}
     variable_dict['query'] = query
     variable_dict['nphenotypes'] = phenotypes.count()
     variable_dict['phenotype_table'] = phenotype_table
+    variable_dict['accession_table'] = accession_table
     variable_dict['study_table'] = study_table
     variable_dict['nstudies'] = studies.count()
+    variable_dict['naccessions'] = accessions.count()
     variable_dict['download_url'] = download_url
 
     return render(request,'home/search_results.html',variable_dict)

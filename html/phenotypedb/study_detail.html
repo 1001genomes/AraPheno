@@ -110,8 +110,8 @@
         });
     });
     
-    google.load('visualization', '1.0', {'packages':['corechart']});
-    google.setOnLoadCallback(drawCharts);
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawCharts);
     
     function drawCharts() {
         {% autoescape off %}

@@ -84,3 +84,18 @@ class PublicationTable(tables.Table):
 
     class Meta:
         attrs = {"class": "striped"}
+
+
+class AccessionTable(tables.Table):
+    id = tables.LinkColumn("accession_detail",args=[A('id')],text=lambda record: record.pk,verbose_name="ID",order_by="pk")
+    name = tables.Column(accessor="name",verbose_name="Name",order_by="name")
+    country = tables.Column(accessor="country",verbose_name="Country",order_by="country")
+    sitename = tables.Column(accessor="sitename",verbose_name="Sitename",order_by="sitename")
+    collector = tables.Column(accessor="collector",verbose_name="Collector",order_by="collector")
+    longitude = tables.Column(accessor="longitude",verbose_name="Longitude",order_by="longitude")
+    latitude = tables.Column(accessor="latitude",verbose_name="Latitude",order_by="latitude")
+    cs_number = tables.Column(accessor="cs_number",verbose_name="CS Number",order_by="cs_number")
+    
+    class Meta:
+        attrs = {"class": "striped"}
+    

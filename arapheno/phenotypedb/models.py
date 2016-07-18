@@ -66,7 +66,10 @@ class Accession(models.Model):
     longitude = models.FloatField(null=True,blank=True,db_index=True) #longitude of accession
     latitude = models.FloatField(null=True,blank=True,db_index=True) #latitude of accession
     cs_number = models.CharField(max_length=255,blank=True,null=True) # Stock center number
-    species = models.ForeignKey("Species") #species foreign key    
+    species = models.ForeignKey("Species") #species foreign key
+
+    def __unicode__(self):
+        return u"%s (Accession)" % (mark_safe(self.name))    
 
 '''
 Observation unit

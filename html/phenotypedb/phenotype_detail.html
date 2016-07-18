@@ -290,16 +290,25 @@
           {% endfor %}
           ],false);
 
-        {% endautoescape %}
+        tableData = google.visualization.arrayToDataTable([
+          ['ID','Accession','Longitude','Latitude','Phenotype','Country'],
+          {% for item in pheno_acc_infos %}
+             [ "<a href=\"{% url 'accession_detail' item.obs_unit.accession.id  %}\">{{ item.obs_unit.accession.id }}</a>", "{{ item.obs_unit.accession.name }}", {{ item.obs_unit.accession.longitude | default_if_none:"null" }}, {{ item.obs_unit.accession.latitude |default_if_none:"null" }},
+              {{ item.value }},"{{ item.obs_unit.accession.country }}"
+            ],
+          {% endfor %}
+          ],false);
 
+        {% endautoescape %}
+        
         var geoOptions = {};
         var histogramOptions = {height:500,width:"100%"};
         var explorerOptions = {height:500};
-        var tableOptions = {height:500, width:"100%"};
+        var tableOptions = {height:500, width:"100%",allowHtml:true};
 
         geoChart.draw(geoChartData, geoOptions);
         histogramChart.draw(histogramData,histogramOptions)
-        tableChart.draw(explorerData,tableOptions);
+        tableChart.draw(tableData,tableOptions);
     }
     
 
