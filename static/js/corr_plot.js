@@ -781,15 +781,17 @@ function corrPlot() {
     __plot.changeCorrMethod = function(method) {
         if (method=="spearman") {
             __method = method;
-            d3.selectAll("circle.corr").transition().duration(500)
+            
+            circles = d3.selectAll("circle.corr");
+            circles.transition().duration(500)
                 .filter(function(d,i) {
                     return d.i > d.j;
                 })
                 .attr("class",function(d,i) {
                     return "corr " + "corr_color_" + __colors(d.spear).replace("#","") + " id_" + d.i + "_" + d.j;
                 })
-                .attr("r",function(d){return __size_scale(d.spear*2);})
-                .attr("fill",function(d){return __colors(d.spear*2);})
+                .attr("r",function(d){return __size_scale(d.spear);})
+                .attr("fill",function(d){return __colors(d.spear);})
             
             d3.selectAll("text.tcorr").transition().duration(500)
                 .filter(function(d,i) {
@@ -801,40 +803,42 @@ function corrPlot() {
                 .text(function(d){return d.spear.toFixed(2);})
                 .style("fill",function(d,i){return __colors(d.spear)});
     
-        corr_text= d3.select("text.colorbar.label")
-        corr_text.text("Spearman Correlation")
-        
-        corr_text.on("mouseover",function(d,i){
-            d3.selectAll(".id_" + d.j + "_" + d.i)
-                .transition().duration(100)
-                .attr("r",__highlight_scale(d.spear))
-                .style("fill-opacity",0.9);
-            d3.select(this)
-                .transition().duration(100)
-                .style("fill-opacity",0.9)
-                .style("font-size","18px");
-            d3.select(".colorbar_" + __colors(d.spear).replace("#",""))
-                .transition().duration(100)
-                .style("fill-opacity","0.2");
-            d3.selectAll(".info_box").transition().duration(200).style("opacity",0);
+            corr_text= d3.select("text.colorbar.label");
+            corr_text.text("Spearman Correlation");
             
-            /*Update associated plots*/
-            updateScatterPlot(d.x_pheno_id,d.y_pheno_id);
-            updateVennPlot(d.x_pheno_id,d.y_pheno_id);
+            circles.on("mouseover",function(d,i){
+                d3.select(this)
+                    .transition().duration(100)
+                    .attr("r",__highlight_scale(d.spear))
+                    .style("fill-opacity",0.9);
+                d3.selectAll(".id_" + d.j + "_" + d.i)
+                    .transition().duration(100)
+                    .style("font-size","18px")
+                    .style("fill-opacity",0.9);
+                d3.select(".colorbar_" + __colors(d.spear).replace("#",""))
+                    .transition().duration(100)
+                    .style("fill-opacity","0.2");
+                //update scatter plot
+                d3.selectAll(".info_box").transition().duration(200).style("opacity",0);
+            
+                /*Update associated plots*/
+                updateScatterPlot(d.x_pheno_id,d.y_pheno_id);
+                updateVennPlot(d.x_pheno_id,d.y_pheno_id);
+
+            }).on("mouseout",function(d,i){
+                d3.select(this)
+                    .transition().duration(100)
+                    .attr("r",__size_scale(d.spear))
+                    .style("fill-opacity",1);
+                d3.selectAll(".id_" + d.j + "_" + d.i)
+                    .transition().duration(100)
+                    .style("font-size","12px")
+                    .style("fill-opacity",1);
+                d3.select(".colorbar_" + __colors(d.spear).replace("#",""))
+                    .transition().duration(100)
+                    .style("fill-opacity",1);
+            });
         
-        }).on("mouseout",function(d,i){
-            d3.selectAll(".id_" + d.j + "_" + d.i)
-                .transition().duration(100)
-                .attr("r",__size_scale(d.spear))
-                .style("fill-opacity",1);
-            d3.select(this)
-                .transition().duration(100)
-                .style("font-size","12px")
-                .style("fill-opacity",1);
-            d3.select(".colorbar_" + __colors(d.spear).replace("#",""))
-                .transition().duration(100)
-                .style("fill-opacity",1);
-        });
         } else {
             __method = "pearson";
             d3.selectAll("circle.corr").transition().duration(500)
