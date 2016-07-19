@@ -117,6 +117,47 @@
                         </div>
                     </li>
                     <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to get a list of all accessions?</div>
+                        <div class="collapsible-body"><p>You can use one of the following URL to retrive a list of accessions.
+                        <br><br>
+                        <strong>For CSV format: <a href="/rest/accession/list.csv">http://arapheno.1001genomes.org/rest/accession/list.csv</a></strong>
+                        <br><br>
+                        <strong>For JSON format: <a href="/rest/accession/list.json">http://arapheno.1001genomes.org/rest/accession/list.json</a></strong> 
+                        <br><br>
+                        A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
+                        </p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to get a details for a certain accession?</div>
+                        <div class="collapsible-body"><p>You can use the accession id to access certain details for an accession. Just replace &lt;q&gt; with the accession id.
+                        <br><br>
+                        <strong>For CSV format: http://arapheno.1001genomes.org/rest/accession/&lt;q&gt;.csv</strong>
+                        <br><br>
+                        <strong>For JSON format: http://arapheno.1001genomes.org/rest/accession/&lt;q&gt;.json</strong> 
+                        <br><br>
+                        Example: <a href="/rest/accession/6074.json">http://arapheno.1001genomes.org/accession/study/6074.json</a>
+                        <br><br>
+                        A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
+                        </p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to get all phenotypes for a certain accession?</div>
+                        <div class="collapsible-body"><p>You can use the accession id to access a list of all phenotypes for this accession. 
+                        Just replace &lt;q&gt; with the accession id and extend URL with <strong>/phenotypes</strong>.
+                        <br><br>
+                        <strong>For CSV format: http://arapheno.1001genomes.org/rest/accession/&lt;q&gt;/phenotypes.csv</strong>
+                        <br><br>
+                        <strong>For JSON format: http://arapheno.1001genomes.org/rest/accession/&lt;q&gt;/phenotypes.json</strong> 
+                        <br><br>
+                        Example: <a href="/rest/accession/6074/phenotypes.json">http://arapheno.1001genomes.org/rest/accession/6074/phenotypes.json</a>
+                        <br><br>
+                        A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
+                        </p>
+                        </div>
+                    </li>
+                    <li>
                         <div class="collapsible-header"><i class="material-icons">code</i>How to do a database search with REST?</div>
                         <div class="collapsible-body"><p>You can use the following URL to perform a search.
                         Just replace &lt;query&gt; with your search query (e.g. with a phenotype name). If the search query is empty you will get a list with all phenotypes and studies.
@@ -126,6 +167,19 @@
                         <strong>For JSON format: http://arapheno.1001genomes.org/rest/search/&lt;query&gt;.json</strong> 
                         <br><br>
                         Example: <a href="/rest/search/at.json">http://arapheno.1001genomes.org/rest/search/at.json</a>
+                        <br><br>
+                        A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
+                        </p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to retrive phenotype correlations via REST?</div>
+                        <div class="collapsible-body"><p>You can use the following URL to compute phenotype-phenotype correlations.
+                        Just replace &lt;query&gt; with a comma sperated list oh phenotype ids. Note, that for this query we only support JSON as output format.
+                        <br><br>
+                        <strong>http://arapheno.1001genomes.org/rest/correlation/&lt;query&gt;/</strong>
+                        <br><br>
+                        Example: <a href="/rest/correlation/6,29,30,31,49,102,99,53,86,39/">http://arapheno.1001genomes.org/rest/correlation/6,29,30,31,49,102,99,53,86,39/</a>
                         <br><br>
                         A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
                         </p>
