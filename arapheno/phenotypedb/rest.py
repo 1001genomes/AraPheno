@@ -59,6 +59,7 @@ def search(request,query_term=None,format=None):
         if query_term==None:
             studies = Study.objects.all()
             phenotypes = Phenotype.objects.all()
+            accessions = Accession.objects.all()
         else:
             studies = Study.objects.filter(name__icontains=query_term)
             phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
