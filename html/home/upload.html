@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - Upload{% endblock title %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:130px">
+    <div class="section no-pad-bot">
+        <div class="container">
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara4.jpg" alt="Unsplashed background img 1"></div>
+</div>
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <h3 style="text-align:center">Submit a study</h3>
+            <p>
+                To submit a study with one or multiple phenotypes just upload a file in ISA-TAB format or in PLink format.
+                The submission will go through a manial revision process and once this is done, the study will be published.
+            </p>
+        </div>
+        <div class="row">
+            <form class="s12" action="/submission/" method="post" enctype="multipart/form-data" >
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="input-field col s6">
+                        {{ form.firstname }}
+                        <label for="{{ form.firstname.id_for_label }}" data-error="{{ form.firstname.errors.0 }}" data-success="ok">First Name</label>
+                    </div>
+                    <div class="input-field col s6">
+                        {{ form.lastname }}
+                        <label for="{{ form.lastname.id_for_label }}" data-error="{{ form.lastname.errors.0 }}" data-success="ok">Last Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        {{ form.email }}
+                        <label for="{{ form.email.id_for_label }}" data-error="incorrect email" data-success="ok">Email</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="file-field input-field" >
+                        <div class="btn">
+                            <span>Browse file</span>
+                            {{ form.file }}
+                        </div>
+
+                        <div class="file-path-wrapper input-field" style="height:70px">
+
+                            <input id="filename" class="file-path validate{% if form.file.errors %} invalid{% endif %}" value="{{ form.file.value | default_if_none:'' }}" name="Filename" type="text" required>
+                            <label for="filename" data-error="{{ form.file.errors.0 }}">Filename</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                   <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Upload
+                       <i class="material-icons right">send</i>
+                   </button>
+                </div>
+                <div class="row">
+                    <div class="s12">
+                        {% if form.non_field_errors %}
+                            <h3 class="center-align red-text text-ligthen-2">
+                                {{ form.non_field_errors }}
+                            </h3>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.parallax').parallax();
+    });
+</script>
+{% endblock content %}

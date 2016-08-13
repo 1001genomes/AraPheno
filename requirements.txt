@@ -10,3 +10,4 @@ django_rest_swagger==0.3.7
 pandas==0.18.1
 scipy
 numpy
+django-widget-tweaks==1.4.1

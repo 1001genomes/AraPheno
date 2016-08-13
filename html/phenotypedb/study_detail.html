@@ -18,6 +18,7 @@
                         <li><a href="/rest/study/{{study.id}}.csv" class="btn-floating yellow darken-3 black-text" style="font-size:10px;text-align:center;font-weight:bold">Study</a></li>
                         <li><a href="/rest/study/{{study.id}}/phenotypes.csv" class="btn-floating green black-text" style="font-size:10px;text-align:center;font-weight:bold">Pheno</a></li>
                         <li><a href="/rest/study/{{study.id}}/isatab" class="btn-floating blue black-text" style="font-size:10px;text-align:center;font-weight:bold">IsaTab</a></li>
+                        <li><a href="/rest/study/{{study.id}}/values.plink" class="btn-floating pink white-text" style="font-size:10px;text-align:center;font-weight:bold">Plink</a></li>
                     </ul>
                 </div>
                 </div>
@@ -31,6 +32,8 @@
         <div class="col s12 m6">
             <div class="row">
                 <br>
+                <div class="col s12"><h5>DOI</h5></div>
+                <div class="col s12" id="description"><a href="{{ study.doi_link }}" target="_blank">{{ study.doi }}</a></div>
                 <div class="col s12"><h5>Description</h5></div>
                 <div class="col s12" id="description">{{ study.description }}</div>
                 <div class="col s12"><h5>Statistics</h5></div>
@@ -86,7 +89,7 @@
 
 <script type="text/javascript">
     var chartEO,chartTO,chartUO,dataEO,dataTO,dataUO;
-    $(document).ready(function(){    
+    $(document).ready(function(){
         $('.parallax').parallax();
         $('ul.tabs').on('click', 'a', function(e) {
             var target = e.currentTarget;
@@ -109,15 +112,15 @@
             }
         });
     });
-    
+
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawCharts);
-    
+
     function drawCharts() {
         {% autoescape off %}
         dataTO = google.visualization.arrayToDataTable([
             ['TO', '# Number'],
-            
+
             {% for to in to_data %}
                 [ "{{ to.to_term__name }}", {{ to.count }} ],
             {% endfor %}],
@@ -125,14 +128,14 @@
 
          dataEO = google.visualization.arrayToDataTable([
             ['EO', '# Number'],
-            
+
             {% for eo in eo_data %}
                 [ "{{ eo.eo_term__name }}", {{ eo.count }} ],
             {% endfor %}],
             false);
         dataUO = google.visualization.arrayToDataTable([
             ['UO', '# Number'],
-            
+
             {% for uo in uo_data %}
                 [ "{{ uo.uo_term__name }}", {{ uo.count }} ],
             {% endfor %}],
@@ -174,7 +177,7 @@
           ga('send', 'event', 'Tour', 'nextpage','Study Detail');
           window.location.href = '/phenotype/1?multipage=true';
         }).onexit(function() {
-          ga('send', 'event', 'Tour', 'exit','Study Detail');  
+          ga('send', 'event', 'Tour', 'exit','Study Detail');
         });
     }
 </script>

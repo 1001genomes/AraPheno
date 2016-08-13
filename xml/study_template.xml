@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd" xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <identifier identifierType="DOI">{{ study.doi }}</identifier>
+    <creators>
+        <creator>
+            <creatorName>{{ study.submission.firstname }}, {{ study.submission.lastname }}</creatorName>
+        </creator>
+    </creators>
+    <titles>
+        <title xml:lang="en-us">{{ study.name }}</title>
+    </titles>
+    <publisher>{{ study.submission.publisher }}</publisher>
+    <publicationYear>{{ study.submission.publication_date|date:"Y" }}</publicationYear>
+    <dates>
+        <date dateType="Submitted">{{ study.submission.submission_date }}</date>
+        <date dateType="Available">{{ study.submission.publication_date }}</date>
+    </dates>
+    <language>en-us</language>
+    <resourceType resourceTypeGeneral="Collection">Study</resourceType>
+    <relatedIdentifiers>
+        {% for phenotype in study.phenotype_set.all %}
+            <relatedIdentifier relatedIdentifierType="DOI" relationType="HasPart" >{{ phenotype.doi }}</relatedIdentifier>{% endfor %}
+        {% for publication in study.publications.all %}
+          {% if publication.pubmed_id %}
+            <relatedIdentifier relatedIdentifierType="PMID" relationType="Cites">{{ publication.pubmed_id }}</relatedIdentifier>{% elif publication.doi %}
+            <relatedIdentifier relatedIdentifierType="DOI" relationType="Cites">{{ publication.doi }}</relatedIdentifier>{% endif %}{% endfor %}
+    </relatedIdentifiers>
+    <sizes>
+        <size>{{ study.count_phenotypes }} Phenotypes</size>
+    </sizes>
+    <formats>
+        <format>text/csv</format>
+        <format>application/json</format>
+        <format>application/plink</format>
+    </formats>
+    <version>1</version>
+    <descriptions>
+        <description xml:lang="en-us" descriptionType="Methods">
+            {{ study.description }}
+        </description>
+    </descriptions>
+</resource>

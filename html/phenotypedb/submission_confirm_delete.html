@@ -1,0 +1,17 @@
+{% extends "submission_base.html" %}
+
+{% load render_table from django_tables2 %}
+
+{% block submission_content %}
+<div class="row">
+    <div class="col s12">
+        <form action="" method="post">{% csrf_token %}
+            <h3>Are you sure you want to delete the submission ? </h3>
+            <br>
+            <button class="s12 btn waves-effect waves-light red" type="submit" name="action">Confirm
+                <i class="material-icons right">delete</i>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock submission_content %}

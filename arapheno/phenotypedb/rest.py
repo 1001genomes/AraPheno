@@ -17,20 +17,20 @@ from phenotypedb.serializers import AccessionListSerializer
 
 
 from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer
-from phenotypedb.renderer import PLINKRenderer
+from phenotypedb.renderer import PLINKRenderer, PLINKMatrixRenderer
 from utils.isa_tab import export_isatab
 
 import scipy as sp
 import scipy.stats as stats
+from django.conf import settings
 
 import re,os,array
 
-# based on this https://doeidoei.wordpress.com/2009/10/22/regular-expression-to-match-a-doi-digital-object-identifier/
-#doi_regex = r"10.\d{4,9}\/[-._;()/:A-Za-z0-9]+"
-# () cauases issues in REST Django swagger
-doi_regex = r"10.\d{4,9}\/[-._;/:A-Za-z0-9]+"
+DOI_REGEX_STUDY = r"%s\/study:[\d]+" % settings.DATACITE_PREFIX
+DOI_REGEX_PHENOTYPE = r"%s\/phenotype:[\d]+" % settings.DATACITE_PREFIX
 
-doi_pattern = re.compile(doi_regex)
+DOI_PATTERN_STUDY = re.compile(DOI_REGEX_STUDY)
+DOI_PATTERN_PHENOTYPE = re.compile(DOI_REGEX_PHENOTYPE)
 
 '''
 Search Endpoint
@@ -65,7 +65,7 @@ def search(request,query_term=None,format=None):
             phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
                                                   Q(to_term__id__icontains=query_term) |
                                                   Q(to_term__name__icontains=query_term))
-            accessions = Accession.objects.filter(name__icontains=query_term) 
+            accessions = Accession.objects.filter(name__icontains=query_term)
 
         study_serializer = StudyListSerializer(studies,many=True)
         phenotype_serializer = PhenotypeListSerializer(phenotypes,many=True)
@@ -75,7 +75,7 @@ def search(request,query_term=None,format=None):
                          'accession_search_results':accession_serializer.data})
 
 '''
-List all phenotypes 
+List all phenotypes
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
@@ -92,7 +92,7 @@ def phenotype_list(request,format=None):
         - application/json
     """
     phenotypes = Phenotype.objects.all()
-    
+
     if request.method == "GET":
         serializer = PhenotypeListSerializer(phenotypes,many=True)
         return Response(serializer.data)
@@ -123,7 +123,7 @@ def phenotype_detail(request,q,format=None):
         - application/json
 
     """
-    doi = _is_doi(q)
+    doi = _is_doi(DOI_PATTERN_PHENTOYPE,q)
     try:
         if doi:
             phenotype = Phenotype.objects.get(doi=q)
@@ -161,7 +161,7 @@ def phenotype_value(request,q,format=None):
         - text/csv
         - application/json
     """
-    doi = _is_doi(q)
+    doi = _is_doi(DOI_PATTERN_PHENOTYPE, q)
     try:
         if doi:
             phenotype = Phenotype.objects.get(doi=q)
@@ -217,12 +217,14 @@ def study_detail(request,q,format=None):
         - text/csv
         - application/json
     """
-    doi = _is_doi(q)
+    doi = _is_doi(DOI_PATTERN_STUDY, q)
+
     try:
         if doi:
-            study = Study.objects.get(doi=q)
+            id = int(doi)
         else:
-            study = Study.objects.get(pk=int(q))
+            id = int(q)
+        study = Study.objects.get(pk=id)
     except:
         return HttpResponse(status=404)
 
@@ -249,7 +251,7 @@ def study_all_pheno(request,q=None,format=None):
         - text/csv
         - application/json
     """
-    doi = _is_doi(q)
+    doi = _is_doi(DOI_PATTERN_STUDY, q)
     try:
         if doi:
             study = Study.objects.get(doi=q)
@@ -267,7 +269,7 @@ List phenotype value matrix for entire study
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
-@renderer_classes((PhenotypeMatrixRenderer,JSONRenderer))
+@renderer_classes((PhenotypeMatrixRenderer,PLINKMatrixRenderer,JSONRenderer))
 def study_phenotype_value_matrix(request,q,format=None):
     """
     Phenotype value matrix for entire study
@@ -282,8 +284,9 @@ def study_phenotype_value_matrix(request,q,format=None):
     produces:
         - text/csv
         - application/json
+        - application/plink
     """
-    doi = _is_doi(q)
+    doi = _is_doi(DOI_PATTERN_STUDY, q)
     try:
         if doi:
             study = Study.objects.get(doi=q)
@@ -293,12 +296,12 @@ def study_phenotype_value_matrix(request,q,format=None):
         return HttpResponse(status=404)
 
     if request.method == "GET":
-        df = study.value_as_dataframe()
-        data = _convert_dataframe_to_list(df)
+        df,df_pivot = study.get_matrix_and_accession_map()
+        data = _convert_dataframe_to_list(df,df_pivot)
         return Response(data)
 
 '''
-Corrleation Matrix for selected phenotypes 
+Corrleation Matrix for selected phenotypes
 '''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
@@ -347,7 +350,7 @@ def phenotype_correlations(request,q=None):
                              "pheno_id":str(pheno_dict[pheno1]['id']),
                              "samples": samples1.tolist(),
                              "values":y1.tolist()})
-        
+
         for j,pheno2 in enumerate(pheno_keys):
             samples2 = pheno_dict[pheno2]['samples']
             y2 = pheno_dict[pheno2]['y']
@@ -380,7 +383,7 @@ def phenotype_correlations(request,q=None):
     data['sample_data'] = sample_data
     data['corr_mat'] = str(corr_mat.tolist()).replace("nan","NaN")
     data['spear_mat'] = str(spear_mat.tolist()).replace("nan","NaN")
-    
+
     if request.method == "GET":
         return Response(data)
 
@@ -405,7 +408,7 @@ def study_isatab(request,q,format=None):
     produces:
         - application/zip
     """
-    doi = _is_doi(q)
+    doi = _is_doi(DOI_PATTERN_STUDY, q)
     try:
         if doi:
             study = Study.objects.get(doi=q)
@@ -498,8 +501,8 @@ def accession_phenotypes(request,pk,format=None):
         return Response(serializer.data)
 
 
-def _convert_dataframe_to_list(df):
-    df_pivot = df.pivot(index='obs_unit_id',columns='phenotype_name', values='value').fillna('')
+def _convert_dataframe_to_list(df, df_pivot):
+    df_pivot = df_pivot.fillna('')
     data = []
     headers = df_pivot.columns.tolist()
     for obs_unit_id,row in df_pivot.iterrows():
@@ -514,5 +517,9 @@ def _convert_dataframe_to_list(df):
 
 
 
-def _is_doi(term):
-    return doi_pattern.match(term)
+def _is_doi(pattern, term):
+    doi = pattern.match(term)
+    if doi:
+        # can't use REGEX capture groups because "("" causes problems in Swagger
+        return term.split(":")[1]
+    return None

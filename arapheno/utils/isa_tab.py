@@ -9,6 +9,7 @@ import pdb
 from phenotypedb.models import Study,Phenotype,PhenotypeValue,Publication, Accession, Species, Author, ObservationUnit, OntologyTerm
 from django.db import transaction
 import datetime
+import codecs
 
 from phenotypedb.renderer import IsaTabStudyRenderer, IsaTabAssayRenderer,IsaTabDerivedDataFileRenderer,IsaTabTraitDefinitionRenderer
 
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def parse_isatab(filename):
     """Parses either an isa-tab zip or folder"""
-    
+
     from bcbio import isatab
 
     # check if filename is a folder or a zip
@@ -29,8 +30,8 @@ def parse_isatab(filename):
         with zipfile.ZipFile(filename, "r") as z:
             z.extractall(work_dir)
     else:
-        work_dir = filename    
-    
+        work_dir = filename
+
     # parse
     rec = isatab.parse(work_dir)
     # parse trait def file and raw data file
@@ -73,7 +74,7 @@ def _get_accession_map(study):
 def _parse_trait_def_file(trait_def_file,work_dir):
     trait_def_map = {}
 
-    with codecs.open(os.path.join(work_dir,trait_def_file),'rb','utf-16') as f:
+    with codecs.open(os.path.join(work_dir,trait_def_file),'rb','utf-8') as f:
         reader = csv.reader(f,dialect="excel-tab")
         header = next(reader)
         method_ix = header.index('Method')
@@ -107,7 +108,7 @@ def _get_index_for_term(row,term):
 
 def _parse_derived_data_file(derived_data_file,work_dir):
     derived_data_map = {}
-    with codecs.open(os.path.join(work_dir,derived_data_file),'rb','utf-16') as f:
+    with codecs.open(os.path.join(work_dir,derived_data_file),'rb','utf-8') as f:
         reader = csv.DictReader(f,dialect="excel-tab")
         for row in reader:
             assay_name = row['Assay Name']
@@ -124,9 +125,11 @@ def save_isatab(isatab):
         # Initialize Publication
         study = Study()
         study.name = s.metadata['Study Title']
-        study.description = s.design_descriptors[0]['Study Design Type']
+        if len(s.design_descriptors) > 0:
+            study.description = s.design_descriptors[0]['Study Design Type']
         study.species = Species.objects.get(pk=1)
-        studies.append(study.save())
+        study.save()
+        studies.append(study)
         # initialize publications
         pubs = {}
         for p in isatab.publications + s.publications:
@@ -162,7 +165,7 @@ def save_isatab(isatab):
                 phenotype = Phenotype(name=trait['Trait'],scoring=trait['Method'],to_term = to_term,eo_term=eo_term,uo_term=uo_term,study=study,species=study.species)
                 phenotype.save()
                 pheno_map[trait_id] = phenotype
-            phenotype_map[trait_def_file] = pheno_map 
+            phenotype_map[trait_def_file] = pheno_map
         for sample_id,sample in s.nodes.items():
             # avoid duplicates because nodes will also contain source- entries 
             if not sample_id.startswith('sample-'):
@@ -170,7 +173,7 @@ def save_isatab(isatab):
             accession_id = int(sample.metadata['Characteristics[Infraspecific name]'][0].Term_Accession_Number)
             obs_unit = ObservationUnit(study=study,accession=Accession.objects.get(pk=accession_id))
             obs_unit.save()
-            obs_map[sample_id] = obs_unit 
+            obs_map[sample_id] = obs_unit
         for a in s.assays:
             # ignore if it's not a phenotyping assay
             if (a.metadata['Study Assay Measurement Type Term Accession Number'] != '23'):
@@ -254,7 +257,7 @@ Investigation Publication Status Term Accession Number
 Investigation Publication Status Term Source REF
 """
 
-    investigation_contacts=""""INVESTIGATION CONTACTS
+    investigation_contacts="""INVESTIGATION CONTACTS
 Investigation Person Last Name
 Investigation Person First Name
 Investigation Person Mid Initials
@@ -287,29 +290,29 @@ Investigation Person Roles Term Source REF
 
 
     study_info = """STUDY
-Study Identifier    study%(study_id)s
-Study Title %(study_name)s
-Study Description
-Study Submission Date   %(study_submission_date)s
-Study Public Release Date   %(study_publication_date)s
-Study File Name s_study%(study_id)s.txt
+Study Identifier\tstudy%(study_id)s
+Study Title\t%(study_name)s
+Study Description\t
+Study Submission Date\t%(study_submission_date)s
+Study Public Release Date\t%(study_publication_date)s
+Study File Name\ts_study%(study_id)s.txt
 STUDY DESIGN DESCRIPTORS
-Study Design Type   %(study_description)s
-Study Design Type Term Accession Number
-Study Design Type Term Source REF
+Study Design Type\t%(study_description)s
+Study Design Type Term Accession Number\t
+Study Design Type Term Source REF\t
 """ % ({'study_id':study.id,'study_name':study.name,
 'study_description':study.description,'study_submission_date':datetime.datetime.now(),
 'study_publication_date':datetime.datetime.now()})
 
     study_publications = """STUDY PUBLICATIONS
-STUDY PubMed ID\t%(pubmed_ids)s
-STUDY Publication DOI\t%(dois)s
-STUDY Publication Author List\t%(authors)s
-STUDY Publication Title\t%(titles)s
-STUDY Publication Status\t%(status)s
-STUDY Publication Status Term Accession Number\t%(status_terms)s
-STUDY Publication Status Term Source REF\t%(status_refs)s
-STUDY FACTORS
+Study PubMed ID\t%(pubmed_ids)s
+Study Publication DOI\t%(dois)s
+Study Publication Author List\t%(authors)s
+Study Publication Title\t%(titles)s
+Study Publication Status\t%(status)s
+Study Publication Status Term Accession Number\t%(status_terms)s
+Study Publication Status Term Source REF\t%(status_refs)s
+Study FACTORS
 Study Factor Name
 Study Factor Type
 Study Factor Type Term Accession Number

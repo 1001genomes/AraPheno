@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - Submission{% endblock title %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:130px">
+    <div class="section no-pad-bot">
+        <div class="container">
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara4.jpg" alt="Unsplashed background img 1"></div>
+</div>
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <h3 style="text-align:center">Update your submission</h3>
+            <h4 >Hi {{ submission.firstname }} {{ submission.lastname }}</h4>
+            <p class="flow-text">
+                You submitted your "{{ submission.study.name }}" study on {{ submission.submission_date }}.
+                It is currently being under revision. If there are any missing information,
+                we will send a notification and you will be able to update the missing information on this page.
+            </p>
+            <div class="col s6">
+                <h5>Information:</h5>
+                <ul class="flow-text" >
+                    <li class="submission-status">Status: <span class="{{ submission.submitted_class }}">Submitted</span> - <span class="{{ submission.review_class }}">Review</span> - <span class="{{ submission.published_class }}">Published</span>
+                    <li>Email: {{ submission.email}} </li>
+                    <li>Submitted: {{ submission.submission_date}} </li>
+                    {% if submission.update_date %}
+                        <li>Updated: {{ submission.update_date}} </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col s6 flow-text">
+                <h5>Reviewers Comments</h5>
+                <div>Status:
+                    {% if submission.status != 0 and object.curation %}
+                        {% if object.curation.correct %}
+                        <span class="curation-status ok">Correct</span>
+                        {% else %}
+                        <span class="curation-status error">Issues</span>
+                        {% endif %}
+                    {% else %}
+                     Not reviewed yet
+                    {% endif %}
+                </div>
+                <div style="margin-top:5px">
+                    {{ object.curation.message|default:"" }}
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            {% block submission_content %}{% endblock submission_content %}
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.parallax').parallax();
+    });
+</script>
+{% endblock content %}
