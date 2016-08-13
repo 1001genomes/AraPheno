@@ -1,0 +1,101 @@
+{% extends "submission_base.html" %}
+
+{% load render_table from django_tables2 %}
+
+{% block submission_content %}
+{% load widget_tweaks %}
+{% with WIDGET_ERROR_CLASS='invalid' %}
+<div class="row">
+    <div class="col s12">
+        <h4>Phenotype</h4>
+    </div>
+</div>
+<div class="row">
+    <form class="col s12" action="" method="post">
+
+         {% csrf_token %}
+        <div class="row">
+            <div class="input-field col s12">
+                {{ form.name }}
+                <label for="{{ form.name.id_for_label }}" data-error="{{ form.name.errors.0 }}" data-success="ok">Name</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m6">
+                {{ form.scoring }}
+                <label for="{{ form.scoring.id_for_label }}" data-error="{{ form.scoring.errors.0 }}" data-success="ok">Scoring</label>
+            </div>
+            <div class="input-field col s12 m6">
+                {{ form.growth_conditions }}
+                <label for="{{ form.growth_conditions.id_for_label }}" data-error="{{ form.growth_conditions.errors.0 }}" data-success="ok">Growth condition</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12 m6">
+                {{ form.source }}
+                <label for="{{ form.source.id_for_label }}" data-error="{{ form.source.errors.0 }}" data-success="ok">Source</label>
+            </div>
+            <div class="input-field col s12 m6">
+                {{ form.type }}
+                <label for="{{ form.type.id_for_label }}" data-error="{{ form.type.errors.0 }}" data-success="ok">Type</label>
+            </div>
+        </div>
+         <div class="row">
+            <div class="input-field col s12">
+                {% render_field form.eo_term %}
+                <label for="{{ form.eo_term.id_for_label }}" data-error="{{ form.eo_term.errors.0 }}" data-success="ok">Environment-Ontology (autocomplete)</label>
+            </div>
+        </div>
+         <div class="row">
+            <div class="input-field col s12">
+                {% render_field form.to_term %}
+                <label for="{{ form.to_term.id_for_label }}" data-error="{{ form.to_term.errors.0 }}" data-success="ok">Trait-Ontology (autocomplete)</label>
+            </div>
+        </div>
+         <div class="row">
+            <div class="input-field col s12">
+                {% render_field form.uo_term %}
+                <label for="{{ form.uo_term.id_for_label }}" data-error="{{ form.uo_term.errors.0 }}" data-success="ok">Unit-Ontology (autocomplete)</label>
+            </div>
+        </div>
+        <div class="row">
+            <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Submit
+                <i class="material-icons right">send</i>
+            </button>
+            <div class="right">
+                <a href="{% url 'submission_study_result' submission.id %} " class="s12  btn waves-effect waves-light grey">
+                    Back to Study
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endwith %}
+<script>
+    $(document).ready(function(){
+        $('#{{ form.uo_term.id_for_label }}').autocomplete({
+            data: {
+            {% autoescape off %}
+            {% for uo_term in uo_terms %}"{{ uo_term }}":null,{% endfor %}
+            {% endautoescape %}
+            }
+        });
+
+         $('#{{ form.to_term.id_for_label }}').autocomplete({
+            data: {
+            {% autoescape off %}
+            {% for to_term in to_terms %}"{{ to_term }}":null,{% endfor %}
+            {% endautoescape %}
+            }
+        });
+
+         $('#{{ form.eo_term.id_for_label }}').autocomplete({
+            data: {
+            {% autoescape off %}
+            {% for eo_term in eo_terms %}"{{ eo_term }}":null,{% endfor %}
+            {% endautoescape %}
+            }
+        });
+    });
+</script>
+{% endblock submission_content %}

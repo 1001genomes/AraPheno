@@ -44,6 +44,23 @@ class AccessionListRenderer(CSVRenderer):
     header = ['pk','name','country','latitude','longitude',
               'collector','collection_date','cs_number','species']
 
+
+class PLINKMatrixRenderer(PhenotypeMatrixRenderer):
+    media_type = "application/plink"
+    format = "plink"
+    writer_opts = {'delimiter':' '}
+    labels = {'obs_unit_id':'IID','accession_id':'FID'}
+
+
+    def _get_sorted_headers(self,headers):
+        headers.remove('obs_unit_id')
+        headers.remove('accession_id')
+        headers.remove('accession_name')
+        headers.insert(0,'obs_unit_id')
+        headers.insert(0,'accession_id')
+        return headers
+
+
 '''
 Custom File Renderer
 '''
@@ -54,7 +71,7 @@ class PLINKRenderer(renderers.BaseRenderer):
     def render(self,data,media_type=None,renderer_context=None):
         if data is None:
             return "No Data Found"
-        plink = "FID IID " + data[0]['phenotype_name'] + "\n"
+        plink = "FID IID \"" + data[0]['phenotype_name'] + "\"\n"
         for element in data:
             if not ("accession_id" in element):
                 return "Wrong Data Format"

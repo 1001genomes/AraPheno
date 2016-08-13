@@ -1,6 +1,7 @@
 from datetime import datetime
 import csv
 import ontology_parser
+import scipy as sp
 
 '''
 Accession Class
@@ -92,32 +93,35 @@ Output: phenotype_matrix: accession_ids x phenotypes (or replicates)
         accession_ids: scipy array of accession ids
         names: phenotype or replicate names
 '''
-def parsePhenotypePLINKFile(filename=None):
-    if filename==None:
-        return None
+def parse_plink_file(f):
     #Parse file
-    f = open(filename,'r')
-    accession_ids = []
-    pmatrix = []
-    names = None
-    split_delimiter = " "
-    for i,line in enumerate(f):
-        sv = line.strip().split(split_delimiter)
-        if i==0:
-            if len(sv)==1:
-                sv = line.strip().split("\t")
-                if len(sv)>1:
-                    split_delimiter = "\t"
-                else:
-                    raise Exception("Wrong file format")
-            names = map(lambda s: s.replace("_"," "),sv[2:])
-        else:
-            accession_ids.append(sv[0].strip())
-            pmatrix.append(map(float,sv[2:]))
-    f.close()
-    accession_ids = sp.array(accession_ids)
-    pmatrix = sp.array(pmatrix)
-    return [pmatrix,accession_ids,names]
+    if not hasattr(f, 'read'):
+        f = codecs.open(f,'rU',encoding='utf-8')
+    try:
+        accession_ids = []
+        pmatrix = []
+        names = None
+        split_delimiter = " "
+        reader = csv.reader(f,delimiter=split_delimiter)
+        for i,line in enumerate(reader):
+            if i==0:
+                if len(line)==1:
+                    reader = csv.reader(f,delimiter='\t')
+                    line = next(reader)
+                    if len(line)==1:
+                        raise Exception("Wrong file format")
+                names = map(lambda s: s.replace("_"," "),line[2:])
+            else:
+                accession_ids.append(line[0].strip())
+                pmatrix.append(map(lambda x: sp.nan if x == '' else float(x),line[2:]))
+        accession_ids = sp.array(accession_ids)
+        pmatrix = sp.array(pmatrix)
+        return [pmatrix,accession_ids,names]
+    except Exception as error:
+        raise error
+    finally:
+        if f is not None:
+            f.close()
 
 
 '''

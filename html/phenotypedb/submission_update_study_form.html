@@ -1,0 +1,42 @@
+{% extends "submission_base.html" %}
+
+{% load render_table from django_tables2 %}
+
+{% block submission_content %}
+<div class="row">
+    <div class="col s12">
+        <h4>Study</h4>
+    </div>
+</div>
+<div class="row">
+    <form class="col s6" action="" method="post">
+         {% csrf_token %}
+        <div class="row">
+            <div class="input-field col s12">
+                {{ form.name }}
+                <label for="{{ form.name.id_for_label }}" data-error="{{ form.name.errors.0 }}" data-success="ok">Name</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                {{ form.description }}
+                <label for="{{ form.description.id_for_label }}" data-error="{{ form.description.errors.0 }}" data-success="ok">Description</label>
+            </div>
+        </div>
+        <div class="row">
+            <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Submit
+                <i class="material-icons right">send</i>
+            </button>
+            <div class="right">
+                <a href="{% url 'submission_delete' submission.id %} " class="s12  btn waves-effect waves-light red">
+                    <i class="material-icons right">delete</i> Delete
+                </a>
+            </div>
+        </div>
+    </form>
+    <div class="col s6 submission-phenotypes">
+        <br>
+        {% render_table curation_phenotype_table %}
+    </div>
+</div>
+{% endblock submission_content %}

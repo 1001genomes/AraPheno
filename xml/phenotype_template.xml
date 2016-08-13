@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd" xmlns="http://datacite.org/schema/kernel-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <identifier identifierType="DOI">{{ phenotype.doi }}</identifier>
+    <creators>
+        <creator>
+            <creatorName>{{ phenotype.study.submission.firstname }}, {{ phenotype.study.submission.lastname }}</creatorName>
+        </creator>
+    </creators>
+    <titles>
+        <title xml:lang="en-us">{{ phenotype.name }}</title>
+    </titles>
+    <publisher>{{ phenotype.study.submission.publisher }}</publisher>
+    <publicationYear>{{ phenotype.study.submission.publication_date|date:"Y" }}</publicationYear>
+    <dates>
+        <date dateType="Submitted">{{ phenotype.study.submission.submission_date }}</date>
+        <date dateType="Available">{{ phenotype.study.submission.publication_date }}</date>
+    </dates>
+    <language>en-us</language>
+    <resourceType resourceTypeGeneral="Dataset">Phenotype</resourceType>
+    <relatedIdentifiers>
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPartOf">{{ phenotype.study.doi }}</relatedIdentifier>
+        {% for publication in phenotype.study.publications.all %}
+          {% if publication.pubmed_id %}
+         <relatedIdentifier relatedIdentifierType="PMID" relationType="Cites">{{ publication.pubmed_id }}</relatedIdentifier>{% elif publication.doi %}
+         <relatedIdentifier relatedIdentifierType="DOI" relationType="Cites">{{ publication.doi }}</relatedIdentifier>{% endif %}{% endfor %}
+    </relatedIdentifiers>
+    <sizes>
+        <size>{{ phenotype.phenotypevalue_set.count }} values</size>
+    </sizes>
+    <formats>
+        <format>text/csv</format>
+        <format>application/json</format>
+        <format>application/plink</format>
+    </formats>
+    <version>1</version>
+    <descriptions>
+        <description xml:lang="en-us" descriptionType="Abstract">
+            {{ phenotype.scoring }}
+        </description>
+        {% if phenotype.growth_conditions %}<description xml:lang="en-us" descriptionType="Methods">{{ phenotype.growth_conditions }}</description>{% endif %}
+    </descriptions>
+</resource>

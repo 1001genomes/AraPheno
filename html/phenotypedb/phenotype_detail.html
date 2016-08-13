@@ -1,4 +1,4 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
 {% block title %}AraPheno - Phenotype {{object.name}} {% endblock title %}
 
@@ -81,7 +81,7 @@
                     <span>DOI:</span>
                 </div>
                 <div class="col s9">
-                    <span>{{ object.doi }}</span>
+                    <span><a href="{{ object.doi_link }}" target="_blank">{{ object.doi }}</a></span>
                 </div>
             </div>
             <div class="row">
@@ -194,9 +194,9 @@
 
 <script type="text/javascript">
     var geoChrt,geoChartData,histogramChart,histogramData,explorerChart,explorerData, tableChart;
-    $(document).ready(function(){    
+    $(document).ready(function(){
         $('.parallax').parallax();
-        
+
         $('.modal-trigger').leanModal({
             dimissible:true,
             in_duration: 300,
@@ -253,7 +253,7 @@
             intro.start().oncomplete(function() {
                 ga('send', 'event', 'Tour', 'complete','Phenotype Detail');
             }).onexit(function() {
-                ga('send', 'event', 'Tour', 'exit','Phenotype Detail');  
+                ga('send', 'event', 'Tour', 'exit','Phenotype Detail');
             });
         }
 
@@ -300,7 +300,7 @@
           ],false);
 
         {% endautoescape %}
-        
+
         var geoOptions = {};
         var histogramOptions = {height:500,width:"100%"};
         var explorerOptions = {height:500};
@@ -310,7 +310,7 @@
         histogramChart.draw(histogramData,histogramOptions)
         tableChart.draw(tableData,tableOptions);
     }
-    
 
-</script> 
+
+</script>
 {% endblock content %}

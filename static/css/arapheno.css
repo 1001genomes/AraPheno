@@ -27,3 +27,35 @@
 .spinner-brown-only {
     border-color: rgb(121,85,72);
 }
+
+li.submission-status span {
+    color:#9E9E9E;
+}
+
+li.submission-status span.active {
+    font-weight:400;
+    color:#4CAF50
+}
+
+.curation-status {
+    font-weight:400;
+}
+.curation-status.ok {
+    color:#4CAF50;
+}
+
+.curation-status.error {
+    color:#F44336;
+}
+
+i.material-icons.unknown {
+     color:#9E9E9E;
+}
+
+i.material-icons.ok {
+     color:#4CAF50;
+}
+
+i.material-icons.error {
+     color:#F44336;
+}
