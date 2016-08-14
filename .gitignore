@@ -4,3 +4,5 @@
 *.swp
 .nfs*
 static_deploy
+.env
+.vscode
