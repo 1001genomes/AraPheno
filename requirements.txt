@@ -11,3 +11,4 @@ pandas==0.18.1
 scipy
 numpy
 django-widget-tweaks==1.4.1
+requests==2.11.0

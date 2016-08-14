@@ -163,7 +163,7 @@ class Study(models.Model):
         if self.submission.status != 2:
             return reverse('submission_study_result', args=[str(self.submission.id)])
         else:
-            return reverse('study_detail', args=[str(self.id)])
+            return reverse('study_detail', args=[str(self.pk)])
 
     @property
     def doi_link(self):
@@ -354,7 +354,7 @@ class Phenotype(models.Model):
     def get_absolute_url(self):
         """returns the submission page or phenotype page"""
         if self.study.submission.status != 2:
-            return reverse('submission_phenotypey_result', args=[str(self.study.submission.id), str(self.id)])
+            return reverse('submission_phenotype_result', args=[str(self.study.submission.id), str(self.id)])
         else:
             return reverse('phenotype_detail', args=[str(self.id)])
 
