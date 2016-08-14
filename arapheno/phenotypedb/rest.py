@@ -1,25 +1,27 @@
 from django.http import HttpResponse
 from django.db.models import Q
 from django.http import FileResponse
+from django.core.mail import EmailMessage
 
-from rest_framework.decorators import api_view, permission_classes, renderer_classes
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes, renderer_classes, parser_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import JSONParser, FileUploadParser, MultiPartParser, FormParser
 from rest_framework.views import APIView
 
-from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession
+from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession, Submission
 from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer
 from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeValueSerializer
-from phenotypedb.serializers import AccessionListSerializer
+from phenotypedb.serializers import AccessionListSerializer, SubmissionDetailSerializer
 
-
+from phenotypedb.forms import UploadFileForm
 from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer
 from phenotypedb.renderer import PLINKRenderer, PLINKMatrixRenderer
 from utils.isa_tab import export_isatab
-
+from django.views.decorators.csrf import csrf_exempt
 import scipy as sp
 import scipy.stats as stats
 from django.conf import settings
@@ -499,6 +501,97 @@ def accession_phenotypes(request,pk,format=None):
     if request.method == "GET":
         serializer = PhenotypeListSerializer(phenotypes,many=True)
         return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+@renderer_classes((JSONRenderer,))
+@parser_classes((FormParser, MultiPartParser))
+def submit_study(request,format=None):
+    """
+    Submit a study
+    ---
+
+    serializer: SubmissionDetailSerializer
+    omit_serializer: false
+
+    produces:
+        - application/json
+    """
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                submission = form.save()
+                email = EmailMessage(
+                    'Study submitted to AraPheno',
+                    submission.get_email_text(),
+                    'uemit.seren@gmi.oeaw.ac.at',
+                    [submission.email],
+                    [settings.ADMINS[0][1]],
+                    reply_to=['uemit.seren@gmi.oeaw.ac.at']
+                )
+                email.send(True)
+                serializer = SubmissionDetailSerializer(submission,many=False,context={'request': request})
+
+                return Response(serializer.data, status.HTTP_201_CREATED)
+            except Accession.DoesNotExist as err:
+                return Response('Unknown accession with ID: %s' % err.args[-1],status.HTTP_400_BAD_REQUEST)
+            except Exception as err:
+                return Response(str(err),status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response('Some fields are missing',status.HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+@renderer_classes((JSONRenderer,))
+def submission_infos(request,pk,format=None):
+    """
+    Retrieve detailed information about the submission
+    ---
+
+    serializer: SubmissionDetailSerializer
+    omit_serializer: false
+
+    produces:
+        - application/json
+    """
+    if request.method == "GET":
+        try:
+            submission = Submission.objects.get(pk=pk)
+            serializer = SubmissionDetailSerializer(submission,many=False,context={'request': request})
+            return Response(serializer.data)
+        except Exception as err:
+            return HttpResponse(str(err),status=404)
+
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes((AllowAny,))
+@renderer_classes((JSONRenderer,))
+def delete_submission(request,pk,format=None):
+    """
+    Deletes a submission
+    ---
+    omit_serializer: false
+
+    produces:
+        - application/json
+    """
+    import pdb
+    pdb.set_trace()
+    if request.method == "DELETE":
+        try:
+
+            submission = Submission.objects.get(pk=pk)
+            if submission.status != 2:
+                submission.study.delete()
+                return Response(status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(status.HTTP_403_FORBIDDEN) 
+        except Exception as err:
+            return HttpResponse(str(err),status=404)
+
+            
 
 
 def _convert_dataframe_to_list(df, df_pivot):

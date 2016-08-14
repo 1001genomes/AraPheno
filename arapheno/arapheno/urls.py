@@ -20,6 +20,7 @@ import phenotypedb.views
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.urlpatterns import format_suffix_patterns
+from django.views.decorators.csrf import csrf_exempt
 admin.autodiscover()
 al.autodiscover()
 
@@ -58,6 +59,25 @@ urlpatterns = [
 '''
 REST URLS
 '''
+
+
+# Required for this http://stackoverflow.com/a/20898410/356594
+def method_dispatch(**table):
+    def invalid_method(request, *args, **kwargs):
+        logger.warning('Method Not Allowed (%s): %s', request.method, request.path,
+            extra={
+                'status_code': 405,
+                'request': request
+            }
+        )
+        return HttpResponseNotAllowed(table.keys())
+
+    def d(request, *args, **kwargs):
+        handler = table.get(request.method, invalid_method)
+        return handler(request, *args, **kwargs)
+    return d
+
+
 restpatterns = [
     #search
     url(r'^rest/search/$', rest.search),
@@ -87,6 +107,14 @@ restpatterns = [
     url(r'^rest/accession/(?P<pk>%s)/$'% ID_REGEX, rest.accession_detail),
 
     url(r'^rest/accession/(?P<pk>%s)/phenotypes/$' % ID_REGEX, rest.accession_phenotypes),
+
+    url(r'rest/submission/$', rest.submit_study),
+
+    url(r'rest/submission/(?P<pk>%s)/$' % UUID_REGEX, rest.submission_infos,name='submission_infos'),
+
+    url(r'rest/submission/(?P<pk>%s)/delete$' % UUID_REGEX, rest.delete_submission)
+
+    #url(r'rest/submission/(?P<pk>%s)/(?P<phenotype_id>%s)/$' % (UUID_REGEX, ID_REGEX), rest.submission_phenotype_infos),
 
 ]
 #extend restpatterns with suffix options

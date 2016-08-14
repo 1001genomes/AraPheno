@@ -223,7 +223,7 @@ class Submission(models.Model):
 
     def get_absolute_url(self):
         """returns the submission page or study detail page"""
-        if self.submission.status != 2:
+        if self.status != 2:
             return reverse('submission_study_result', args=[str(self.id)])
         else:
             return reverse('study_detail', args=[str(self.study.id)])

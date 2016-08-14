@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from phenotypedb.models import Phenotype,PhenotypeValue,Study, Accession
-from phenotypedb.models import ObservationUnit
+from phenotypedb.models import ObservationUnit, Submission, StudyCuration, PhenotypeCuration, Curation
 
 '''
 Phenotype List Serializer Class (read-only: might be extended to also allow integration of new data)
@@ -285,3 +285,52 @@ class AccessionListSerializer(serializers.ModelSerializer):
             return '%s %s' % (obj.species.genus, obj.species.species)
         except:
             return ""
+
+
+class StudyCurationSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = StudyCuration
+        fields = ('correct','message')
+
+class PhenotypeCurationSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = PhenotypeCuration
+        fields = ('correct','message')
+
+class SubmissionPhenotypeSerializer(serializers.HyperlinkedModelSerializer):
+    #rest_url = serializers.HyperlinkedIdentityField(view_name='submission_infos')
+    #html_url = serializers.HyperlinkedIdentityField(view_name='submission_study_result')
+    curation = PhenotypeCurationSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Phenotype
+        fields = ('name','scoring','growth_conditions','to_term','eo_term','uo_term','curation')
+
+class SubmissionStudySerializer(serializers.HyperlinkedModelSerializer):
+    #rest_url = serializers.HyperlinkedIdentityField(view_name='submission_infos')
+    #html_url = serializers.HyperlinkedIdentityField(view_name='submission_study_result')
+    curation = StudyCurationSerializer(many=False, read_only=True)    
+    phenotype_set = SubmissionPhenotypeSerializer(many=True,read_only=True)
+
+    class Meta:
+        model = Study
+        fields = ('name','description','curation','phenotype_set')
+
+
+class SubmissionDetailSerializer(serializers.HyperlinkedModelSerializer):
+    rest_url = serializers.HyperlinkedIdentityField(view_name='submission_infos')
+    html_url = serializers.HyperlinkedIdentityField(view_name='submission_study_result')
+    study = SubmissionStudySerializer(many=False,read_only=True)
+
+    class Meta:
+        model = Submission
+        fields = ('pk','firstname','submission_date','update_date','curation_date','lastname','email','status','rest_url','html_url','study')
+
+    
+
+
+
+
+#class SubmissionUploadDetailSerializer(serializers.Model)

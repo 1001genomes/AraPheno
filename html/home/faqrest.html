@@ -47,7 +47,7 @@
                         </div>
                     </li>
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">code</i>How to get a details for a certain phenotype?</div>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to get details for a certain phenotype?</div>
                         <div class="collapsible-body"><p>You can use either the primary id or DOI to access certain details for a phenotype. Just replace &lt;q&gt; with the phenotype id or DOI.
                         <br><br>
                         <strong>For CSV format: http://arapheno.1001genomes.org/rest/phenotype/&lt;q&gt;.csv</strong>
@@ -88,7 +88,7 @@
                         </div>
                     </li>
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">code</i>How to get a details for a certain study?</div>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to get details for a certain study?</div>
                         <div class="collapsible-body"><p>You can use either the primary id or DOI to access certain details for a study. Just replace &lt;q&gt; with the study id or DOI.
                         <br><br>
                         <strong>For CSV format: http://arapheno.1001genomes.org/rest/study/&lt;q&gt;.csv</strong>
@@ -129,7 +129,7 @@
                         </div>
                     </li>
                     <li>
-                        <div class="collapsible-header"><i class="material-icons">code</i>How to get a details for a certain accession?</div>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to get details for a certain accession?</div>
                         <div class="collapsible-body"><p>You can use the accession id to access certain details for an accession. Just replace &lt;q&gt; with the accession id.
                         <br><br>
                         <strong>For CSV format: http://arapheno.1001genomes.org/rest/accession/&lt;q&gt;.csv</strong>
@@ -185,6 +185,42 @@
                         </p>
                         </div>
                     </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to submit your study via REST?</div>
+                        <div class="collapsible-body"><p>You can submit a study by sending a <code>POST</code> request containing the study file in ISA-TAB or PLINK format 
+                        and additional form fields (i.e. firstname. lastname, email) to the following url:
+                        <strong>http://arapheno.1001genomes.org/rest/submission/</strong><br>
+                        The response will contain information about the submission (see below)
+                        <br><br>
+                        Example (cURL): <code>curl -X POST -H "Cache-Control: no-cache" -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -F "file=@" -F "firstname=John" -F "lastname=Doe" -F "email=john@doe.com" "http://localhost:8000/rest/submission/"</code>
+                        <br><br>
+                        A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
+                        </p>
+                        </div>
+                    </li>
+                   <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to get details for a submission?</div>
+                        <div class="collapsible-body"><p>You can use the submission_id to view details such as status and curation about the submission. Just replace &lt;q&gt; with the submission_id:
+                        <br><br>
+                        <strong>http://arapheno.1001genomes.org/rest/submission/&lt;q&gt;.json</strong> 
+                        <br><br>
+                        A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
+                        </p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to delete a submission?</div>
+                        <div class="collapsible-body"><p>You can use the submission_id to delete by sending a <code>DELETE</code> request. Just replace &lt;q&gt; with the submission_id:
+                        <br><br>
+                        <strong>http://arapheno.1001genomes.org/rest/submission/&lt;q&gt;/delete</strong>
+                        <br><br>
+                        Example (cURL): <code>curl -X DELETE -H "Cache-Control: no-cache" "http://localhost:8000/rest/submission/[SUBMISSION_ID]/delete"</code> 
+                        <br><br>
+                        A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
+                        </p>
+                        </div>
+                    </li>
+
                  </ul>
                 
                 </li>
