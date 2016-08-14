@@ -59,3 +59,15 @@ i.material-icons.ok {
 i.material-icons.error {
      color:#F44336;
 }
+
+.flash_warning {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}
+
+.flash_warning h5 {
+    align-self: center;
+    width: 60%;
+    text-align: center;
+}

@@ -183,7 +183,14 @@
             <div id="histogram_chart" class="chart"></div>
         </div>
         <div id="explorer" class="col s12" style="height:500px;width:100%;">
-            <div id="explorer_chart" class="chart"></div>
+            <div id="explorer_chart" class="chart">
+                <div class="flash_warning">
+                    <h5 id="flash_warning" >
+                        This visualization requires Flash to be active/installed.<br>
+                        If you use Safari, try Firefox or Chrome
+                    </h5>
+                </div>
+            </div>
         </div>
         <div id="table" class="col s12" style="height:500px">
             <div id="table_chart" class="chart"></div>
@@ -310,7 +317,5 @@
         histogramChart.draw(histogramData,histogramOptions)
         tableChart.draw(tableData,tableOptions);
     }
-
-
 </script>
 {% endblock content %}
