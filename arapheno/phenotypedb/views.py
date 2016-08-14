@@ -189,10 +189,10 @@ def upload_file(request):
                 email = EmailMessage(
                     'Study submitted to AraPheno',
                     submission.get_email_text(),
-                    'arapheno@1001genomes.org',
+                    'uemit.seren@gmi.oeaw.ac.at',
                     [submission.email],
                     [settings.ADMINS[0][1]],
-                    reply_to=['arapheno@1001genomes.org']
+                    reply_to=['uemit.seren@gmi.oeaw.ac.at']
                 )
                 email.send(True)
                 return HttpResponseRedirect('/submission/%s/' % submission.id)
