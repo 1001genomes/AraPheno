@@ -11,6 +11,6 @@ VOLUME /code
 
 ADD requirements.txt /code/
 
-RUN pip install -r requirements.txt && pip install gunicorn
+RUN pip install --upgrade pip
 
-ADD . /code/
+RUN pip install -r requirements.txt && pip install gunicorn
