@@ -125,7 +125,7 @@ def phenotype_detail(request,q,format=None):
         - application/json
 
     """
-    doi = _is_doi(DOI_PATTERN_PHENTOYPE,q)
+    doi = _is_doi(DOI_PATTERN_PHENOTYPE,q)
     try:
         if doi:
             phenotype = Phenotype.objects.get(doi=q)
