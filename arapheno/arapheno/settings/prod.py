@@ -15,6 +15,6 @@ DATABASES = {
     }
 }
 
-EMAIL_HOST = os.eniron["EMAIL_HOST"]
+EMAIL_HOST = os.environ["EMAIL_HOST"]
 EMAIL_PORT = os.environ.get("EMAIL_PORT",25)
 EMAIL_HOST_USER = os.environ["EMAIL_USER"]
