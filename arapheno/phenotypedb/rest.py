@@ -577,8 +577,6 @@ def delete_submission(request,pk,format=None):
     produces:
         - application/json
     """
-    import pdb
-    pdb.set_trace()
     if request.method == "DELETE":
         try:
 
