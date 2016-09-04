@@ -284,7 +284,7 @@
 
         histogramData = google.visualization.arrayToDataTable([
           ['Phenotype', 'Frequency'],
-          {% for item in object.phenotypevalue_set.all %}[ "{{ item.id }}", {{ item.value }} ],{% endfor %}
+          {% for item in object.phenotypevalue_set.all %}[ "{{ item.obs_unit.accession.name }} ({{ item.id }})", {{ item.value }} ],{% endfor %}
         ],false);
 
         explorerData = google.visualization.arrayToDataTable([
