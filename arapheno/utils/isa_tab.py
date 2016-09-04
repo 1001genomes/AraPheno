@@ -23,7 +23,7 @@ def parse_isatab(filename):
     # check if filename is a folder or a zip
     if not os.path.exists(filename):
         raise Exception('File or folder %s does not exist',filename)
-    
+
     if not os.path.isdir(filename):
         work_dir = tempfile.mkdtemp()
         # unzip to temporary folder
@@ -39,21 +39,21 @@ def parse_isatab(filename):
         s.trait_def_map = {}
         s.derived_data_map = {}
         for assay in s.assays:
-            if (assay.metadata['Study Assay Measurement Type Term Accession Number'] != '23'):
+            if (assay.metadata['Study Assay Measurement Type Term Accession Number'] not in ('23','0000023')):
                 continue
             for sample_id,assay_data in assay.nodes.items():
                 derived_data_file = assay_data.metadata['Derived Data File'][0]
                 trait_def_file = assay_data.metadata['Parameter Value[Trait Definition File]'][0].Trait_Definition_File
-                
+
                 # check if we already loaded the trait def file
                 if trait_def_file not in s.trait_def_map:
                     s.trait_def_map[trait_def_file] = _parse_trait_def_file(trait_def_file,work_dir)
-                
+
                 # check if we already loaded the derived data matrix
                 if derived_data_file not in s.derived_data_map:
                     s.derived_data_map[derived_data_file] = _parse_derived_data_file(derived_data_file,work_dir)
     # remove temporary folder
-    
+
     if filename != work_dir:
         shutil.rmtree(work_dir)
     return rec
@@ -95,12 +95,12 @@ def _parse_trait_def_file(trait_def_file,work_dir):
                 try:
                     uo_ix = row.index('UO')
                 except ValueError:
-                    pass    
+                    pass
             tr = {'Trait':row[trait_ix],'Method':row[method_ix],'EO':None,'TO':None,'UO':None}
             if (eo_ix > 0): tr['EO'] = row[eo_ix+1]
             if (to_ix > 0): tr['TO'] = row[to_ix+1]
             if (uo_ix > 0): tr['UO'] = row[uo_ix+1]
-            trait_def_map[row[0]] = tr 
+            trait_def_map[row[0]] = tr
     return trait_def_map
 
 def _get_index_for_term(row,term):
@@ -167,7 +167,7 @@ def save_isatab(isatab):
                 pheno_map[trait_id] = phenotype
             phenotype_map[trait_def_file] = pheno_map
         for sample_id,sample in s.nodes.items():
-            # avoid duplicates because nodes will also contain source- entries 
+            # avoid duplicates because nodes will also contain source- entries
             if not sample_id.startswith('sample-'):
                 continue
             accession_id = int(sample.metadata['Characteristics[Infraspecific name]'][0].Term_Accession_Number)
@@ -176,8 +176,8 @@ def save_isatab(isatab):
             obs_map[sample_id] = obs_unit
         for a in s.assays:
             # ignore if it's not a phenotyping assay
-            if (a.metadata['Study Assay Measurement Type Term Accession Number'] != '23'):
-                continue            
+            if (a.metadata['Study Assay Measurement Type Term Accession Number'] not in ('23','0000023')):
+                continue
             for sample_id,assay_data in a.nodes.items():
                 # will contain additional nodes unrelated to samples
                 if not sample_id.startswith('sample-'):
