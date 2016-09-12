@@ -104,6 +104,8 @@ class AccessionTable(tables.Table):
     longitude = tables.Column(accessor="longitude", verbose_name="Longitude", order_by="longitude")
     latitude = tables.Column(accessor="latitude", verbose_name="Latitude", order_by="latitude")
     cs_number = tables.Column(accessor="cs_number", verbose_name="CS Number", order_by="cs_number")
+    number_of_phenotypes = tables.Column(accessor="count_phenotypes",verbose_name='# Phenotypes')
+
 
     class Meta:
         attrs = {"class": "striped"}

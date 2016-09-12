@@ -276,6 +276,12 @@ class Accession(models.Model):
     cs_number = models.CharField(max_length=255, blank=True, null=True) # Stock center number
     species = models.ForeignKey("Species") #species foreign key
 
+
+    @property
+    def count_phenotypes(self):
+        """Returns number of phenotypes"""
+        return self.observationunit_set.values('phenotypevalue__phenotype').distinct().count()
+
     def __unicode__(self):
         return u"%s (Accession)" % (mark_safe(self.name))
 
