@@ -17,7 +17,7 @@ from phenotypedb.models import (Accession, OntologyTerm, Phenotype, Study,
                                 Submission)
 from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
                                 PhenotypeTable, ReducedPhenotypeTable,
-                                StudyTable)
+                                StudyTable, AccessionPhenotypeTable)
 from scipy.stats import shapiro
 
 
@@ -101,7 +101,7 @@ def detail_accession(request, pk=None):
     Detailed view of a single accession
     """
     accession = Accession.objects.get(id=pk)
-    phenotype_table = PhenotypeTable(Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=pk), order_by="-id")
+    phenotype_table = AccessionPhenotypeTable(pk,Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=pk), order_by="-id")
     RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
