@@ -371,7 +371,11 @@ class Phenotype(models.Model):
             return -1
         return self.curation.correct
 
-
+    def get_values_for_acc(self,accession_id):
+        """
+        Retrieves the phenotype value for a specific accession
+        """
+        return self.phenotypevalue_set.filter(obs_unit__accession_id=accession_id).values_list("value", flat=True)
 
 
     @property

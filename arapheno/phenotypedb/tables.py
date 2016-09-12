@@ -4,6 +4,7 @@ Tables for django-table2
 import django_tables2 as tables
 from django_tables2.utils import A
 from django.utils.safestring import mark_safe
+import numpy as np
 
 
 class ReducedPhenotypeTable(tables.Table):
@@ -47,6 +48,21 @@ class PhenotypeTable(ReducedPhenotypeTable):
         attrs = {"class": "striped"}
 
 
+class AccessionPhenotypeTable(PhenotypeTable):
+    """
+    Table that is displayed in the accession detial view
+    """
+    value = tables.Column(empty_values=(),verbose_name='Value (mean)')
+
+    def __init__(self, accession_id, *args, **kwargs):
+        super(AccessionPhenotypeTable, self).__init__(*args, **kwargs)
+        self.accession_id = accession_id
+    
+    def render_value(self,record):
+        values = record.get_values_for_acc(self.accession_id)
+        if not values: 
+            return "N/A"
+        return str(np.mean(values))
 
 
 class StudyTable(tables.Table):
