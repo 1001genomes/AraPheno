@@ -40,7 +40,7 @@ class PhenotypeDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(PhenotypeDetail, self).get_context_data(**kwargs)
-        context['pheno_acc_infos'] = self.object.phenotypevalue_set.prefetch_related('obs_unit__accession')
+        context['pheno_acc_infos'] = self.object.phenotypevalue_set.select_related('obs_unit__accession')
         context['geo_chart_data'] = Accession.objects.filter(observationunit__phenotypevalue__phenotype_id=1).values('country').annotate(count=Count('country'))
         context['values'] = self.object.phenotypevalue_set.all().values_list("value", flat=True)
         context['shapiro'] = "%.2e"%shapiro(context['values'])[1]
