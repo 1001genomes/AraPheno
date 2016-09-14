@@ -12,8 +12,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser, FileUploadParser, MultiPartParser, FormParser
 from rest_framework.views import APIView
 
-from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession, Submission
-from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer
+from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession, Submission, OntologyTerm, OntologySource
+from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer, OntologyTermListSerializer
 from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeValueSerializer
 from phenotypedb.serializers import AccessionListSerializer, SubmissionDetailSerializer
 
@@ -62,19 +62,23 @@ def search(request,query_term=None,format=None):
             studies = Study.objects.all()
             phenotypes = Phenotype.objects.all()
             accessions = Accession.objects.all()
+            ontologies = OntologyTerm.objects.all()
         else:
             studies = Study.objects.filter(name__icontains=query_term)
             phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
                                                   Q(to_term__id__icontains=query_term) |
                                                   Q(to_term__name__icontains=query_term))
             accessions = Accession.objects.filter(name__icontains=query_term)
+            ontologies = OntologyTerm.objects.filter(name__icontains=query_term)
 
         study_serializer = StudyListSerializer(studies,many=True)
         phenotype_serializer = PhenotypeListSerializer(phenotypes,many=True)
         accession_serializer = AccessionListSerializer(accessions,many=True)
+        ontology_serializer = OntologyTermListSerializer(ontologies,many=True)
         return Response({'phenotype_search_results':phenotype_serializer.data,
                          'study_search_results':study_serializer.data,
-                         'accession_search_results':accession_serializer.data})
+                         'accession_search_results':accession_serializer.data,
+                         'ontology_search_results':ontology_serializer.data})
 
 '''
 List all phenotypes
@@ -501,6 +505,28 @@ def accession_phenotypes(request,pk,format=None):
     if request.method == "GET":
         serializer = PhenotypeListSerializer(phenotypes,many=True)
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((JSONRenderer,))
+def ontology_tree_data(request,acronym=None,term_id=None,format=None):
+    """
+    Retrieve ontology tree structure
+    ---
+    produces:
+        - application/json
+    """
+    if term_id is not None: 
+        term = OntologyTerm.objects.get(pk=term_id)
+        data = [{'text':t.name,'id':t.id, 'children': True if t.children.count() > 0 else False} for t in term.children.all()]
+    else:
+        source = OntologySource.objects.get(acronym=acronym)
+        roots = source.ontologyterm_set.filter(parents=None)
+        data = [{'text':term.name,'id':term.id,'children':True if term.children.count() > 0 else False} for term in roots]
+    return Response(data)
+
+
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))

@@ -137,3 +137,16 @@ class CurationPhenotypeTable(tables.Table):
     eo = tables.Column(accessor="eo_term.name", verbose_name="Environmental Ontoloy (EO)", order_by="eo_term.name")
     uo = tables.Column(accessor="uo_term.name", verbose_name="Unit Ontology (UO)", order_by="uo_term.name")
     status = StatusColumn(accessor="curation_status",verbose_name="Status")
+
+
+class OntologyTermTable(tables.Table):
+    """
+    Table that is displayed for ontology terms
+    """
+    name = tables.LinkColumn("ontology_detail", args=[A('source.acronym'), A('pk')], text=lambda record: record.name, verbose_name="Ontology Name", order_by="name")
+    source = tables.LinkColumn("ontologysource_detail",args=[A('source.acronym')], text=lambda record: '%s (%s)' % (record.source.name, record.source.acronym),verbose_name='Source',order_by="source.name")
+    definition = tables.Column(accessor="definition", verbose_name="Definition", order_by="definition")
+    info = tables.TemplateColumn('<a target="_blank" href="{{record.get_info_url}}" >Infos</a>')
+
+    class Meta:
+        attrs = {"class": "striped"}

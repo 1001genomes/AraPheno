@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from phenotypedb.models import Phenotype,PhenotypeValue,Study, Accession
+from phenotypedb.models import Phenotype,PhenotypeValue,Study, Accession, OntologyTerm, OntologySource
 from phenotypedb.models import ObservationUnit, Submission, StudyCuration, PhenotypeCuration, Curation
 
 '''
@@ -328,8 +328,23 @@ class SubmissionDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Submission
         fields = ('pk','firstname','submission_date','update_date','curation_date','lastname','email','status','rest_url','html_url','study')
 
-    
 
+class OntologySourceSerializer(serializers.ModelSerializer):
+
+     class Meta:
+        model = OntologySource
+        fields = ('pk','name','acronym','description')
+    
+class OntologyTermListSerializer(serializers.ModelSerializer):
+
+    source = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OntologyTerm
+        fields = ('pk','name','definition','comment','source')
+
+    def get_source(self,obj):
+        return '%s (%s)' % (obj.source.name, obj.source.acronym)
 
 
 
