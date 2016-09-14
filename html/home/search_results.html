@@ -52,25 +52,32 @@
         <div class="row">
             <div class="col l12 m12 s12">
             <ul class="tabs">
-                <li class="tab col s3"><a class="active brown-text" href="#phenotypes">Search Results: Phenotypes
+                <li class="tab col s3"><a class="active brown-text" href="#phenotypes">Results: Phenotypes
                 {% if nphenotypes == 1 %}
                        <div class="right"><span class="arabadge">{{nphenotypes}} Result</span></div>
                     {% else %}
                        <div class="right"><span class="arabadge">{{nphenotypes}} Results</span></div>
                     {% endif %}
                 </a></li>
-                <li class="tab col s3"><a href="#studies" class="brown-text">Search Results: Studies
+                <li class="tab col s3"><a href="#studies" class="brown-text">Results: Studies
                     {% if nstudies == 1 %}
                        <div class="right"><span class="arabadge">{{nstudies}} Result</span></div>
                     {% else %}
                        <div class="right"><span class="arabadge">{{nstudies}} Results</span></div>
                     {% endif %}
                 </a></li>
-                 <li class="tab col s3"><a href="#accessions" class="brown-text">Search Results: Accessions
+                 <li class="tab col s3"><a href="#accessions" class="brown-text">Results: Accessions
                     {% if naccessions == 1 %}
                        <div class="right"><span class="arabadge">{{naccessions}} Result</span></div>
                     {% else %}
                        <div class="right"><span class="arabadge">{{naccessions}} Results</span></div>
+                    {% endif %}
+                </a></li>
+                <li class="tab col s3"><a href="#ontologies" class="brown-text">Results: Ontologies
+                    {% if nontologies == 1 %}
+                       <div class="right"><span class="arabadge">{{nontologies}} Result</span></div>
+                    {% else %}
+                       <div class="right"><span class="arabadge">{{nontologies}} Results</span></div>
                     {% endif %}
                 </a></li>
                 <div class="indicator brown" style="z-index:1"></div>
@@ -95,6 +102,15 @@
                         <h5 class="brown-text center">No Accessions found for query: {{query}}</h5>
                 {% else %}
                     {% render_table accession_table %}
+                {% endif %}
+                </div>
+
+            </div>
+             <div id="ontologies" class="col s12"><br>
+                {% if nontologies == 0 %}
+                        <h5 class="brown-text center">No Ontologies found for query: {{query}}</h5>
+                {% else %}
+                    {% render_table ontologies_table %}
                 {% endif %}
                 </div>
 

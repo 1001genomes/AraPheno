@@ -14,11 +14,12 @@ from django_tables2 import RequestConfig
 from phenotypedb.forms import (CorrelationWizardForm, PhenotypeUpdateForm,
                                StudyUpdateForm, UploadFileForm)
 from phenotypedb.models import (Accession, OntologyTerm, Phenotype, Study,
-                                Submission)
+                                Submission, OntologySource)
 from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
                                 PhenotypeTable, ReducedPhenotypeTable,
                                 StudyTable, AccessionPhenotypeTable)
 from scipy.stats import shapiro
+import json, itertools
 
 
 # Create your views here.
@@ -112,6 +113,99 @@ def detail_accession(request, pk=None):
     variable_dict['eo_data'] = phenotypes.values('eo_term__name').annotate(count=Count('eo_term__name'))
     variable_dict['uo_data'] = phenotypes.values('uo_term__name').annotate(count=Count('uo_term__name'))
     return render(request, 'phenotypedb/accession_detail.html', variable_dict)
+
+
+def _get_ontology_terms(term,ids = None):
+    if not ids:
+        ids = [term.id] 
+    for t in term.children.all():
+        ids.append(t.id)
+        _get_ontology_terms(t,ids)
+    return ids
+    
+def _get_db_field_from_source(source):
+    if source.acronym == 'PECO':
+        return 'eo_term'
+    elif source.acronym == 'PTO':
+        return 'to_term'
+    elif source.acronym == 'UO':
+        return 'uo_term'
+    else:
+        raise Exception('term %s unknown' % source.acronym)
+    
+
+def detail_ontology_term(request,pk=None):
+    """
+    Detailed view of Ontology 
+    """
+    variable_dict = {}
+    phenotypes = []
+    if pk is not None:
+        term = OntologyTerm.objects.get(pk=pk)
+        variable_dict["object"] = term
+        db_field = _get_db_field_from_source(term.source) + '_id__in'
+        ids = _get_ontology_terms(term)
+        #necessary because sqlite has a limit of 999 SQL variables
+        ids = [ ids[i:i+500] for i in range(0, len(ids), 500) ]
+        for sub in ids:
+            kwargs = {db_field:sub}
+            phenotypes.extend(Phenotype.objects.published().filter(**kwargs))
+    phenotype_table = PhenotypeTable(phenotypes, order_by="-name")
+    RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
+    variable_dict["phenotype_table"] = phenotype_table
+    return render(request, 'phenotypedb/ontologyterm_detail.html', variable_dict)
+
+
+def list_ontology_sources(request):
+    """
+    Displays list of ontologies
+    """
+    return render(request, 'phenotypedb/ontologysource_list.html', {"objects":OntologySource.objects.all()})
+
+
+def detail_ontology_source(request,acronym,term_id=None):
+    """
+    Detailed view of OntologySource 
+    """
+    variable_dict = {}
+    source = OntologySource.objects.get(acronym=acronym)
+    variable_dict['object']  = source
+    root_nodes = source.ontologyterm_set.filter(parents=None) 
+    tree = None
+    if term_id is not None:
+        tree = []
+        term = OntologyTerm.objects.get(pk=term_id)
+        tree = _get_tree_to_root(term,root_nodes)
+    else:
+        tree = [{'id':term.pk,'text':term.name,'children':True if term.children.count() > 0 else False} for term in root_nodes]
+    variable_dict['tree'] = json.dumps(tree)
+    return render(request, 'phenotypedb/ontologysource_detail.html', variable_dict)
+
+
+def _get_tree_to_root(term,root_nodes):
+    tree = []
+    parent = term.parents.all()[0]
+    p_obj = None
+    term_obj = {'id':term.id,'text':term.name,'state':{'selected':True},'children':True if term.children.count() > 0 else False}
+    while True:
+        p_obj = {'id':parent.id,'text':parent.name,'children': [term_obj],'state':{'opened':True}}
+        for t in parent.children.all():
+            if t.id != term_obj['id']:
+                p_obj['children'].append({'id':t.id,'text':t.name,'children':True if term.children.count() > 0 else False})
+        parents = parent.parents.all()
+        if len(parents) == 0:
+            break
+        term = parent
+        term_obj = p_obj
+        parent = parents[0]
+    for t in root_nodes:
+        if t.id == parent.id:
+            tree.append(p_obj)
+        else:
+            tree.append({'id':t.id,'text':t.name,'children':True if t.children.count() > 0 else False})
+    return tree
+
+
 
 
 class SubmissionStudyDeleteView(DeleteView):

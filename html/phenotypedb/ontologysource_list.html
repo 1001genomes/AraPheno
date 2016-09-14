@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - Ontologies {% endblock title %}
+
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:80px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h5>List of all ontologies</h5>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+
+<div class="container valign-wrapper ontology-container" >
+     {% for source in objects %}
+        <div class="card blue-grey darken-1 ontology">
+                <div class="card-content white-text">
+                <span class="card-title">{{ source.name }}</span>
+                <div class="card-subtitle">{{ source.acronym }}</div>
+                <p>{{ source.description }}</p>
+                </div>
+                <div class="card-action">
+                <a href="{% url 'ontologysource_detail' source.acronym %}">Show</a>
+                <a href="{{ source.url }}" target="_blank">More Info</a>
+                </div>
+            </div>
+        {% endfor %}
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+
+    });
+</script>
+{% endblock content %}

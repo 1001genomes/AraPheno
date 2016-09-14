@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="/static/css/materialize.min.css" media="screen,projection"/>
+        <link type="text/css" rel="stylesheet" href="/static/css/arapheno.css" media="screen,projection"/>
+    </head>
+    <body>
+        {% load render_table from django_tables2 %}
+        {% if object %}
+            <div class="row">
+                <h5 class="col s12">Info</h5>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Name:</span>
+                </div>
+                <div class="col s9">
+                    <span>{{ object.name }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Identifier:</span>
+                </div>
+                <div class="col s9">
+                    <span><a href="{{ object.get_info_url }}" target="_blank">{{ object.pk }}</a></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Definition:</span>
+                </div>
+                <div class="col s9">
+                    <span>{{ object.definition }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <h5 class="col s12">
+                    Phenotypes:    
+                </h5>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    {% render_table phenotype_table %}
+                </div>
+            </div>
+        {% else %}
+            <h4>Choose an Ontology Term from the Tree on the left side</h4>
+
+        {% endif %}
+    </body>

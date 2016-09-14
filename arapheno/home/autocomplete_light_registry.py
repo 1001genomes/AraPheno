@@ -2,7 +2,7 @@
 Autocomplete Light Registry for global search
 """
 from autocomplete_light import shortcuts as autocomplete_light
-from phenotypedb.models import Accession, Phenotype, Study
+from phenotypedb.models import Accession, Phenotype, Study, OntologyTerm
 
 
 class GlobalSearchAutocomplete(autocomplete_light.AutocompleteGenericBase):
@@ -11,10 +11,13 @@ class GlobalSearchAutocomplete(autocomplete_light.AutocompleteGenericBase):
     """
     choices = (Phenotype.objects.published(),
                Study.objects.published(),
-               Accession.objects.all())
+               Accession.objects.all(),
+               OntologyTerm.objects.all())
     search_fields = (('name', 'to_term__id', 'to_term__name',), #phenotype search field
                      ('name',), #study search field
-                     ('name',),) #Accession search field
+                     ('name',), #Accession search field
+                     ('name',), #Ontology searhc field
+                     ) 
 
     attrs = {'placeholder':'Search a phenotype, study, trait ontology (e.g. type FRI for phenotype, Atwell for study, or concentration for ontology) or accession name',
              'data-autocomplete-minimum-characters':1}
@@ -38,6 +41,8 @@ class GlobalSearchAutocomplete(autocomplete_light.AutocompleteGenericBase):
                 html += ("<a href='study/%d'>%s</a>" % (choice.id, self.choice_html(choice)))
             elif isinstance(choice, Accession):
                 html += ("<a href='accession/%d'>%s</a>" % (choice.id, self.choice_html(choice)))
+            elif isinstance(choice, OntologyTerm):
+                html += ("<a href='ontology/%s/%s'>%s</a>" % (choice.source.acronym,choice.id, self.choice_html(choice)))
         return html
 
 autocomplete_light.register(GlobalSearchAutocomplete)

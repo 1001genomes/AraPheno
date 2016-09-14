@@ -465,7 +465,8 @@ class OntologyTerm(models.Model):
     definition = models.TextField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     source = models.ForeignKey('OntologySource')
-
+    children = models.ManyToManyField('self', related_name='parents', symmetrical=False)
+    
     objects = OntologyTermQuerySet.as_manager()
 
     def __unicode__(self):
@@ -475,6 +476,15 @@ class OntologyTerm(models.Model):
         """return the url for more information about the OntologyTerm"""
         return 'https://bioportal.bioontology.org/ontologies/%s?p=classes&conceptid=http://purl.obolibrary.org/obo/%s' % (self.source.acronym, self.id.replace(':', '_'))
 
+
+'''class OntologyTerm2Term(models.Model):
+    """OntologyTerm Many To Many table """
+    parent = models.ForeignKey("OntologyTerm",related_name="parent")
+    child = models.ForeignKey("OntologyTerm",related_name="child")'''
+     
+
+
+
 class OntologySource(models.Model):
     """
     OntologySource model
@@ -483,6 +493,7 @@ class OntologySource(models.Model):
     acronym = models.CharField(max_length=50)
     name = models.CharField(max_length=255)
     url = models.URLField()
+    description = models.TextField(null=True)
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.acronym)
