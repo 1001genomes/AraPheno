@@ -145,3 +145,20 @@ DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
 DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
 DATACITE_DOI_URL = 'http://search.datacite.org/works'
 DOI_BASE_URL = 'http://arapheno.1001genomes.org'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}
