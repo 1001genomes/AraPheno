@@ -150,6 +150,7 @@ def detail_ontology_term(request,pk=None):
         for sub in ids:
             kwargs = {db_field:sub}
             phenotypes.extend(Phenotype.objects.published().filter(**kwargs))
+    variable_dict['phenotype_count'] = len(phenotypes)
     phenotype_table = PhenotypeTable(phenotypes, order_by="-name")
     RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
     variable_dict["phenotype_table"] = phenotype_table
