@@ -106,3 +106,7 @@ i.material-icons.error {
     flex:1;
     flex-direction: column;
 }
+
+.ontology-source-container .jstree {
+    overflow:hidden;
+}
