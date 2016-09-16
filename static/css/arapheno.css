@@ -79,7 +79,6 @@ i.material-icons.error {
 
 .card.ontology {
     width:390px;
-    height:300px;
 }
 .card.ontology p {
     overflow: hidden;
@@ -100,4 +99,10 @@ i.material-icons.error {
 .ontology-source-container .row {
     display:flex;
     flex:1;
+}
+
+.ontology-source-container .phenotype-container {
+    display:flex;
+    flex:1;
+    flex-direction: column;
 }
