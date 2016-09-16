@@ -130,11 +130,10 @@ def phenotype_detail(request,q,format=None):
 
     """
     doi = _is_doi(DOI_PATTERN_PHENOTYPE,q)
+
     try:
-        if doi:
-            phenotype = Phenotype.objects.get(doi=q)
-        else:
-            phenotype = Phenotype.objects.get(pk=int(q))
+        id = doi if doi else int(q)
+        phenotype = Phenotype.objects.published().get(pk=id)
     except:
         return HttpResponse(status=404)
 
@@ -169,10 +168,8 @@ def phenotype_value(request,q,format=None):
     """
     doi = _is_doi(DOI_PATTERN_PHENOTYPE, q)
     try:
-        if doi:
-            phenotype = Phenotype.objects.get(doi=q)
-        else:
-            phenotype = Phenotype.objects.get(pk=int(q))
+        id = doi if doi else int(q)
+        phenotype = Phenotype.objects.published().get(pk=id)
     except:
         return HttpResponse(status=404)
 
@@ -226,11 +223,8 @@ def study_detail(request,q,format=None):
     doi = _is_doi(DOI_PATTERN_STUDY, q)
 
     try:
-        if doi:
-            id = int(doi)
-        else:
-            id = int(q)
-        study = Study.objects.get(pk=id)
+        id = doi if doi else int(q)
+        study = Study.objects.published().get(pk=id)
     except:
         return HttpResponse(status=404)
 
@@ -259,10 +253,8 @@ def study_all_pheno(request,q=None,format=None):
     """
     doi = _is_doi(DOI_PATTERN_STUDY, q)
     try:
-        if doi:
-            study = Study.objects.get(doi=q)
-        else:
-            study = Study.objects.get(pk=int(q))
+        id = doi if doi else int(q)
+        study = Study.objects.published().get(pk=id)
     except:
         return HttpResponse(status=404)
 
@@ -294,10 +286,8 @@ def study_phenotype_value_matrix(request,q,format=None):
     """
     doi = _is_doi(DOI_PATTERN_STUDY, q)
     try:
-        if doi:
-            study = Study.objects.get(doi=q)
-        else:
-            study = Study.objects.get(pk=int(q))
+        id = doi if doi else int(q)
+        study = Study.objects.published().get(pk=id)
     except:
         return HttpResponse(status=404)
 
@@ -325,7 +315,7 @@ def phenotype_correlations(request,q=None):
     pheno_dict = {}
     for i,pid in enumerate(pids):
         try:
-            phenotype = Phenotype.objects.get(pk=pid)
+            phenotype = Phenotype.objects.published().get(pk=pid)
         except:
             return Response({'message':'FAILED','not_found':pid})
         pheno_acc_infos = phenotype.phenotypevalue_set.prefetch_related('obs_unit__accession')
@@ -416,10 +406,8 @@ def study_isatab(request,q,format=None):
     """
     doi = _is_doi(DOI_PATTERN_STUDY, q)
     try:
-        if doi:
-            study = Study.objects.get(doi=q)
-        else:
-            study = Study.objects.get(pk=int(q))
+        id = doi if doi else int(q)
+        study = Study.objects.published().get(pk=id)
     except:
         return HttpResponse(status=404)
 
@@ -638,5 +626,5 @@ def _is_doi(pattern, term):
     doi = pattern.match(term)
     if doi:
         # can't use REGEX capture groups because "("" causes problems in Swagger
-        return term.split(":")[1]
+        return int(term.split(":")[1])
     return None
