@@ -185,23 +185,22 @@ def detail_ontology_source(request,acronym,term_id=None):
 
 def _get_tree_to_root(term,root_nodes):
     tree = []
-    parent = term.parents.all()[0]
-    p_obj = None
     term_obj = {'id':term.id,'text':term.name,'state':{'selected':True},'children':True if term.children.count() > 0 else False}
-    while True:
+    parents = term.parents.all()
+
+    while len(parents) > 0:
+        parent = parents[0]
         p_obj = {'id':parent.id,'text':parent.name,'children': [term_obj],'state':{'opened':True}}
         for t in parent.children.all():
             if t.id != term_obj['id']:
                 p_obj['children'].append({'id':t.id,'text':t.name,'children':True if term.children.count() > 0 else False})
         parents = parent.parents.all()
-        if len(parents) == 0:
-            break
         term = parent
         term_obj = p_obj
-        parent = parents[0]
+        
     for t in root_nodes:
-        if t.id == parent.id:
-            tree.append(p_obj)
+        if t.id == term.id:
+            tree.append(term_obj)
         else:
             tree.append({'id':t.id,'text':t.name,'children':True if t.children.count() > 0 else False})
     return tree
