@@ -60,16 +60,16 @@ Search Result View for Global Search in AraPheno
 '''
 def SearchResults(request,query=None):
     if query==None:
-        phenotypes = Phenotype.objects.all()
-        studies = Study.objects.all()
+        phenotypes = Phenotype.objects.published().all()
+        studies = Study.objects.published().all()
         accessions = Accession.objects.all()
         ontologies = OntologyTerm.objects.all()
         download_url = "/rest/search"
     else:
-        phenotypes = Phenotype.objects.filter(Q(name__icontains=query) |
+        phenotypes = Phenotype.objects.published().filter(Q(name__icontains=query) |
                                               Q(to_term__id__icontains=query) |
                                               Q(to_term__name__icontains=query))
-        studies = Study.objects.filter(name__icontains=query)
+        studies = Study.objects.published().filter(name__icontains=query)
         accessions = Accession.objects.filter(name__icontains=query)
         ontologies = OntologyTerm.objects.filter(name__icontains=query)
         download_url = "/rest/search/" + str(query)

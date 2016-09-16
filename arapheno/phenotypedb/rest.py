@@ -59,13 +59,13 @@ def search(request,query_term=None,format=None):
     """
     if request.method == "GET":
         if query_term==None:
-            studies = Study.objects.all()
-            phenotypes = Phenotype.objects.all()
+            studies = Study.objects.published().all()
+            phenotypes = Phenotype.objects.published().all()
             accessions = Accession.objects.all()
             ontologies = OntologyTerm.objects.all()
         else:
-            studies = Study.objects.filter(name__icontains=query_term)
-            phenotypes = Phenotype.objects.filter(Q(name__icontains=query_term) |
+            studies = Study.objects.published().filter(name__icontains=query_term)
+            phenotypes = Phenotype.objects.published().filter(Q(name__icontains=query_term) |
                                                   Q(to_term__id__icontains=query_term) |
                                                   Q(to_term__name__icontains=query_term))
             accessions = Accession.objects.filter(name__icontains=query_term)
@@ -97,7 +97,7 @@ def phenotype_list(request,format=None):
         - text/csv
         - application/json
     """
-    phenotypes = Phenotype.objects.all()
+    phenotypes = Phenotype.objects.published().all()
 
     if request.method == "GET":
         serializer = PhenotypeListSerializer(phenotypes,many=True)
@@ -196,7 +196,7 @@ def study_list(request,format=None):
         - text/csv
         - application/json
     """
-    studies = Study.objects.all()
+    studies = Study.objects.published().all()
     if request.method == "GET":
         serializer = StudyListSerializer(studies,many=True)
         return Response(serializer.data)
@@ -470,9 +470,6 @@ def accession_detail(request,pk,format=None):
         return Response(serializer.data)
 
 
-'''
-List all phenotypes for study id/doi
-'''
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
 @renderer_classes((PhenotypeListRenderer,JSONRenderer,))
@@ -488,7 +485,7 @@ def accession_phenotypes(request,pk,format=None):
         - text/csv
         - application/json
     """
-    phenotypes = Phenotype.objects.filter(phenotypevalue__obs_unit__accession_id=pk)
+    phenotypes = Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=pk)
 
     if request.method == "GET":
         serializer = PhenotypeListSerializer(phenotypes,many=True)
