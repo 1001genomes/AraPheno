@@ -75,7 +75,7 @@ i.material-icons.error {
 .card-subtitle {
     font-size: 20px;
     font-weight: 300;
-}   
+}
 
 .card.ontology {
     width:390px;
@@ -109,4 +109,31 @@ i.material-icons.error {
 
 .ontology-source-container .jstree {
     overflow:hidden;
+}
+.citation {
+    margin-top:10px;
+}
+.citation .citation-issue {
+    padding-left: 0.5em;
+    margin-left: 1.5em;
+    font-weight:bold;
+}
+.citation .citation-author-list {
+    margin-left: 2.5em;
+    padding-left: 2.2em;
+}
+.citation .citation-title {
+    padding-left: 2.1em;
+    color: #111111;
+    font-size: 1em;
+    font-weight: bolder;
+    margin-top: .2em;
+}
+.citation cite {
+    margin-left: 0.5em;
+    padding-left: 2.5em;
+    font-size: 80%;
+    color: grey;
+    font-style: normal;
+    margin-top: .25em;
 }

@@ -54,7 +54,7 @@
                 </div>
                 <a class="waves-effect waves-light btn-large brown" id="start_tour" ><i class="material-icons left">rowing</i>Take a Tour</a>
             </div>
-            
+
             <div class="col s12 m6 l3">
                 <div class="icon-block">
                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">help_outline</i></h3>
@@ -88,6 +88,15 @@
                 <h5 class="light"><i class="material-icons brown-text" style="font-size=35px">fiber_new</i> News & Updates</h5>
                 <div class="card brown lighten-5">
                     <div class="card-content black-text">
+                       <span class="card-title"><i class="material-icons brown-text" style="font-size=50px">library_books</i> AraPheno paper published</span>
+                        <p class="light">
+                            We are happy to annouce that AraPheno was <a href="http://nar.oxfordjournals.org/content/early/2016/10/24/nar.gkw986.abstract" target="_blank">published</a> in the Database issue of Nucleic Acids Research (NAR):<br>
+                            <div style="padding:10px">Ümit Seren, Dominik Grimm, Joffrey Fitz, Detlef Weigel, Magnus Nordborg, Karsten Borgwardt, and Arthur Korte:AraPheno: A public database for Arabidopsis thaliana phenotype, Nucl. Acids Res. first published online October 24, 2016 doi:10.1093/nar/gkw986</div><br>
+                        </p>
+                    </div>
+                </div>
+                <div class="card brown lighten-5">
+                    <div class="card-content black-text">
                        <span class="card-title"><i class="material-icons brown-text" style="font-size=50px">new_releases</i> AraPheno is online</span>
                         <p class="light">
                             We are proud to annouce that the first public phenotype database for the model organism <em>Arabidopsis thaliana</em> has launched.
@@ -100,7 +109,7 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function(){    
+    $(document).ready(function(){
         $('.parallax').parallax();
     });
 
@@ -109,7 +118,7 @@
     });
 
     $('#submit_search').click(function(){
-        document.forms['_search_form'].submit(); 
+        document.forms['_search_form'].submit();
     });
 
     $('#start_tour').click(function() {
@@ -143,7 +152,7 @@
           ga('send', 'event', 'Tour', 'nextpage','Home');
           window.location.href = 'phenotypes/?multipage=true';
         }).onexit(function() {
-          ga('send', 'event', 'Tour', 'exit','Home');  
+          ga('send', 'event', 'Tour', 'exit','Home');
         });
     });
 
