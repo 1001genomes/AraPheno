@@ -27,7 +27,6 @@ class Command(BaseCommand):
                             help='Specify wheather to delete also the sub-entitites')
 
     def handle(self, *args, **options):
-        import pdb ; pdb.set_trace()
         entity_id = options['entity_id']
         entity = options['entity']
         recursive  = options['recursive']
