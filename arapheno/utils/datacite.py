@@ -48,3 +48,29 @@ def submit_to_datacite(obj):
         raise Exception('Creating DOI failed: %s' % response.text)
 
     return response.text
+
+def remove_from_datacite(obj, recursive):
+    """
+    Remove a Study or Phenotype with datacite
+    """
+    auth = (settings.DATACITE_USERNAME, settings.DATACITE_PASSWORD)
+    url = settings.DOI_BASE_URL + obj.get_absolute_url()
+
+    failed_sub_entities = 0
+    if recursive and isinstance(obj,Study):
+        phenotypes = obj.phenotype_set.all()
+        try:
+            for phenotype in phenotypes:
+                remove_from_datacite(phenotype,True)
+        except Exception as err:
+            failed_sub_entities = failed_sub_entities + 1
+
+
+    # if successful send metadata
+    response = requests.delete('%s/metadata/%s' % (settings.DATACITE_REST_URL,obj.doi),
+                             auth=auth,
+                             headers={'Content-Type':'application/xml;charset=UTF-8'})
+    if response.status_code != 200:
+        raise Exception('Making dataset inactive failed %s' % response.text)
+
+    return failed_sub_entities
