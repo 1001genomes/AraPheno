@@ -58,13 +58,13 @@ def parseAccessionFile(filename=None, species=1):
             try:
                 accession.latitude = float(row[4])
             except:
-                pass 
+                pass
             try:
                 accession.longitude = float(row[5])
-            except: 
+            except:
                 pass
             accession.collector = row[6]
-            try: 
+            try:
                 accession.collection_data = datetime.strptime(row[7],'%Y-%m-%d %H:%M:%S')
             except:
                 pass

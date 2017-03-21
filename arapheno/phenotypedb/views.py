@@ -117,12 +117,12 @@ def detail_accession(request, pk=None):
 
 def _get_ontology_terms(term,ids = None):
     if not ids:
-        ids = [term.id] 
+        ids = [term.id]
     for t in term.children.all():
         ids.append(t.id)
         _get_ontology_terms(t,ids)
     return ids
-    
+
 def _get_db_field_from_source(source):
     if source.acronym == 'PECO':
         return 'eo_term'
@@ -132,11 +132,11 @@ def _get_db_field_from_source(source):
         return 'uo_term'
     else:
         raise Exception('term %s unknown' % source.acronym)
-    
+
 
 def detail_ontology_term(request,pk=None):
     """
-    Detailed view of Ontology 
+    Detailed view of Ontology
     """
     variable_dict = {}
     phenotypes = []
@@ -166,12 +166,12 @@ def list_ontology_sources(request):
 
 def detail_ontology_source(request,acronym,term_id=None):
     """
-    Detailed view of OntologySource 
+    Detailed view of OntologySource
     """
     variable_dict = {}
     source = OntologySource.objects.get(acronym=acronym)
     variable_dict['object']  = source
-    root_nodes = source.ontologyterm_set.filter(parents=None) 
+    root_nodes = source.ontologyterm_set.filter(parents=None)
     tree = None
     if term_id is not None:
         tree = []
@@ -197,7 +197,7 @@ def _get_tree_to_root(term,root_nodes):
         parents = parent.parents.all()
         term = parent
         term_obj = p_obj
-        
+
     for t in root_nodes:
         if t.id == term.id:
             tree.append(term_obj)
