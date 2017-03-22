@@ -15,11 +15,12 @@ from rest_framework.views import APIView
 from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession, Submission, OntologyTerm, OntologySource
 from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer, OntologyTermListSerializer
 from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeValueSerializer
-from phenotypedb.serializers import AccessionListSerializer, SubmissionDetailSerializer
+from phenotypedb.serializers import AccessionListSerializer, SubmissionDetailSerializer, AccessionPhenotypesSerializer
 
 from phenotypedb.forms import UploadFileForm
 from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer
 from phenotypedb.renderer import PLINKRenderer, PLINKMatrixRenderer
+from phenotypedb.parsers import AccessionTextParser
 from utils.isa_tab import export_isatab
 from django.views.decorators.csrf import csrf_exempt
 import scipy as sp
@@ -491,6 +492,31 @@ def accession_phenotypes(request,pk,format=None):
         serializer = PhenotypeListSerializer(phenotypes,many=True)
         return Response(serializer.data)
 
+@api_view(['POST'])
+@permission_classes((AllowAny,))
+@renderer_classes((JSONRenderer,))
+@parser_classes((JSONParser, AccessionTextParser))
+def accessions_phenotypes(request,format=None):
+    """
+    Retrieve all phenotypes for a list of accessions
+    ---
+
+    serializer: AccessionPhenotypesSerializer
+    omit_serializer: false
+
+    consumes:
+        - text/plain
+
+    produces:
+        - application/json
+    """
+    acc_phenotype_list = {}
+    for id in set(request.data):
+        acc_phenotype_list[id] = Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=id)
+    if request.method == "POST":
+        serializer = AccessionPhenotypesSerializer(acc_phenotype_list)
+        return Response(serializer.data)
+
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticatedOrReadOnly,))
@@ -502,7 +528,7 @@ def ontology_tree_data(request,acronym=None,term_id=None,format=None):
     produces:
         - application/json
     """
-    if term_id is not None: 
+    if term_id is not None:
         term = OntologyTerm.objects.get(pk=term_id)
         data = [{'text':t.name,'id':t.id, 'children': True if t.children.count() > 0 else False} for t in term.children.all()]
     else:
@@ -596,11 +622,11 @@ def delete_submission(request,pk,format=None):
                 submission.study.delete()
                 return Response(status.HTTP_204_NO_CONTENT)
             else:
-                return Response(status.HTTP_403_FORBIDDEN) 
+                return Response(status.HTTP_403_FORBIDDEN)
         except Exception as err:
             return HttpResponse(str(err),status=404)
 
-            
+
 
 
 def _convert_dataframe_to_list(df, df_pivot):

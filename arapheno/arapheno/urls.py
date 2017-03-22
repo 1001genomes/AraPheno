@@ -111,6 +111,8 @@ restpatterns = [
 
     url(r'^rest/accession/list/$', rest.accession_list),
 
+    url(r'^rest/accession/phenotypes/$', rest.accessions_phenotypes),
+
     url(r'^rest/accession/(?P<pk>%s)/$'% ID_REGEX, rest.accession_detail),
 
     url(r'^rest/accession/(?P<pk>%s)/phenotypes/$' % ID_REGEX, rest.accession_phenotypes),
@@ -124,7 +126,7 @@ restpatterns = [
     #url(r'rest/submission/(?P<pk>%s)/(?P<phenotype_id>%s)/$' term_id% (UUID_REGEX, ID_REGEX), rest.submission_phenotype_infos),
 
     url(r'rest/terms/(?P<acronym>%s)/$' % ONTOLOGY_SOURCE_REGEX, rest.ontology_tree_data,name='ontology_tree_root'),
-    
+
     url(r'rest/terms/(?P<term_id>%s)/$' % ONTOLOGY_REGEX, rest.ontology_tree_data,name='ontology_tree_children')
     #url(r'rest/ontology/(?P<pk>%s)/(?P<term_id>%s)' % ID_REGEX )
 
