@@ -282,6 +282,13 @@ class Accession(models.Model):
         """Returns number of phenotypes"""
         return self.observationunit_set.values('phenotypevalue__phenotype').distinct().count()
 
+    @property
+    def cs_number_url(self):
+        """Returns the URL to the stock center detail page"""
+        if self.cs_number:
+            return "http://www.arabidopsis.org/servlets/StockSearcher?action=detail&stock_number=%s" % self.cs_number
+        return None
+
     def __unicode__(self):
         return u"%s (Accession)" % (mark_safe(self.name))
 
@@ -466,7 +473,7 @@ class OntologyTerm(models.Model):
     comment = models.TextField(blank=True, null=True)
     source = models.ForeignKey('OntologySource')
     children = models.ManyToManyField('self', related_name='parents', symmetrical=False)
-    
+
     objects = OntologyTermQuerySet.as_manager()
 
     def __unicode__(self):
@@ -481,7 +488,7 @@ class OntologyTerm(models.Model):
     """OntologyTerm Many To Many table """
     parent = models.ForeignKey("OntologyTerm",related_name="parent")
     child = models.ForeignKey("OntologyTerm",related_name="child")'''
-     
+
 
 
 

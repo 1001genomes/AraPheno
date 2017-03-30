@@ -69,7 +69,7 @@
                     {% if object.collection_date %}
                         <span>{{ object.collection_date }}</span>
                     {% else %}
-                        - 
+                        -
                     {% endif %}
                 </div>
             </div>
@@ -86,7 +86,9 @@
                     <span>CS number:</span>
                 </div>
                 <div class="col s9">
-                    <span>{{ object.cs_number }}</span>
+                    {% if object.cs_number_url %}
+                      <a href="{{ object.cs_number_url }}" target="_blank">{{ object.cs_number }}</a>
+                    {% endif %}
                 </div>
             </div>
             <div class="row">
@@ -134,7 +136,7 @@
     </div>
 </div>
 <script type="text/javascript">
-    $(document).ready(function(){    
+    $(document).ready(function(){
         $('.parallax').parallax();
         $('ul.tabs').on('click', 'a', function(e) {
             var target = e.currentTarget;
@@ -163,7 +165,7 @@
         {% autoescape off %}
         dataTO = google.visualization.arrayToDataTable([
             ['TO', '# Number'],
-            
+
             {% for to in to_data %}
                 [ "{{ to.to_term__name }}", {{ to.count }} ],
             {% endfor %}],
@@ -171,14 +173,14 @@
 
          dataEO = google.visualization.arrayToDataTable([
             ['EO', '# Number'],
-            
+
             {% for eo in eo_data %}
                 [ "{{ eo.eo_term__name }}", {{ eo.count }} ],
             {% endfor %}],
             false);
         dataUO = google.visualization.arrayToDataTable([
             ['UO', '# Number'],
-            
+
             {% for uo in uo_data %}
                 [ "{{ uo.uo_term__name }}", {{ uo.count }} ],
             {% endfor %}],
