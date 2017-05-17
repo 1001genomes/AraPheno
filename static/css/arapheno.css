@@ -71,3 +71,69 @@ i.material-icons.error {
     width: 60%;
     text-align: center;
 }
+
+.card-subtitle {
+    font-size: 20px;
+    font-weight: 300;
+}
+
+.card.ontology {
+    width:390px;
+}
+.card.ontology p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 180px;
+}
+
+.ontology-container {
+    flex:1;
+    justify-content:space-around;
+    flex-wrap:wrap;
+}
+.ontology-source-container {
+    display:flex;
+    flex-direction:column;
+    flex:1;
+}
+.ontology-source-container .row {
+    display:flex;
+    flex:1;
+}
+
+.ontology-source-container .phenotype-container {
+    display:flex;
+    flex:1;
+    flex-direction: column;
+}
+
+.ontology-source-container .jstree {
+    overflow:hidden;
+}
+.citation {
+    margin-top:10px;
+}
+.citation .citation-issue {
+    padding-left: 0.5em;
+    margin-left: 1.5em;
+    font-weight:bold;
+}
+.citation .citation-author-list {
+    margin-left: 2.5em;
+    padding-left: 2.2em;
+}
+.citation .citation-title {
+    padding-left: 2.1em;
+    color: #111111;
+    font-size: 1em;
+    font-weight: bolder;
+    margin-top: .2em;
+}
+.citation cite {
+    margin-left: 0.5em;
+    padding-left: 2.5em;
+    font-size: 80%;
+    color: grey;
+    font-style: normal;
+    margin-top: .25em;
+}

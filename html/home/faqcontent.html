@@ -14,7 +14,7 @@
     <div class="section">
         <div class="row">
             <div class="col s12 l12 m12">
-            
+
                 <ul class="collection">
                 <li class="collection-item avatar">
                 <i class="material-icons circle brown">help_outline</i>
@@ -41,12 +41,45 @@
                         <div class="collapsible-header"><i class="material-icons">star</i>Is it possible to download the phenotype data?</div>
                         <div class="collapsible-body"><p>Yes phenotype data can be download at the individual phenotype views. You can choose if you like to download the phenotypic meta-information, or the actual phenotype values. For this purpose, you can choose different formats, including CSV, JSON and PLINK.</p></div>
                     </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">star</i>Should I upload mean/average values or replicates?</div>
+                        <div class="collapsible-body">
+                            <p>
+                                Whenever replicate values are available, you should upload the replicate values and not the averages/means.
+                                Both submission formats (ISA-TAB and PLINK) support uploading replicate values.
+                            </p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">star</i>Is it possible to preserve the replicate information across multiple phenotypes?</div>
+                        <div class="collapsible-body">
+                            <p>
+                                Yes, it is possible to preserve the specific value of each replicate across multiple phenotypes.
+                                In case of PLINK just repeat the accessionid multiple times and add a an arbitary number into the replicateid column or alternatively leave it empty (it is not used by AraPheno).
+                                For PLINK this should look as follows:
+                            </p>
+                            <pre>
+                                accessionid replicateid pheno1 pheno2
+                                        6909           1   24.5  100.2
+                                        6909           2   23.2  101.5
+                                        6909           3   25.2   99.4
+                                        6414           4    5.4   10.4
+                                        6414           5    6.4   11.2
+                                        6414           6    4.2    9.8
+                                ...
+                            </pre>
+                            <p>
+                                AraPheno will create separate replicate values for each accession and make sure that for example replicate <b>1</b> of <b>6909</b> has 24.6 for <b>pheno1</b> and 100.2 for </b>pheno2</b>.<br>
+                                This also works for the ISA-TAB format.
+                            </p>
+                        </div>
+                    </li>
                     <!--<li>
                         <div class="collapsible-header"><i class="material-icons">star</i>What do the terms TO, EO and UO mean?</div>
                         <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
                     </li>-->
                  </ul>
-                
+
                 </li>
                 </ul>
 
@@ -56,7 +89,7 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function(){    
+    $(document).ready(function(){
         $('.parallax').parallax();
     });
 </script>

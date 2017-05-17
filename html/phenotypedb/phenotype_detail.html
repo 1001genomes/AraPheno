@@ -70,6 +70,14 @@
         <div class="col s12 m5" id="infos">
             <div class="row">
                 <div class="col s3">
+                    <span>ID:</span>
+                </div>
+                <div class="col s9">
+                    {{ object.id }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
                     <span>Study:</span>
                 </div>
                 <div class="col s9">
@@ -284,7 +292,7 @@
 
         histogramData = google.visualization.arrayToDataTable([
           ['Phenotype', 'Frequency'],
-          {% for item in object.phenotypevalue_set.all %}[ "{{ item.id }}", {{ item.value }} ],{% endfor %}
+          {% for item in object.phenotypevalue_set.all %}[ "{{ item.obs_unit.accession.name }} ({{ item.id }})", {{ item.value }} ],{% endfor %}
         ],false);
 
         explorerData = google.visualization.arrayToDataTable([
@@ -309,7 +317,7 @@
         {% endautoescape %}
 
         var geoOptions = {};
-        var histogramOptions = {height:500,width:"100%"};
+        var histogramOptions = {height:500,width:"100%",legend: { position: 'none' },hAxis:{title:'Phenotypic Value'},vAxis:{title:'Frequency'}};
         var explorerOptions = {height:500};
         var tableOptions = {height:500, width:"100%",allowHtml:true};
 

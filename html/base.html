@@ -20,6 +20,8 @@
 
             main {
                 flex: 1 0 auto;
+                display:flex; 
+                flex-direction:column;
             }
             .chart {
                 height:400px;
@@ -55,6 +57,9 @@
                             <li><a class="white-text" href="/phenotypes">Phenotypes</a></li>
                             <li class="divider"></li>
                             <li><a class="white-text" href="/accessions">Accessions</a></li>
+                            <li class="divider"></li>
+                            <li><a class="white-text" href="{% url 'ontologysource_list' %}">Ontologies</a></li>
+                            
                         </ul>
                     </li>
                     <li>

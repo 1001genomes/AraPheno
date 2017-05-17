@@ -276,6 +276,19 @@ class Accession(models.Model):
     cs_number = models.CharField(max_length=255, blank=True, null=True) # Stock center number
     species = models.ForeignKey("Species") #species foreign key
 
+
+    @property
+    def count_phenotypes(self):
+        """Returns number of phenotypes"""
+        return self.observationunit_set.values('phenotypevalue__phenotype').distinct().count()
+
+    @property
+    def cs_number_url(self):
+        """Returns the URL to the stock center detail page"""
+        if self.cs_number:
+            return "http://www.arabidopsis.org/servlets/StockSearcher?action=detail&stock_number=%s" % self.cs_number
+        return None
+
     def __unicode__(self):
         return u"%s (Accession)" % (mark_safe(self.name))
 
@@ -371,7 +384,11 @@ class Phenotype(models.Model):
             return -1
         return self.curation.correct
 
-
+    def get_values_for_acc(self,accession_id):
+        """
+        Retrieves the phenotype value for a specific accession
+        """
+        return self.phenotypevalue_set.filter(obs_unit__accession_id=accession_id).values_list("value", flat=True)
 
 
     @property
@@ -455,6 +472,7 @@ class OntologyTerm(models.Model):
     definition = models.TextField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     source = models.ForeignKey('OntologySource')
+    children = models.ManyToManyField('self', related_name='parents', symmetrical=False)
 
     objects = OntologyTermQuerySet.as_manager()
 
@@ -465,6 +483,15 @@ class OntologyTerm(models.Model):
         """return the url for more information about the OntologyTerm"""
         return 'https://bioportal.bioontology.org/ontologies/%s?p=classes&conceptid=http://purl.obolibrary.org/obo/%s' % (self.source.acronym, self.id.replace(':', '_'))
 
+
+'''class OntologyTerm2Term(models.Model):
+    """OntologyTerm Many To Many table """
+    parent = models.ForeignKey("OntologyTerm",related_name="parent")
+    child = models.ForeignKey("OntologyTerm",related_name="child")'''
+
+
+
+
 class OntologySource(models.Model):
     """
     OntologySource model
@@ -473,6 +500,7 @@ class OntologySource(models.Model):
     acronym = models.CharField(max_length=50)
     name = models.CharField(max_length=255)
     url = models.URLField()
+    description = models.TextField(null=True)
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.acronym)

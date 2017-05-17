@@ -14,3 +14,4 @@ services:
       - DATACITE_PASSWORD=${DATACITE_PASSWORD}
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_USER=${EMAIL_USER}
+      - DJANGO_SETTINGS_MODULE=arapheno.settings.prod

@@ -58,6 +58,8 @@ class PLINKMatrixRenderer(PhenotypeMatrixRenderer):
         headers.remove('accession_name')
         headers.insert(0,'obs_unit_id')
         headers.insert(0,'accession_id')
+        for i,header in enumerate(headers):
+            headers[i] = header.replace(' ','_')
         return headers
 
 
@@ -71,7 +73,7 @@ class PLINKRenderer(renderers.BaseRenderer):
     def render(self,data,media_type=None,renderer_context=None):
         if data is None:
             return "No Data Found"
-        plink = "FID IID \"" + data[0]['phenotype_name'] + "\"\n"
+        plink = "FID IID \"" + data[0]['phenotype_name'].replace(' ','_') + "\"\n"
         for element in data:
             if not ("accession_id" in element):
                 return "Wrong Data Format"

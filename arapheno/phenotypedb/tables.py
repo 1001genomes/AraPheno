@@ -4,6 +4,7 @@ Tables for django-table2
 import django_tables2 as tables
 from django_tables2.utils import A
 from django.utils.safestring import mark_safe
+import numpy as np
 
 
 class ReducedPhenotypeTable(tables.Table):
@@ -47,6 +48,21 @@ class PhenotypeTable(ReducedPhenotypeTable):
         attrs = {"class": "striped"}
 
 
+class AccessionPhenotypeTable(PhenotypeTable):
+    """
+    Table that is displayed in the accession detial view
+    """
+    value = tables.Column(empty_values=(),verbose_name='Value (mean)')
+
+    def __init__(self, accession_id, *args, **kwargs):
+        super(AccessionPhenotypeTable, self).__init__(*args, **kwargs)
+        self.accession_id = accession_id
+
+    def render_value(self,record):
+        values = record.get_values_for_acc(self.accession_id)
+        if not values:
+            return "N/A"
+        return str(np.mean(values))
 
 
 class StudyTable(tables.Table):
@@ -87,7 +103,9 @@ class AccessionTable(tables.Table):
     collector = tables.Column(accessor="collector", verbose_name="Collector", order_by="collector")
     longitude = tables.Column(accessor="longitude", verbose_name="Longitude", order_by="longitude")
     latitude = tables.Column(accessor="latitude", verbose_name="Latitude", order_by="latitude")
-    cs_number = tables.Column(accessor="cs_number", verbose_name="CS Number", order_by="cs_number")
+    cs_number = tables.URLColumn({"target":"_blank"},lambda record: record.cs_number, accessor="cs_number_url", verbose_name="CS Number", order_by="cs_number")
+    number_of_phenotypes = tables.Column(accessor="count_phenotypes",verbose_name='# Phenotypes')
+
 
     class Meta:
         attrs = {"class": "striped"}
@@ -119,3 +137,16 @@ class CurationPhenotypeTable(tables.Table):
     eo = tables.Column(accessor="eo_term.name", verbose_name="Environmental Ontoloy (EO)", order_by="eo_term.name")
     uo = tables.Column(accessor="uo_term.name", verbose_name="Unit Ontology (UO)", order_by="uo_term.name")
     status = StatusColumn(accessor="curation_status",verbose_name="Status")
+
+
+class OntologyTermTable(tables.Table):
+    """
+    Table that is displayed for ontology terms
+    """
+    name = tables.LinkColumn("ontology_detail", args=[A('source.acronym'), A('pk')], text=lambda record: record.name, verbose_name="Ontology Name", order_by="name")
+    source = tables.LinkColumn("ontologysource_detail",args=[A('source.acronym')], text=lambda record: '%s (%s)' % (record.source.name, record.source.acronym),verbose_name='Source',order_by="source.name")
+    definition = tables.Column(accessor="definition", verbose_name="Definition", order_by="definition")
+    info = tables.TemplateColumn('<a target="_blank" href="{{record.get_info_url}}" >Infos</a>')
+
+    class Meta:
+        attrs = {"class": "striped"}

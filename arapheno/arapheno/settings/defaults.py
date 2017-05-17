@@ -24,7 +24,7 @@ ADMINS = [('Uemit', 'uemit.seren@gmi.oeaw.ac.at')]
 SECRET_KEY = '1g)fcq3@lg*lb^@ia#uw3&!)-a3__v(_oc56*%s82o16og*hg8'
 
 
-ALLOWED_HOSTS = ['arapheno.1001genomes.org']
+ALLOWED_HOSTS = ['arapheno.1001genomes.org','arapheno.sci.gmi.oeaw.ac.at']
 
 # Application definition
 
@@ -145,3 +145,20 @@ DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
 DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
 DATACITE_DOI_URL = 'http://search.datacite.org/works'
 DOI_BASE_URL = 'http://arapheno.1001genomes.org'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}

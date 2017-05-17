@@ -28,6 +28,8 @@ ID_REGEX = r"[0-9]+"
 REGEX_STUDY = ID_REGEX + "|" + rest.DOI_REGEX_STUDY
 REGEX_PHENOTYPE = ID_REGEX + "|" + rest.DOI_REGEX_PHENOTYPE
 UUID_REGEX = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+ONTOLOGY_REGEX = r"(EO|TO|UO){1}:[0-9]*"
+ONTOLOGY_SOURCE_REGEX = "(PECO|PTO|UO)"
 
 urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
@@ -43,6 +45,11 @@ urlpatterns = [
     url(r'^accessions/$', phenotypedb.views.list_accessions, name="accessions"),
     url(r'^accession/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.detail_accession, name="accession_detail"),
     url(r'^study/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.detail_study, name="study_detail"),
+    url(r'^ontology/$', phenotypedb.views.list_ontology_sources,name="ontologysource_list"),
+    url(r'^ontology/(?P<acronym>%s)/$' % ONTOLOGY_SOURCE_REGEX, phenotypedb.views.detail_ontology_source,name="ontologysource_detail"),
+    url(r'^ontology/(?P<acronym>%s)/(?P<term_id>%s)/$' % (ONTOLOGY_SOURCE_REGEX,ONTOLOGY_REGEX), phenotypedb.views.detail_ontology_source,name="ontology_detail"),
+    url(r'^term/(?P<pk>%s)/$' % ONTOLOGY_REGEX, phenotypedb.views.detail_ontology_term,name="term_detail"),
+    url(r'^term/$', phenotypedb.views.detail_ontology_term),
     url(r'^about/$', home.views.about),
     url(r'^faq/$', home.views.faq),
     url(r'^faq/content/$', home.views.faqcontent),
@@ -104,6 +111,8 @@ restpatterns = [
 
     url(r'^rest/accession/list/$', rest.accession_list),
 
+    url(r'^rest/accession/phenotypes/$', rest.accessions_phenotypes),
+
     url(r'^rest/accession/(?P<pk>%s)/$'% ID_REGEX, rest.accession_detail),
 
     url(r'^rest/accession/(?P<pk>%s)/phenotypes/$' % ID_REGEX, rest.accession_phenotypes),
@@ -112,9 +121,14 @@ restpatterns = [
 
     url(r'rest/submission/(?P<pk>%s)/$' % UUID_REGEX, rest.submission_infos,name='submission_infos'),
 
-    url(r'rest/submission/(?P<pk>%s)/delete$' % UUID_REGEX, rest.delete_submission)
+    url(r'rest/submission/(?P<pk>%s)/delete$' % UUID_REGEX, rest.delete_submission),
 
-    #url(r'rest/submission/(?P<pk>%s)/(?P<phenotype_id>%s)/$' % (UUID_REGEX, ID_REGEX), rest.submission_phenotype_infos),
+    #url(r'rest/submission/(?P<pk>%s)/(?P<phenotype_id>%s)/$' term_id% (UUID_REGEX, ID_REGEX), rest.submission_phenotype_infos),
+
+    url(r'rest/terms/(?P<acronym>%s)/$' % ONTOLOGY_SOURCE_REGEX, rest.ontology_tree_data,name='ontology_tree_root'),
+
+    url(r'rest/terms/(?P<term_id>%s)/$' % ONTOLOGY_REGEX, rest.ontology_tree_data,name='ontology_tree_children')
+    #url(r'rest/ontology/(?P<pk>%s)/(?P<term_id>%s)' % ID_REGEX )
 
 ]
 #extend restpatterns with suffix options
