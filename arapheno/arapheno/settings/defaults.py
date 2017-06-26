@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'widget_tweaks',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -59,6 +60,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE_CLASSES = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -141,10 +143,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 DATACITE_PREFIX = '10.21958'
-DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
-DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
-DATACITE_DOI_URL = 'http://search.datacite.org/works'
-DOI_BASE_URL = 'http://arapheno.1001genomes.org'
+# DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
+# DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
+# DATACITE_DOI_URL = 'http://search.datacite.org/works'
+# DOI_BASE_URL = 'http://arapheno.1001genomes.org'
 
 
 LOGGING = {
@@ -162,3 +164,11 @@ LOGGING = {
         },
     },
 }
+
+CORS_ORIGIN_WHITELIST = (
+    'www.1001genomes.org'
+    'aragwas.1001genomes.org',
+    'localhost:8000',
+    'localhost:8080',
+    '127.0.0.1:8080'
+)

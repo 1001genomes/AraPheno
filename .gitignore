@@ -6,3 +6,5 @@
 static_deploy
 .env
 .vscode
+.idea
+env/

@@ -12,3 +12,4 @@ numpy==1.11.1
 django-widget-tweaks==1.4.1
 requests==2.11.0
 git+git://github.com/timeu/biopy-isatab.git#egg=biopy-isatab
+django-cors-headers==2.1.0
