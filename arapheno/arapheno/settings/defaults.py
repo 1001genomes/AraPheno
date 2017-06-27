@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'widget_tweaks',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -59,6 +60,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE_CLASSES = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -162,3 +164,11 @@ LOGGING = {
         },
     },
 }
+
+CORS_ORIGIN_WHITELIST = (
+    'www.1001genomes.org'
+    'aragwas.1001genomes.org',
+    'localhost:8000',
+    'localhost:8080',
+    '127.0.0.1:8080'
+)

@@ -97,6 +97,7 @@ restpatterns = [
     url(r'^rest/phenotype/(?P<q>%s)/$' % REGEX_PHENOTYPE, rest.phenotype_detail),
 
     url(r'^rest/phenotype/(?P<q>%s)/values/$' % REGEX_PHENOTYPE, rest.phenotype_value),
+    url(r'^rest/phenotype/(?P<q>%s)/similar/$' % REGEX_PHENOTYPE, rest.phenotype_similar_list),
 
     url(r'^rest/study/list/$', rest.study_list),
     url(r'^rest/study/(?P<q>%s)/$' % REGEX_STUDY, rest.study_detail),

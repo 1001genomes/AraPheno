@@ -106,6 +106,37 @@ def phenotype_list(request,format=None):
 
 
 '''
+List all similar phenotypes
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeListRenderer,JSONRenderer))
+def phenotype_similar_list(request,q,format=None):
+    """
+    List all available phenotypes matching phenotype q's trait ontology
+    ---
+    serializer: PhenotypeListSerializer
+    omit_serializer: false
+
+    produces:
+        - text/csv
+        - application/json
+    """
+    doi = _is_doi(DOI_PATTERN_PHENOTYPE,q)
+    try:
+        id = doi if doi else int(q)
+        phenotype = Phenotype.objects.published().get(pk=id)
+    except:
+        return HttpResponse(status=404)
+    to_term = phenotype.to_term.id
+    phenotypes = Phenotype.objects.published().filter(to_term__id=to_term)
+
+    if request.method == "GET":
+        serializer = PhenotypeListSerializer(phenotypes,many=True)
+        return Response(serializer.data)
+
+
+'''
 Detail information about phenotype
 '''
 @api_view(['GET'])
