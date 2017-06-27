@@ -166,7 +166,7 @@ LOGGING = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'www.1001genomes.org'
+    'www.1001genomes.org',
     'aragwas.1001genomes.org',
     'localhost:8000',
     'localhost:8080',
