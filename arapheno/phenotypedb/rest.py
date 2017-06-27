@@ -129,7 +129,6 @@ def phenotype_similar_list(request,q,format=None):
     except:
         return HttpResponse(status=404)
     to_term = phenotype.to_term.id
-    print(to_term)
     phenotypes = Phenotype.objects.published().filter(to_term__id=to_term)
 
     if request.method == "GET":

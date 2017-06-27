@@ -143,10 +143,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 DATACITE_PREFIX = '10.21958'
-# DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
-# DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
-# DATACITE_DOI_URL = 'http://search.datacite.org/works'
-# DOI_BASE_URL = 'http://arapheno.1001genomes.org'
+DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
+DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
+DATACITE_DOI_URL = 'http://search.datacite.org/works'
+DOI_BASE_URL = 'http://arapheno.1001genomes.org'
 
 
 LOGGING = {
