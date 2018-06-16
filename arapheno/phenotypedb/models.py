@@ -237,27 +237,71 @@ class Submission(models.Model):
         on_delete=models.CASCADE
     )
 
+    def get_email_subject(self):
+        """Returns the email subject that will be send upon updates"""
+        if self.status == SUBMITTED:
+            return "Study submitted to AraPheno"
+        elif self.status == IN_CURATION:
+            return "Changes to Arapheno study requested"
+        elif self.status == PUBLISHED:
+            return "Study published in AraPheno"
+        raise Exception('Not supported')
+
     def get_email_text(self):
-        """returns the email body that will be sent upon submission"""
-        return '''
-        Dear %(firstname)s %(lastname)s,
+        """returns the email body that will be sent upon updates"""
+        if self.status == SUBMITTED:
+            return '''
+            Dear %(firstname)s %(lastname)s,
 
-        thank you for your submission.
-        The "%(study_name)s" study will be curated by one of our admins
-        and if it passes the quality assurance, it will be published.
-        If there are issues (missing information), we will contact you.
+            thank you for your submission.
+            The "%(study_name)s" study will be curated by one of our admins
+            and if it passes the quality assurance, it will be published.
+            If there are issues (missing information), we will contact you.
 
-        You can follow the curation process using following URL:
-        http://%(submission_url)s/%(submission_id)s
+            You can follow the curation process using following URL:
+            http://%(submission_url)s/%(submission_id)s
 
-        Thank you for your patience
+            Thank you for your patience
 
-        Best
+            Best
 
-        AraPheno Team
-        ''' % {'firstname':self.firstname, 'lastname':self.lastname,
-               'study_name':self.study.name, 'submission_url':'arapheno.1001genomes.org/submission',
-               'submission_id':self.id}
+            AraPheno Team
+            ''' % {'firstname':self.firstname, 'lastname':self.lastname,
+                'study_name':self.study.name, 'submission_url':'arapheno.1001genomes.org/submission',
+                'submission_id':self.id}
+        elif self.status == IN_CURATION:
+            return '''
+            Dear %(firstname)s %(lastname)s,
+
+            Curators have requested changes to your "%(study_name)s" study. 
+            Please check the requested changes and update the missing/incomplete fields using following URL:
+            http://%(submission_url)s/%(submission_id)s
+
+            Thank you for your patience
+
+            Best
+
+            AraPheno Team
+            ''' % {'firstname':self.firstname, 'lastname':self.lastname,
+                'study_name':self.study.name, 'submission_url':'arapheno.1001genomes.org/submission',
+                'submission_id':self.id}
+        elif self.status == PUBLISHED:
+            return '''
+            Dear %(firstname)s %(lastname)s,
+
+            Your "%(study_name)s" study has been successfully curated and we are happy to inform you
+            that the study is now publicly available under following URL: 
+            http://%(study_url)s/%(study_id)s
+
+            Thank you for your submission
+
+            Best
+
+            AraPheno Team
+            ''' % {'firstname':self.firstname, 'lastname':self.lastname,
+                'study_name':self.study.name, 'study_url':'arapheno.1001genomes.org/study',
+                'study_id':self.study.id}
+        raise Exception('Not supported')
 
     def __unicode__(self):
         return u'%s by %s %s' % (self.study.name, self.firstname, self.lastname)

@@ -281,7 +281,7 @@ def upload_file(request):
             try:
                 submission = form.save()
                 email = EmailMessage(
-                    'Study submitted to AraPheno',
+                    submission.get_email_subject(),
                     submission.get_email_text(),
                     'uemit.seren@gmi.oeaw.ac.at',
                     [submission.email],
