@@ -10,7 +10,7 @@ import numpy as np
 from django.db import transaction
 from phenotypedb.models import (Accession, ObservationUnit, Phenotype,
                                 PhenotypeValue, Species, Study, Submission)
-from utils.data_io import parse_plink_file
+from utils.data_io import parse_plink_file, parse_csv_file
 from utils.isa_tab import parse_isatab, save_isatab
 
 
@@ -21,8 +21,10 @@ def import_study(fhandle):
     name, extension = os.path.splitext(fhandle.name)
     if extension in ('.zip', '.tar.gz'):
         study = import_isatab(fhandle)
-    elif extension in ('.plink', '.csv'):
+    elif extension in ('.plink'):
         study = import_plink(fhandle, name)
+    elif extension in ( '.csv'):
+        study = import_csv(fhandle, name)
     else:
         raise Exception('Extension %s not supported' % extension)
     return study
@@ -49,11 +51,18 @@ def import_plink(fhandle, name):
     Imports a PLINK file into the database using a file handle or filename
     """
     plink_data = parse_plink_file(fhandle)
-    return save_plink(plink_data, name)
+    return save_plink_or_csv(plink_data, name)
+
+def import_csv(fhandle, name):
+    """
+    Imports a CSV file into the database using a file handle or filename
+    """
+    csv_data = parse_csv_file(fhandle)
+    return save_plink_or_csv(csv_data, name)
 
 
 @transaction.atomic
-def save_plink(plink_data, name):
+def save_plink_or_csv(plink_data, name):
     """
     Saves the parsed plink data in a database
     """

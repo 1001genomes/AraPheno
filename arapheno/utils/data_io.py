@@ -87,6 +87,16 @@ def convertAccessionsToJson(accessions,country_map = {}):
     return accession_dict
 
 '''
+Parse Phenotype File in CSV format
+Input: filename: filename of phenotype file
+Output: phenotype_matrix: accession_ids x phenotypes (or replicates)
+        accession_ids: scipy array of accession ids
+        names: phenotype or replicate names
+'''
+def parse_csv_file(f):
+    return _parse_pheno_file(f, ",")
+
+'''
 Parse Phenotype File in PLINK format
 Input: filename: filename of phenotype file
 Output: phenotype_matrix: accession_ids x phenotypes (or replicates)
@@ -94,6 +104,10 @@ Output: phenotype_matrix: accession_ids x phenotypes (or replicates)
         names: phenotype or replicate names
 '''
 def parse_plink_file(f):
+    return _parse_pheno_file(f, " ")
+
+
+def _parse_pheno_file(f, split_delimiter):
     #Parse file
     if not hasattr(f, 'read'):
         f = codecs.open(f,'rU',encoding='utf-8')
@@ -101,7 +115,6 @@ def parse_plink_file(f):
         accession_ids = []
         pmatrix = []
         names = None
-        split_delimiter = " "
         reader = csv.reader(f,delimiter=split_delimiter)
         for i,line in enumerate(reader):
             if i==0:
@@ -122,7 +135,6 @@ def parse_plink_file(f):
     finally:
         if f is not None:
             f.close()
-
 
 '''
 Parse an Ontology file as a dictionary

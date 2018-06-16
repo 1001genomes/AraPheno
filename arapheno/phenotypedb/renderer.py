@@ -24,6 +24,7 @@ class PhenotypeValueRenderer(CSVRenderer):
               'accession_latitude','accession_country','phenotype_value','obs_unit_id']
 
 class PhenotypeMatrixRenderer(CSVRenderer):
+    labels = {'obs_unit_id':'replicate_id'}
 
     def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
         if type(data) == list and len(data) > 0:
@@ -35,9 +36,8 @@ class PhenotypeMatrixRenderer(CSVRenderer):
         headers.remove('obs_unit_id')
         headers.remove('accession_id')
         headers.remove('accession_name')
-        headers.insert(0,'accession_name')
-        headers.insert(0,'accession_id')
         headers.insert(0,'obs_unit_id')
+        headers.insert(0,'accession_id')
         return headers
 
 class AccessionListRenderer(CSVRenderer):

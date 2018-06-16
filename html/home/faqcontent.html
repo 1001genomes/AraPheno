@@ -55,20 +55,32 @@
                         <div class="collapsible-body">
                             <p>
                                 Yes, it is possible to preserve the specific value of each replicate across multiple phenotypes.
-                                In case of PLINK just repeat the accessionid multiple times and add a an arbitary number into the replicateid column or alternatively leave it empty (it is not used by AraPheno).
-                                For PLINK this should look as follows:
+                                In case of PLINK or CSV just repeat the FID (accession_id) multiple times and add a an arbitary number into the IID (replicate_id) column or alternatively leave it empty (it is not used by AraPheno).
+                                <br>For <b>PLINK</b> this should look as follows:
                             </p>
                             <pre>
-                                accessionid replicateid pheno1 pheno2
+                                        FID            IID pheno1 pheno2
                                         6909           1   24.5  100.2
                                         6909           2   23.2  101.5
                                         6909           3   25.2   99.4
                                         6414           4    5.4   10.4
-                                        6414           5    6.4   11.2
+                                        6414           5          11.2
                                         6414           6    4.2    9.8
                                 ...
                             </pre>
-                            <p>
+                            <p>For <b>CSV</b> this should look as follows:</p>
+                            <pre>
+                                        accession_id,replicate_id,pheno1,pheno2
+                                        6909,           1,   24.5,  100.2
+                                        6909,           2,   23.2,  101.5
+                                        6909,           3,   25.2,   99.4
+                                        6414,           4,    5.4,   10.4
+                                        6414,           5,       ,   11.2
+                                        6414,           6,    4.2,    9.8
+                                ...
+                            </pre>
+                            <p> The main difference between PLINK and CSV is that PLINK uses a space as a delimiter and CSV uses a comma. Addtionally the headers are different.
+                                <br><br><b>Empty values are encoded as empty cells in both CSV and PLINK </b>(see pheno1 for accession_id/FID: 6414 and replicate_id/IID: 5)<br><br>
                                 AraPheno will create separate replicate values for each accession and make sure that for example replicate <b>1</b> of <b>6909</b> has 24.6 for <b>pheno1</b> and 100.2 for </b>pheno2</b>.<br>
                                 This also works for the ISA-TAB format.
                             </p>
