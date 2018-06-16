@@ -3,6 +3,9 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from phenotypedb.models import Submission, Study, Phenotype, Curation, StudyCuration, PhenotypeCuration
 from django.core.mail import EmailMessage
 from django.conf import settings
+from utils.datacite import submit_submission_to_datacite
+from django.contrib.messages import INFO,WARNING, ERROR
+from models import PUBLISHED
 
 class StudyCurationInline(admin.StackedInline):
     model = StudyCuration
@@ -21,6 +24,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     list_display = ['study_name', 'fullname','status','submission_date','curation_date','update_date','publication_date']
     list_filter = ('status',)
     readonly_fields = ('study',)
+    actions = ['submit_to_datacite']
 
     def save_model(self, request, obj, form, change):
         super(SubmissionAdmin, self).save_model(request, obj, form, change)
@@ -39,6 +43,24 @@ class SubmissionAdmin(admin.ModelAdmin):
         """Returns name of the study"""
         return submission.study.name
 
+    def submit_to_datacite(self, request, queryset):
+        success = []
+        error = []
+        for submission in queryset:        
+            try:
+                if submission.status == PUBLISHED:
+                    submit_submission_to_datacite(submission)
+                    subccess.append(submission)
+            except Exception as err:
+                error.append((submission, str(err)))
+                
+        if len(error) == 0:
+            self.message_user(request, "Successuflly sent all selected submissions to datacite", level=INFO)
+        else:
+            msg = "Not all submissions could be sent to datacite. Following failed:<br>"
+            for submission, err in error:
+                msg += "<br>%s:%s"  % (submission, err)
+            self.message_user(request, msg, level=WARNING)
 
 
 @admin.register(Study)

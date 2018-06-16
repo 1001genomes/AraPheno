@@ -4,7 +4,7 @@ Functions to generate the schema for datacite
 #from django.template import Template
 from django.template.loader import render_to_string
 from django.conf import settings
-from phenotypedb.models import Study, Phenotype
+from phenotypedb.models import Study, Phenotype, PUBLISHED
 import requests
 
 def generate_schema(obj):
@@ -20,7 +20,14 @@ def generate_schema(obj):
     context = {entity:obj}
     return render_to_string('%s_template.xml' % entity, context)
 
-
+def submit_submission_to_datacite(submission):
+    """Register the study and phenotypes of a submission in datacite"""
+    if submission.status != PUBLISHED:
+        raise Exception("Can only submit to datacite if submission is published")
+    study = submission.study
+    submit_to_datacite(study)
+    for phenotype in study.phenotype_set.all():
+        submit_to_datacite(phenotype)
 
 def submit_to_datacite(obj):
     """
