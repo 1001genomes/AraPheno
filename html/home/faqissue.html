@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - How to report feedback and issues?{% endblock title %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:130px">
+    <div class="section no-pad-bot">
+        <div class="container">
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara4.jpg" alt="Unsplashed background img 1"></div>
+</div>
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col s12 l12 m12">
+
+                <ul class="collection">
+                <li class="collection-item avatar">
+                    <i class="material-icons circle deep-orange">feedback</i>
+                    <span class="title black-text" style="font-size:20px">General information on how to report issues and sent feedback</span>
+                    <br><br>
+                    <p>
+		    <h5>Reporting Issues and Bugs</h5>
+		    <div class="citation">
+			Issues, bugs or any other kind of problems can be submitted on GitHub using the issue tracker of this project: <a target="_blank" href="https://github.com/1001genomes/AraPheno/issues">GitHub Issue Tracker</a>
+			<br><br>
+			If you do not have an GitHub account or you would like to submit any feedback you can use the following form:
+		    </div>
+                </div>
+                </li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.parallax').parallax();
+    });
+</script>
+{% endblock content %}

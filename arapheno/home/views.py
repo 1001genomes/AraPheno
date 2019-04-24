@@ -66,6 +66,12 @@ def faqcite(request):
     return render(request,'home/faqcite.html',{})
 
 '''
+FAQ IssUE Content View of AraPhen
+'''
+def faqissue(request):
+    return render(request,'home/faqissue.html',{})
+
+'''
 Search Result View for Global Search in AraPheno
 '''
 def SearchResults(request,query=None):
