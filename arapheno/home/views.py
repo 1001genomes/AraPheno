@@ -17,7 +17,11 @@ def home(request):
     if "global_search-autocomplete" in request.POST:
         query = request.POST.getlist('global_search-autocomplete')[0]
         return HttpResponseRedirect("search_results/%s/"%(query))
-    return render(request,'home/home.html',{"search_form":search_form})
+    stats = {}
+    stats['studies'] = Study.objects.count()
+    stats['phenotypes'] = Phenotype.objects.count()
+    stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y')
+    return render(request,'home/home.html',{"search_form":search_form,"stats":stats})
 
 '''
 About Information View of AraPheno
