@@ -51,7 +51,7 @@ def list_studies(request):
     """
     Displays table of all published studies
     """
-    table = StudyTable(Study.objects.published(), order_by="-name")
+    table = StudyTable(Study.objects.published(), order_by="-update_date")
     RequestConfig(request, paginate={"per_page":20}).configure(table)
     return render(request, 'phenotypedb/study_list.html', {"study_table":table})
 
