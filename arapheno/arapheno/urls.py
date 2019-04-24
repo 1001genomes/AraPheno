@@ -51,6 +51,7 @@ urlpatterns = [
     url(r'^term/(?P<pk>%s)/$' % ONTOLOGY_REGEX, phenotypedb.views.detail_ontology_term,name="term_detail"),
     url(r'^term/$', phenotypedb.views.detail_ontology_term),
     url(r'^about/$', home.views.about),
+    url(r'^links/$', home.views.links),
     url(r'^faq/$', home.views.faq),
     url(r'^faq/content/$', home.views.faqcontent),
     url(r'^faq/tutorials/$', home.views.faqtutorial),

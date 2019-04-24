@@ -30,6 +30,12 @@ def about(request):
     return render(request,'home/about.html',{})
 
 '''
+Links View of AraPheno
+'''
+def links(request):
+    return render(request,'home/links.html',{})
+
+'''
 FAQ View of AraPhen
 '''
 def faq(request):
