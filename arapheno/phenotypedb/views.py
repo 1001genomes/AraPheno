@@ -12,7 +12,7 @@ from django.views.generic.edit import DeleteView, UpdateView
 from django_tables2 import RequestConfig
 
 from phenotypedb.forms import (CorrelationWizardForm, PhenotypeUpdateForm,
-                               StudyUpdateForm, UploadFileForm)
+                               StudyUpdateForm, UploadFileForm, SubmitFeedbackForm)
 from phenotypedb.models import (Accession, OntologyTerm, Phenotype, Study,
                                 Submission, OntologySource)
 from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
@@ -297,3 +297,33 @@ def upload_file(request):
     else:
         form = UploadFileForm()
     return render(request, 'home/upload.html', {'form': form})
+
+
+def submit_feedback(request):
+    """
+    View to submit issues and feedback
+    """
+    if request.method == 'POST':
+        form = SubmitFeedbackForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                submission = form.save()
+                email = EmailMessage(
+                    submission.get_email_subject(),
+                    submission.get_email_text(),
+                    'uemit.seren@gmi.oeaw.ac.at',
+                    [submission.email],
+                    [settings.ADMINS[0][1]],
+                    reply_to=['uemit.seren@gmi.oeaw.ac.at']
+                )
+                email.send(True)
+                return HttpResponseRedirect('/submission/%s/' % submission.id)
+            except Accession.DoesNotExist as err:
+                form.add_error(None, 'Unknown accession with ID: %s' % err.args[-1])
+            except Exception as err:
+                form.add_error(None, str(err))
+    else:
+        form = SubmitFeedbackForm()
+    return render(request, 'home/feedback.html', {'form': form})
+
+
