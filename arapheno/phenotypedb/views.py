@@ -304,7 +304,7 @@ def submit_feedback(request):
     View to submit issues and feedback
     """
     if request.method == 'POST':
-        form = SubmitFeedbackForm(request.POST, request.FILES)
+        form = SubmitFeedbackForm(request.POST)
         if form.is_valid():
             try:
                 submission = form.save()

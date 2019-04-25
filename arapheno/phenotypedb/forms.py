@@ -116,16 +116,9 @@ class PhenotypeUpdateForm(forms.ModelForm):
             'type': TEXT_WIDGET
         }
 
-class SubmitFeedbackForm(forms.ModelForm):
-    file = forms.FileField(validators=[_validate_file])
-
-    class Meta:
-        model = Submission
-        fields = ['firstname', 'lastname', 'email']
-        widgets = {
-            'email': forms.EmailInput(attrs={'class':'validate', 'required':True}),
-            'firstname': TEXT_WIDGET,
-            'lastname': TEXT_WIDGET
-        }
-
+class SubmitFeedbackForm(forms.Form):
+    email = forms.EmailInput(attrs={'class':'validate', 'required':True})
+    firstname = forms.TextInput(attrs={'class':'validate', 'required':True})
+    lastname = forms.TextInput(attrs={'class':'validate', 'required':True})
+    message = forms.Textarea(attrs={'class':'validate materialize-textarea', 'required':True})
 

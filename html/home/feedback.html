@@ -22,7 +22,7 @@
         <div class="row">
             <form class="s12" action="/submission/" method="post" enctype="multipart/form-data" >
                 {% csrf_token %}
-
+                        {{ form.firstname }}
                 <div class="row">
                     <div class="input-field col s6">
                         {{ form.firstname }}
