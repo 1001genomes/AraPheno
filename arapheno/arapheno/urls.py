@@ -60,6 +60,7 @@ urlpatterns = [
     url(r'^faq/cite/$', home.views.faqcite),
     url(r'^faq/issue/$', home.views.faqissue),
     url(r'^feedback/$', phenotypedb.views.submit_feedback, name="feedback"),
+    url(r'^feedback/success/$', phenotypedb.views.submit_feedback_success, name="feedback_success"),
     url(r'^submission/$', phenotypedb.views.upload_file, name="submission"),
     url(r'^submission/(?P<pk>%s)/$' % UUID_REGEX, phenotypedb.views.SubmissionStudyResult.as_view(), name="submission_study_result"),
     url(r'^submission/(?P<pk>%s)/delete/$' % UUID_REGEX, phenotypedb.views.SubmissionStudyDeleteView.as_view(), name="submission_delete"),

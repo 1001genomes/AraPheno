@@ -14,15 +14,16 @@
     <div class="section">
         <div class="row">
             <h3 style="text-align:center">Submit Feedback</h3>
-            <p class="flow-text"> 
-                To submit a study with one or multiple phenotypes just upload a file in ISA-TAB format (<a href="/rest/study/12/isatab">sample</a>), PLINK format (<a href="/rest/study/12/values.plink">sample</a>) or CSV format (<a href="/rest/study/12/values.csv">sample</a>).
-                The submission will go through a manial revision process and once this is done, the study will be published.
+        </div>
+        <div class="row">
+            <p class="flow-text">
+                For general questions, bugs, feature requests or general feeedback, please send us a message!
+                If you have a GitHub account, you can create a bug report or a feature request directly in our <a href='https://github.com/1001genomes/Arapheno/issues' target='_blank'>Issue tracker</a>
             </p>
         </div>
         <div class="row">
-            <form class="s12" action="/submission/" method="post" enctype="multipart/form-data" >
+            <form class="s12" action="/feedback/" method="post" >
                 {% csrf_token %}
-                        {{ form.firstname }}
                 <div class="row">
                     <div class="input-field col s6">
                         {{ form.firstname }}
@@ -40,21 +41,13 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="file-field input-field" >
-                        <div class="btn">
-                            <span>Browse file</span>
-                            {{ form.file }}
-                        </div>
-
-                        <div class="file-path-wrapper input-field" style="height:70px">
-
-                            <input id="filename" class="file-path validate{% if form.file.errors %} invalid{% endif %}" value="{{ form.file.value | default_if_none:'' }}" name="Filename" type="text" required>
-                            <label for="filename" data-error="{{ form.file.errors.0 }}">Filename</label>
-                        </div>
+                    <div class="input-field col s12">
+                        {{ form.message }}
+                        <label for="{{ form.email.id_for_label }}" data-error="incorrect email" data-success="ok">Feedback</label>
                     </div>
                 </div>
                 <div class="row">
-                   <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Upload
+                   <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Send
                        <i class="material-icons right">send</i>
                    </button>
                 </div>

@@ -76,7 +76,7 @@ ROOT_URLCONF = 'arapheno.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['../html/', '../xml/'],
+        'DIRS': [os.path.join(BASE_DIR, '../html'), os.path.join(BASE_DIR,'../xml/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
-
+PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -135,7 +135,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = '../static_deploy'
 
-STATICFILES_DIRS = ['../static',]
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'../static'),]
 
 # https://github.com/marcgibbons/django-rest-swagger/issues/220
 # Needed to get     request.is_secure() == True

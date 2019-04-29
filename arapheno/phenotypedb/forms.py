@@ -117,8 +117,7 @@ class PhenotypeUpdateForm(forms.ModelForm):
         }
 
 class SubmitFeedbackForm(forms.Form):
-    email = forms.EmailInput(attrs={'class':'validate', 'required':True})
-    firstname = forms.TextInput(attrs={'class':'validate', 'required':True})
-    lastname = forms.TextInput(attrs={'class':'validate', 'required':True})
-    message = forms.Textarea(attrs={'class':'validate materialize-textarea', 'required':True})
-
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'validate', 'required':True}), required=True)
+    firstname = forms.CharField(widget=forms.TextInput(attrs={'class':'validate', 'required':True}), required=True)
+    lastname = forms.CharField(widget=forms.TextInput(attrs={'class':'validate', 'required':True}), required=True)
+    message = forms.CharField(widget=forms.Textarea(attrs={'class':'validate materialize-textarea', 'required':True}), required=True)

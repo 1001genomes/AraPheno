@@ -307,19 +307,20 @@ def submit_feedback(request):
         form = SubmitFeedbackForm(request.POST)
         if form.is_valid():
             try:
-                submission = form.save()
+                firstname = form.cleaned_data['firstname']
+                lastname = form.cleaned_data['lastname']
+                from_email = form.cleaned_data['email']
+                message = form.cleaned_data['message']
                 email = EmailMessage(
-                    submission.get_email_subject(),
-                    submission.get_email_text(),
-                    'uemit.seren@gmi.oeaw.ac.at',
-                    [submission.email],
-                    [settings.ADMINS[0][1]],
+                    subject='AraPheno-Feedback',
+                    from_email=from_email,
+                    to=['uemit.seren@gmi.oeaw.ac.at'],
+                    body=message,
+                    bcc=[settings.ADMINS[0][1]],
                     reply_to=['uemit.seren@gmi.oeaw.ac.at']
                 )
                 email.send(True)
-                return HttpResponseRedirect('/submission/%s/' % submission.id)
-            except Accession.DoesNotExist as err:
-                form.add_error(None, 'Unknown accession with ID: %s' % err.args[-1])
+                return HttpResponseRedirect('/feedback/success/')
             except Exception as err:
                 form.add_error(None, str(err))
     else:
@@ -327,3 +328,5 @@ def submit_feedback(request):
     return render(request, 'home/feedback.html', {'form': form})
 
 
+def submit_feedback_success(request):
+    return render(request, 'home/feedback_success.html')
