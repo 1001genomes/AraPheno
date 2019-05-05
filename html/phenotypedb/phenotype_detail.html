@@ -3,6 +3,9 @@
 {% block title %}AraPheno - Phenotype {{object.name}} {% endblock title %}
 
 {% block content %}
+{% with citation=phenotype type='phenotype' publications=phenotype.study.publications submission=phenotype.study.submission%}
+{% include 'phenotypedb/citation_box.html' %}
+{% endwith %}
 <div id="index-banner" class="parallax-container" style="height:80px">
     <div class="section no-pad-bot">
         <div class="container">
@@ -89,7 +92,8 @@
                     <span>DOI:</span>
                 </div>
                 <div class="col s9">
-                    <span><a href="{{ object.doi_link }}" target="_blank">{{ object.doi }}</a></span>
+                    <span><a href="{{ object.doi_link }}" target="_blank">{{ object.doi }}</a> (<a  class="modal-trigger" href="#citationModal"><i class="material-icons">format_quote</i>Cite
+                    </a>)</span>
                 </div>
             </div>
             <div class="row">

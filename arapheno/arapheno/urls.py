@@ -38,6 +38,7 @@ urlpatterns = [
     url(ur'^search_results//$', home.views.SearchResults, name="searchresults"),
     url(ur'^search_results/(?P<query>.*)/$', home.views.SearchResults, name="searchresults"),
     url(r'^phenotypes/$', phenotypedb.views.list_phenotypes, name="phenotypes"),
+    url(r'^download/$', phenotypedb.views.download, name="download"),
     url(r'^correlation/$', phenotypedb.views.correlation_wizard, name="correlation-wizard"),
     url(r'^correlation/(?P<ids>[\d,]+)/$', phenotypedb.views.correlation_results, name="correlation-results"),
     url(r'^phenotype/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.PhenotypeDetail.as_view(), name="phenotype_detail"),

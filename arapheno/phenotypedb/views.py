@@ -330,3 +330,9 @@ def submit_feedback(request):
 
 def submit_feedback_success(request):
     return render(request, 'home/feedback_success.html')
+
+def download(request):
+    """
+    Download data
+    """
+    return render(request, 'phenotypedb/download.html')
