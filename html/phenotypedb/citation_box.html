@@ -1,0 +1,153 @@
+<div id="citationModal" class="modal">
+    <div class="modal-content">
+        <h4>Citation for "{{ citation.name }}"</h4>
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs" id='citationtabs'>
+                    <li class="tab col s3"><a href="#apa">APA</a></li>
+                    <li class="tab col s3"><a href="#bibtex">BibTeX</a></li>
+                    <li class="tab col s3"><a href="#ris">RIS</a></li>
+                </ul>
+            </div>
+            <div id="apa" class="col s12">
+              <div class="divider"></div>
+                <div class="section">
+                    <h5>Original publication</h5>
+                    {% for p in publications.all %}
+                    <pre>
+{{ p.author_order }}. ({{ p.pub_year }}).
+{{ p.title }}.
+{{ p.journal }}. {{ p.volume }}. {{ p.pages }}.
+doi:{{ p.doi }}
+                    </pre>
+                    {% endfor %}
+                </div>
+                 <div class="divider"></div>
+                <div class="section">
+                    <h5>AraPheno {{ type }}</h5>
+<pre>
+{{ submission.publisher }}. ({{ submission.publication_date|date:"Y" }}). {{ citation.name }}. doi:{{ citation.doi }}
+</pre>
+                </div>
+                <div class="divider"></div>
+                <div class="section">
+                    <h5>AraPheno</h5>
+                    <pre>
+Ümit Seren, Dominik Grimm, Joffrey Fitz, Detlef Weigel, Magnus Nordborg, Karsten Borgwardt, Arthur Korte,
+AraPheno: a public database for Arabidopsis thaliana phenotypes,
+Nucleic Acids Research, Volume 45, Issue D1, January 2017, Pages D1054–D1059,
+https://doi.org/10.1093/nar/gkw986
+                    </pre>
+                </div>
+            </div>
+            <div id="bibtex" class="col s12">
+              <div class="divider"></div>
+                <div class="section">
+                    <h5>Original publication</h5>
+                    {% for p in publications.all %}
+<pre>
+@article{https://doi.org/{{ p.doi }},
+    author = {{ '{' }}{{ p.author_order }}{{ '}' }},
+    title = {{ '{' }}{{ p.title }}{{ '}' }},
+    journal = {{ '{' }}{{ p.journal }}{{ '}' }},
+    volume = {{ '{' }}{{ p.volume }}{{ '}' }},
+    doi = {{ '{' }}{{ p.doi }}{{ '}' }},
+    year = {{ '{' }}{{ p.pub_year }}{{ '}' }},
+    pages = {{ '{' }}{{ p.p.pages }}{{ '}' }}
+}
+</pre>
+                    {% endfor %}
+                </div>
+                 <div class="divider"></div>
+                <div class="section">
+                    <h5>AraPheno {{ type }}</h5>
+                    <pre>
+@misc{https://doi.org/{{ citation.doi }},
+    doi = {{ '{' }}{{ citation.doi }}{{ '}' }},
+    url = {{ '{' }}http://arapheno.1001genomes.org/{{ type }}/{{ citation.id }}{{ '}' }},
+    author = {{ '{' }}{{ submission.publisher }}{{ '}' }},
+    language = {en-us},
+    title = {{ '{' }}{{ citation.name }}{{ '}' }},
+    publisher = {{ '{' }}{{ submission.publisher }}{{ '}' }},
+    year = = {{ '{' }}{{ submission.publication_date|date:"Y"  }}{{ '}' }}
+}
+                    </pre>
+                </div>
+                <div class="divider"></div>
+                <div class="section">
+                    <h5>AraPheno</h5>
+                    <pre>
+@article{gkw986,
+    author = {Ümit Seren, Dominik Grimm, Joffrey Fitz, Detlef Weigel, Magnus Nordborg, Karsten Borgwardt, Arthur Korte},
+    title = {AraPheno: a public database for Arabidopsis thaliana phenotypes},
+    journal = {Nucleic Acids Research},
+    volume = {45},
+    doi = {10.1093/nar/gkw986},
+    year = {2017},
+    pages = {D1054–D1059}
+}
+                    </pre>
+                </div>
+            </div>
+            <div id="ris" class="col s12">
+              <div class="divider"></div>
+                <div class="section">
+                    <h5>Original publication</h5>
+                    {% for p in publications.all %}
+                    <pre>
+TY  - JOUR
+{% for author in p.author_order_as_list %}AU  - {{ author.strip }}
+{% endfor %}T1  - {{ p.title }}
+LA  - eng
+SP  - {{ p.pages_as_list | first }}
+EP  - {{ p.pages_as_list | last }}
+VL  - {{ p.volume }}
+PY  - {{ p.pub_year }}
+DO  - {{ p.doi }}
+JF  - {{ p.journal }}
+                    </pre>
+                    {% endfor %}
+                </div>
+                 <div class="divider"></div>
+                <div class="section">
+                    <h5>AraPheno {{ type }}</h5>
+                    <pre>
+TY  - GEN
+AU  - {{ submission.publisher }}
+T1  - {{ citation.name }}
+LA  - eng
+PY  - {{ submission.publication_date|date:"Y" }}
+UR  - http://arapheno.1001genomes.org/{{ type }}/{{ citation.id }}
+DO  - {{ citation.doi }}
+PB  - {{ submission.publisher }}
+                    </pre>
+                </div>
+                <div class="divider"></div>
+                <div class="section">
+                    <h5>AraPheno</h5>
+                    <pre>
+TY  - JOUR
+AU  - Seren, Ümit
+AU  - Grimm, Dominik
+AU  - Fitz, Joffrey
+AU  - Weigel, Detlef
+AU  - Nordborg, Magnus
+AU  - Borgwardt, Karsten
+AU  - Korte, Arthur
+T1  - AraPheno: a public database for Arabidopsis thaliana phenotypes
+LA  - eng
+SP  - D1054
+EP  - D1059
+VL  - 45
+PY  - 2017
+DO  - 10.1093/nar/gkw986
+JF  - Nucleic acids research
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+</div>

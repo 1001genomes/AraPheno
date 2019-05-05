@@ -273,7 +273,7 @@ class Submission(models.Model):
             return '''
             Dear %(firstname)s %(lastname)s,
 
-            Curators have requested changes to your "%(study_name)s" study. 
+            Curators have requested changes to your "%(study_name)s" study.
             Please check the requested changes and update the missing/incomplete fields using following URL:
             http://%(submission_url)s/%(submission_id)s
 
@@ -290,7 +290,7 @@ class Submission(models.Model):
             Dear %(firstname)s %(lastname)s,
 
             Your "%(study_name)s" study has been successfully curated and we are happy to inform you
-            that the study is now publicly available under following URL: 
+            that the study is now publicly available under following URL:
             http://%(study_url)s/%(study_id)s
 
             Thank you for your submission
@@ -489,6 +489,15 @@ class Publication(models.Model):
     pubmed_id = models.CharField(max_length=255, db_index=True, blank=True, null=True) #pubmed id
 
     authors = models.ManyToManyField("Author") #author link
+
+    @property
+    def author_order_as_list(self):
+        return self.author_order.split(",")
+
+    @property
+    def pages_as_list(self):
+        return self.pages.split("-")
+
 
     def __unicode__(self):
         return u'%s (%s, %s)' % (self.title, self.journal, self.pub_year)

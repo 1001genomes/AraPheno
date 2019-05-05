@@ -5,6 +5,10 @@
 {% load render_table from django_tables2 %}
 
 {% block content %}
+<!-- Modal Structure -->
+{% with citation=study type='study' publications=study.publications submission=study.submission%}
+{% include 'phenotypedb/citation_box.html' %}
+{% endwith %}
 <div id="index-banner" class="parallax-container" style="height:80px">
     <div class="section no-pad-bot">
         <div class="container">
@@ -33,7 +37,9 @@
             <div class="row">
                 <br>
                 <div class="col s12"><h5>DOI</h5></div>
-                <div class="col s12" id="description"><a href="{{ study.doi_link }}" target="_blank">{{ study.doi }}</a></div>
+                <div class="col s12" id="description"><a href="{{ study.doi_link }}" target="_blank">{{ study.doi }}</a> (<a  class="modal-trigger" href="#citationModal">
+                    <i class="material-icons">format_quote</i>Cite
+                </a>)</div>
                 <div class="col s12"><h5>Description</h5></div>
                 <div class="col s12" id="description">{{ study.description }}</div>
                 <div class="col s12"><h5>Statistics</h5></div>
@@ -115,6 +121,10 @@
 
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawCharts);
+
+    function showCiteBox() {
+        alert('test');
+    }
 
     function drawCharts() {
         {% autoescape off %}
