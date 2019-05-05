@@ -73,6 +73,7 @@
 {% endwith %}
 <script>
     $(document).ready(function(){
+        $('select').material_select();
         $('#{{ form.uo_term.id_for_label }}').autocomplete({
             data: {
             {% autoescape off %}

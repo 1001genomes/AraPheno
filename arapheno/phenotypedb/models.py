@@ -26,6 +26,14 @@ STATUS_CHOICES = (
     )
 )
 
+PHENOTYPE_TYPE = (
+    (
+        (0, 'Quantitive'),
+        (1, 'Categorical'),
+        (2, 'Binary')
+    )
+)
+
 class Species(models.Model):
     """
     Species model
@@ -389,7 +397,7 @@ class Phenotype(models.Model):
     """
     name = models.CharField(max_length=255, db_index=True) #phenotype name
     scoring = models.TextField(blank=True, null=True) #how was the scoring of the phenotype done
-    type = models.CharField(max_length=255, blank=True, null=True) #type/category of the phenotype
+    type = models.PositiveSmallIntegerField(choices=PHENOTYPE_TYPE, blank=True, null=True,  db_index=True) #type/category of the phenotype
     growth_conditions = models.TextField(blank=True, null=True) #description of the growth conditions of the phenotype
     shapiro_test_statistic = models.FloatField(blank=True, null=True) #Shapiro Wilk test for normality
     shapiro_p_value = models.FloatField(blank=True, null=True) #p-value of Shapiro Wilk test

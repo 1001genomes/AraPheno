@@ -18,8 +18,8 @@ def home(request):
         query = request.POST.getlist('global_search-autocomplete')[0]
         return HttpResponseRedirect("search_results/%s/"%(query))
     stats = {}
-    stats['studies'] = Study.objects.count()
-    stats['phenotypes'] = Phenotype.objects.count()
+    stats['studies'] = Study.objects.published().count()
+    stats['phenotypes'] = Phenotype.objects.published().count()
     stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y')
     return render(request,'home/home.html',{"search_form":search_form,"stats":stats})
 
@@ -89,10 +89,10 @@ def SearchResults(request,query=None):
         accessions = Accession.objects.filter(name__icontains=query)
         ontologies = OntologyTerm.objects.filter(name__icontains=query)
         download_url = "/rest/search/" + str(query)
-    
+
     phenotype_table = PhenotypeTable(phenotypes,order_by="-name")
     RequestConfig(request,paginate={"per_page":10}).configure(phenotype_table)
-    
+
     study_table = StudyTable(studies,order_by="-name")
     RequestConfig(request,paginate={"per_page":10}).configure(study_table)
 
@@ -101,7 +101,7 @@ def SearchResults(request,query=None):
 
     ontologies_table = OntologyTermTable(ontologies,order_by="-name")
     RequestConfig(request,paginate={"per_page":10}).configure(ontologies_table)
-    
+
     variable_dict = {}
     variable_dict['query'] = query
     variable_dict['nphenotypes'] = phenotypes.count()

@@ -7,7 +7,7 @@ import os,re
 from autocomplete_light import shortcuts as autocomplete_light
 from django import forms
 from django.db import transaction
-from phenotypedb.models import Phenotype, Study, Submission, OntologyTerm
+from phenotypedb.models import Phenotype, Study, Submission, OntologyTerm, PHENOTYPE_TYPE
 from utils import import_study
 
 TEXT_WIDGET = forms.TextInput(attrs={'class':'validate'})
@@ -113,7 +113,7 @@ class PhenotypeUpdateForm(forms.ModelForm):
             'scoring': forms.Textarea(attrs={'class': 'validate materialize-textarea', 'required':True}),
             'growth_conditions': forms.Textarea(attrs={'class': 'validate materialize-textarea', 'required':True}),
             'source': TEXT_WIDGET,
-            'type': TEXT_WIDGET
+            'type': forms.Select(choices=PHENOTYPE_TYPE)
         }
 
 class SubmitFeedbackForm(forms.Form):
