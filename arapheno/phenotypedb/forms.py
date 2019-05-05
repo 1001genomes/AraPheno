@@ -107,7 +107,7 @@ class PhenotypeUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Phenotype
-        fields = ('name', 'scoring', 'source', 'type', 'growth_conditions', 'eo_term', 'to_term', 'uo_term')
+        fields = ('name', 'scoring', 'type', 'growth_conditions', 'eo_term', 'to_term', 'uo_term')
         widgets = {
             'name': TEXT_WIDGET,
             'scoring': forms.Textarea(attrs={'class': 'validate materialize-textarea', 'required':True}),

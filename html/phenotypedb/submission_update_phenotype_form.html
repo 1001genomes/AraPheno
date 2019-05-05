@@ -15,29 +15,26 @@
 
          {% csrf_token %}
         <div class="row">
-            <div class="input-field col s12">
+            <div class="input-field col s12 m6">
                 {{ form.name }}
                 <label for="{{ form.name.id_for_label }}" data-error="{{ form.name.errors.0 }}" data-success="ok">Name</label>
             </div>
+            <div class="input-field col s12 m6">
+                    {{ form.type }}
+                    <label for="{{ form.type.id_for_label }}" data-error="{{ form.type.errors.0 }}" data-success="ok">Type</label>
+            </div>
         </div>
         <div class="row">
-            <div class="input-field col s12 m6">
+            <div class="input-field col s12">
                 {{ form.scoring }}
                 <label for="{{ form.scoring.id_for_label }}" data-error="{{ form.scoring.errors.0 }}" data-success="ok">Scoring</label>
             </div>
-            <div class="input-field col s12 m6">
-                {{ form.growth_conditions }}
-                <label for="{{ form.growth_conditions.id_for_label }}" data-error="{{ form.growth_conditions.errors.0 }}" data-success="ok">Growth condition</label>
-            </div>
+
         </div>
         <div class="row">
-            <div class="input-field col s12 m6">
-                {{ form.source }}
-                <label for="{{ form.source.id_for_label }}" data-error="{{ form.source.errors.0 }}" data-success="ok">Source</label>
-            </div>
-            <div class="input-field col s12 m6">
-                {{ form.type }}
-                <label for="{{ form.type.id_for_label }}" data-error="{{ form.type.errors.0 }}" data-success="ok">Type</label>
+            <div class="input-field col s12">
+                {{ form.growth_conditions }}
+                <label for="{{ form.growth_conditions.id_for_label }}" data-error="{{ form.growth_conditions.errors.0 }}" data-success="ok">Growth condition</label>
             </div>
         </div>
          <div class="row">
