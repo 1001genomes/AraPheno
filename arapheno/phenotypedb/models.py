@@ -389,7 +389,6 @@ class Phenotype(models.Model):
     """
     name = models.CharField(max_length=255, db_index=True) #phenotype name
     scoring = models.TextField(blank=True, null=True) #how was the scoring of the phenotype done
-    source = models.TextField(blank=True, null=True) #person who colleted the phenotype. or from which website was the phenotype
     type = models.CharField(max_length=255, blank=True, null=True) #type/category of the phenotype
     growth_conditions = models.TextField(blank=True, null=True) #description of the growth conditions of the phenotype
     shapiro_test_statistic = models.FloatField(blank=True, null=True) #Shapiro Wilk test for normality
