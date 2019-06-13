@@ -32,7 +32,7 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Phenotype
         fields = ('species','phenotype_id','name','doi','study','scoring',
-                  'source','type','growth_conditions',
+                  'type','growth_conditions',
                   'to_term','to_name','to_comment',
                   'to_definition','to_source_acronym','to_source_name','to_source_url',
                   'eo_term','eo_name','eo_comment',
