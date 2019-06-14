@@ -16,7 +16,7 @@ class PhenotypeListRenderer(CSVRenderer):
               'uo_source_acronym','uo_source_name','uo_source_url']
 
 class StudyListRenderer(CSVRenderer):
-    header = ['name','description','phenotype_count']
+    header = ['id','name','description','phenotype_count']
         
         
 class PhenotypeValueRenderer(CSVRenderer):
@@ -129,6 +129,13 @@ class IsaTabDerivedDataFileRenderer(IsaTabRenderer):
 class IsaTabFileRenderer(renderers.BaseRenderer):
     media_type = "application/isatab"
     format = "isatab"
+
+    def render(self,data,media_type=None,renderer_context=None):
+        pass
+
+class ZipFileRenderer(renderers.BaseRenderer):
+    media_type = "application/zip"
+    format = "zip"
 
     def render(self,data,media_type=None,renderer_context=None):
         pass

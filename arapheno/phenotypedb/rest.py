@@ -18,7 +18,7 @@ from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeVa
 from phenotypedb.serializers import AccessionListSerializer, SubmissionDetailSerializer, AccessionPhenotypesSerializer
 
 from phenotypedb.forms import UploadFileForm
-from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer
+from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer, ZipFileRenderer
 from phenotypedb.renderer import PLINKRenderer, PLINKMatrixRenderer
 from phenotypedb.parsers import AccessionTextParser
 from utils.isa_tab import export_isatab
@@ -28,6 +28,8 @@ import scipy.stats as stats
 from django.conf import settings
 
 import re,os,array
+import tempfile
+import shutil
 
 DOI_REGEX_STUDY = r"%s\/study:[\d]+" % settings.DATACITE_PREFIX
 DOI_REGEX_PHENOTYPE = r"%s\/phenotype:[\d]+" % settings.DATACITE_PREFIX
@@ -452,6 +454,32 @@ def study_isatab(request,q,format=None):
     os.unlink(isa_tab_file)
     return response
 
+'''
+Returns AraPheno zip archive
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((ZipFileRenderer, JSONRenderer))
+def arapheno_db_archive(request,format=None):
+    """
+    Generate archive containing all studies in AraPheno
+    ---
+    parameters:
+        - None
+    produces:
+        - application/zip
+    """
+    # Get all published studies IDs
+    arapheno_db_file = _export_arapheno()
+
+    zip_file = open(arapheno_db_file, 'rb')
+    response = FileResponse(zip_file,content_type='application/zip')
+    #response = HttpResponse(FileWrapper(zip_file), content_type='application/zip',content_transfer_encoding='binary')
+    response.setdefault('Content-Transfer-Encoding','binary')
+    response['Content-Disposition'] = 'attachment; filename="arapheno.zip"'
+    os.unlink(arapheno_db_file)
+    return response
+
 
 '''
 List all studies
@@ -682,3 +710,71 @@ def _is_doi(pattern, term):
         # can't use REGEX capture groups because "("" causes problems in Swagger
         return int(term.split(":")[1])
     return None
+
+def _export_arapheno():
+    """
+    Generate an archive of the full database
+    """
+    # create temorary folder
+    folder = tempfile.mkdtemp()
+    arapheno_filename = tempfile.mkstemp()[1]
+
+    # Get list of studies ids
+    studies = Study.objects.published().all()
+    # Create subfolders
+    for study in studies:
+        os.makedirs(os.path.join(folder, str(study.id)))
+
+    # create the isatab files
+    _create_value_files(studies, folder, fmt='csv')
+    _create_value_files(studies, folder, fmt='plink')
+    _create_study_list_file(studies, folder)
+    _create_phenotypes_files(studies, folder)
+
+    # zip it
+    output_filename = shutil.make_archive(arapheno_filename,"zip",folder)
+
+    # remove temporary folder
+    shutil.rmtree(folder)
+    os.unlink(arapheno_filename)
+    return output_filename
+
+
+def _create_value_files(studies, folder, fmt):
+    if fmt == 'csv':
+        renderer = PhenotypeMatrixRenderer()
+    elif fmt == 'plink':
+        renderer = PLINKMatrixRenderer()
+    else:
+        raise Warning('The format must be csv or plink.')
+
+    for study in studies:
+        df,df_pivot = study.get_matrix_and_accession_map()
+        data = _convert_dataframe_to_list(df,df_pivot)
+        content = renderer.render(data)
+        study_filename = os.path.join(folder,str(study.id),'study_%s_values.%s' % (study.id, fmt))
+        with open(study_filename,'w') as f:
+            f.write(content)
+    pass
+
+def _create_phenotypes_files(studies, folder):
+    renderer = PhenotypeListRenderer()
+    for study in studies:
+        serializer = PhenotypeListSerializer(study.phenotype_set.all(),many=True)
+        content = renderer.render(serializer.data)
+        study_filename = os.path.join(folder,str(study.id),'study_%s_phenotypes.csv' % study.id)
+        with open(study_filename,'w') as f:
+            f.write(content)
+    pass
+
+def _create_study_list_file(studies, folder):
+    renderer = StudyListRenderer()
+    serializer = StudyListSerializer(studies,many=True)
+    content = renderer.render(serializer.data)
+    study_list_filename = os.path.join(folder,'study_list.csv')
+    with open(study_list_filename,'w') as f:
+        f.write(content)
+    pass
+# from django.template.loader import render_to_string
+# def render_to_file(template, filename, context):
+#     open(filename, "w").write(render_to_string(template, context))

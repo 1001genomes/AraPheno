@@ -133,8 +133,9 @@ restpatterns = [
 
     url(r'rest/terms/(?P<acronym>%s)/$' % ONTOLOGY_SOURCE_REGEX, rest.ontology_tree_data,name='ontology_tree_root'),
 
-    url(r'rest/terms/(?P<term_id>%s)/$' % ONTOLOGY_REGEX, rest.ontology_tree_data,name='ontology_tree_children')
+    url(r'rest/terms/(?P<term_id>%s)/$' % ONTOLOGY_REGEX, rest.ontology_tree_data,name='ontology_tree_children'),
     #url(r'rest/ontology/(?P<pk>%s)/(?P<term_id>%s)' % ID_REGEX )
+    url(r'rest/download/$', rest.arapheno_db_archive),
 
 ]
 #extend restpatterns with suffix options

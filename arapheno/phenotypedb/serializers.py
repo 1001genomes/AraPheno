@@ -250,7 +250,7 @@ class StudyListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Study
-        fields = ('name','description','phenotype_count')
+        fields = ('id','name','description','phenotype_count')
 
     def get_phenotype_count(self,obj):
         try:
