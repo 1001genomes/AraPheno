@@ -775,6 +775,3 @@ def _create_study_list_file(studies, folder):
     with open(study_list_filename,'w') as f:
         f.write(content)
     pass
-# from django.template.loader import render_to_string
-# def render_to_file(template, filename, context):
-#     open(filename, "w").write(render_to_string(template, context))
