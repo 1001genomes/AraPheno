@@ -19,7 +19,8 @@ def home(request):
         return HttpResponseRedirect("search_results/%s/"%(query))
     stats = {}
     stats['studies'] = Study.objects.published().count()
-    stats['phenotypes'] = Phenotype.objects.published().count()
+    stats['phenotypes_published'] = Phenotype.objects.published().count()
+    stats['phenotypes'] = Phenotype.objects.all().count()
     stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y')
     return render(request,'home/home.html',{"search_form":search_form,"stats":stats})
 

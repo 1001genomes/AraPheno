@@ -1,7 +1,11 @@
 from datetime import datetime
 import csv
+import logging
 import ontology_parser
 import scipy as sp
+import codecs
+
+logger = logging.getLogger(__name__)
 
 '''
 Accession Class
@@ -135,6 +139,32 @@ def _parse_pheno_file(f, split_delimiter):
     finally:
         if f is not None:
             f.close()
+
+
+def parse_meta_information_file(f, close_handle=True):
+    """
+    parses meta-information file for bulk update
+    """
+    if not hasattr(f, 'read'):
+        f = codecs.open(f,'rU',encoding='utf-8')
+    try:
+        meta_information = {}
+        #dialect = csv.Sniffer().sniff(f.read(1024))
+        reader = csv.DictReader(f, delimiter=',')
+        for row in reader:
+            phenotype = row['Phenotype']
+            if phenotype in meta_information:
+                logger.warn("%s is duplicated only taking last row", phenotype)
+            if 'Type' in row:
+                row['Type'] = {'quantitive':0, 'categorical': 1,'binary': 2}.get(row['Type'].lower())
+            meta_information[phenotype] = row
+        return meta_information
+    except Exception as error:
+        raise error
+    finally:
+        if f is not None and close_handle:
+            f.close()
+
 
 '''
 Parse an Ontology file as a dictionary
