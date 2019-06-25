@@ -21,12 +21,14 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.urlpatterns import format_suffix_patterns
 from django.views.decorators.csrf import csrf_exempt
+from utils.statistics import SUPPORTED_TRANSFORMATIONS
 admin.autodiscover()
 al.autodiscover()
 
 ID_REGEX = r"[0-9]+"
 REGEX_STUDY = ID_REGEX + "|" + rest.DOI_REGEX_STUDY
 REGEX_PHENOTYPE = ID_REGEX + "|" + rest.DOI_REGEX_PHENOTYPE
+REGEX_TRANSFORMATIONS = r"(%s)" % "|".join(SUPPORTED_TRANSFORMATIONS)
 UUID_REGEX = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 ONTOLOGY_REGEX = r"(EO|TO|UO){1}:[0-9]*"
 ONTOLOGY_SOURCE_REGEX = "(PECO|PTO|UO)"
@@ -41,6 +43,7 @@ urlpatterns = [
     url(r'^download/$', phenotypedb.views.download, name="download"),
     url(r'^correlation/$', phenotypedb.views.correlation_wizard, name="correlation-wizard"),
     url(r'^correlation/(?P<ids>[\d,]+)/$', phenotypedb.views.correlation_results, name="correlation-results"),
+    url(r'^phenotype/(?P<pk>%s)/transformation/$' % ID_REGEX, phenotypedb.views.transformation_results, name="transformation-results"),
     url(r'^phenotype/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.PhenotypeDetail.as_view(), name="phenotype_detail"),
     url(r'^studies/$', phenotypedb.views.list_studies, name="studies"),
     url(r'^accessions/$', phenotypedb.views.list_accessions, name="accessions"),
@@ -100,6 +103,10 @@ restpatterns = [
 
     # phenotype detail
     url(r'^rest/phenotype/(?P<q>%s)/$' % REGEX_PHENOTYPE, rest.phenotype_detail),
+
+    url(r'^rest/phenotype/(?P<q>%s)/transformations/$' % REGEX_PHENOTYPE, rest.transformations),
+
+    url(r'^rest/phenotype/(?P<q>%s)/transformations/(?P<transformation>%s)/$' % (REGEX_PHENOTYPE, REGEX_TRANSFORMATIONS ), rest.transformations),
 
     url(r'^rest/phenotype/(?P<q>%s)/values/$' % REGEX_PHENOTYPE, rest.phenotype_value),
     url(r'^rest/phenotype/(?P<q>%s)/similar/$' % REGEX_PHENOTYPE, rest.phenotype_similar_list),

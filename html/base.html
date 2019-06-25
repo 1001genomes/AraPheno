@@ -20,7 +20,7 @@
 
             main {
                 flex: 1 0 auto;
-                display:flex; 
+                display:flex;
                 flex-direction:column;
             }
             .chart {
@@ -60,7 +60,7 @@
                             <li><a class="white-text" href="/accessions">Accessions</a></li>
                             <li class="divider"></li>
                             <li><a class="white-text" href="{% url 'ontologysource_list' %}">Ontologies</a></li>
-                            
+
                         </ul>
                     </li>
                     <li>
@@ -68,10 +68,12 @@
                         <ul id="toolsdropdown" class="dropdown-content brown">
                             <li><a class="white-text" href="/correlation">Phenotype Correlation</a></li>
                             <li class="divider"></li>
+                            <li><a class="white-text" href="/transformation">Phenotype Transform</a></li>
+                            <li class="divider"></li>
                             <li><a class="white-text" href="/faq/rest/">REST API</a></li>
                         </ul>
                     </li>
-                    
+
                     <li><a class="black-text" href="/about">About</a></li>
                     <li><a class="black-text" href="/links">Links</a></li>
                     <li><a class="black-text modal-trigger" href="#faqmodal">FAQ</a></li>
@@ -90,7 +92,7 @@
                     </div>
                     </li>
                     </ul>
-                    
+
                     <li class="divider"></li>
                     <ul class="collapsible collapsible-accordion">
                     <li>
@@ -103,17 +105,17 @@
                     </div>
                     </li>
                     </ul>
-                    
+
                     <li class="divider"></li>
                     <li><a class="black-text" href="/about">About</a></li>
                     <li><a class="black-text" href="/links">Links</a></li>
                     <li><a class="black-text" href="/faq">FAQ</a></li>
-                    
+
                     </li>
-                    
+
                 </ul>
                 <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons black-text">menu</i></a>
-            </div>        
+            </div>
         </nav>
         </div>
         <main>
@@ -164,7 +166,7 @@ This website provides information about research at the GMI. GMI makes no guaran
                 <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
-        
+
         <div id="faqmodal" class="modal bottom-sheet" style="max-height:80%; z-index: 1003; display: none; opacity: 0; bottom: -100%;">
             <div class="modal-content">
                 <h4>FAQ & Tutorials</h4>
@@ -175,7 +177,7 @@ This website provides information about research at the GMI. GMI makes no guaran
 
 
     <script type="text/javascript">
-        $(document).ready(function(){    
+        $(document).ready(function(){
             $('.button-collapse').sideNav();
             $('.modal-trigger').leanModal({
                 dimissible:true,

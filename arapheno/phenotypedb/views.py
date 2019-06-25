@@ -20,6 +20,7 @@ from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
                                 StudyTable, AccessionPhenotypeTable)
 from scipy.stats import shapiro
 import json, itertools
+from utils import calculate_phenotype_transformations
 
 
 # Create your views here.
@@ -87,6 +88,15 @@ def correlation_results(request, ids=None):
     Shows the correlation result
     """
     return render(request, 'phenotypedb/correlation_results.html', {"phenotype_ids":ids})
+
+def transformation_results(request, pk):
+    """
+    SHow transformation result
+    """
+    phenotype = Phenotype.objects.get(id=pk)
+    data = calculate_phenotype_transformations(phenotype)
+    data['object'] = phenotype
+    return render(request, 'phenotypedb/transformation_results.html', data)
 
 def list_accessions(request):
     """

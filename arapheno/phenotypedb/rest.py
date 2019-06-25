@@ -18,10 +18,11 @@ from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeVa
 from phenotypedb.serializers import AccessionListSerializer, SubmissionDetailSerializer, AccessionPhenotypesSerializer
 
 from phenotypedb.forms import UploadFileForm
-from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer, ZipFileRenderer
+from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer, ZipFileRenderer, TransformationRenderer
 from phenotypedb.renderer import PLINKRenderer, PLINKMatrixRenderer
 from phenotypedb.parsers import AccessionTextParser
 from utils.isa_tab import export_isatab
+from utils import calculate_phenotype_transformations
 from django.views.decorators.csrf import csrf_exempt
 import scipy as sp
 import scipy.stats as stats
@@ -330,6 +331,41 @@ def study_phenotype_value_matrix(request,q,format=None):
         data = _convert_dataframe_to_list(df,df_pivot)
         return Response(data)
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((TransformationRenderer,JSONRenderer))
+def transformations(request,q,transformation=None, format=None):
+    """
+    Transformation of phenotypes
+    ---
+    parameters:
+        - name: q
+          description: the primary id or doi of the phenotype
+          required: true
+          type: string
+          paramType: path
+        - name: transformation
+          description: the transformation to be calculates (if omitted, all transformations are returned)
+          required: false
+          type: string
+          paramType: path
+
+    produces:
+        - text/csv
+        - application/json
+    """
+    doi = _is_doi(DOI_PATTERN_PHENOTYPE, q)
+    try:
+        id = doi if doi else int(q)
+        phenotype = Phenotype.objects.published().get(pk=id)
+    except:
+        return HttpResponse(status=404)
+
+    if request.method == "GET":
+        data = calculate_phenotype_transformations(phenotype, transformation)
+        return Response(data)
+
+
 '''
 Corrleation Matrix for selected phenotypes
 '''
@@ -464,8 +500,6 @@ def arapheno_db_archive(request,format=None):
     """
     Generate archive containing all studies in AraPheno
     ---
-    parameters:
-        - None
     produces:
         - application/zip
     """
