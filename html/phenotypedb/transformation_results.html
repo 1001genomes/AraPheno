@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - Phenotype {{object.name}} {% endblock title %}
+
+{% block content %}
+{% with citation=phenotype type='phenotype' publications=phenotype.study.publications submission=phenotype.study.submission%}
+{% include 'phenotypedb/citation_box.html' %}
+{% endwith %}
+<div id="index-banner" class="parallax-container" style="height:80px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h5 class="white-text">Phenotype: {{ object.name }}</h5>
+            <div style="position: relative;">
+            <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block; bottom: -4px; right: 0px;z-index:1;">
+                <a href="/rest/phenotype/{{object.id}}/transformations.csv" class="btn-floating btn-large white">
+                    <i class="large material-icons brown-text" id="download_btn">file_download</i>
+                </a>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara2.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <h5>Transformations of <a href="{% url 'phenotype_detail' pk=object.id %}">{{object.name}}</a></h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s11" style="height:500px">
+            <div id="histogram_chart_no" class="chart"></div>
+        </div>
+        <div class="col s1">
+            <a href="/rest/phenotype/{{object.id}}/transformations/no.csv" class="btn-floating btn-large white">
+                <i class="large material-icons brown-text" id="download_btn">file_download</i>
+            </a>
+        </div>
+    </div>
+    {% for transformation in transformations %}
+    {% if transformation != 'no' %}
+    <div class="row">
+        <div class="col s11" style="height:500px">
+            <div id="histogram_chart_{{ transformation }}" class="chart"></div>
+        </div>
+        <div class="col s1">
+            <a href="/rest/phenotype/{{object.id}}/transformations/{{ transformation }}.csv" class="btn-floating btn-large white">
+                <i class="large material-icons brown-text" id="download_btn">file_download</i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+
+<script type="text/javascript">
+    var geoChrt,geoChartData,histogramChart,histogramData,explorerChart,explorerData, tableChart;
+    $(document).ready(function(){
+        $('.parallax').parallax();
+
+
+        if (RegExp('multipage', 'gi').test(window.location.search)) {
+            var steps = [
+                {
+                    element: '#download_btn',
+                    intro: 'The user can download the phenotype values in CSV format'
+                },
+                {
+                    element: '#infos',
+                    intro: 'General information about the selected phenotype are displayed here'
+                },
+                {
+                    element: '#geo_chart_container',
+                    intro: 'The geographic distrubtion of the accessions that where phenotyped are displayed on this map'
+                },
+                {
+                    element: '#histogram_chart',
+                    intro: 'The phenotypic distribution is displayed as a Histogram',
+                    position: 'top'
+                },
+                {
+                    element: '#explorer_chart',
+                    intro: 'This <b>explorer</b> chart combines the phenotype values with information of the corresponding accessions. This way interesting pattern can be discovered. The user can choose between viewing the data as a barchart or as a bubble chart. <b>Note: the chart requires flash</b>',
+                    position: 'top'
+                },
+                {
+                    element: '#table_chart',
+                    intro: 'The same information as in the previous explorer chart are shown in tabular form',
+                    position: 'top'
+                }
+
+            ];
+            var intro = introJs();
+            intro.start().oncomplete(function() {
+                ga('send', 'event', 'Tour', 'complete','Phenotype Detail');
+            }).onexit(function() {
+                ga('send', 'event', 'Tour', 'exit','Phenotype Detail');
+            });
+        }
+
+    });
+    google.load('visualization', '1.0', {'packages':['corechart']});
+    google.setOnLoadCallback(drawCharts);
+
+    function drawCharts() {
+        {% for transformation, data in transformations.items %}
+            histogramChart =  new google.visualization.Histogram(document.getElementById('histogram_chart_{{ transformation }}'));
+             {% autoescape off %}
+            histogramData = google.visualization.arrayToDataTable([
+            ['Phenotype', 'Frequency'],
+            {% for accession, value in data.values %}[ "{{ accession }}", {{ value }} ],{% endfor %}
+            ],false);
+            {% endautoescape %}
+            var histogramOptions = {title: '{{ transformation }} transformation (Shapiro-Wilk-Score: {{ data.sp_score }})', height:500,width:"100%",legend: { position: 'none' },hAxis:{title:'Phenotypic Value'},vAxis:{title:'Frequency'}};
+            histogramChart.draw(histogramData,histogramOptions)
+        {% endfor %}
+    }
+</script>
+{% endblock content %}

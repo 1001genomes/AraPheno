@@ -17,11 +17,28 @@ class PhenotypeListRenderer(CSVRenderer):
 
 class StudyListRenderer(CSVRenderer):
     header = ['id','name','description','phenotype_count']
-        
-        
+
+
 class PhenotypeValueRenderer(CSVRenderer):
     header = ['phenotype_name','accession_id','accession_name','accession_cs_number','accession_longitude',
               'accession_latitude','accession_country','phenotype_value','obs_unit_id']
+
+class TransformationRenderer(CSVRenderer):
+    labels = {'obs_unit_id': 'replicate_id'}
+
+    def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        headers = ['accession_id']
+        for transformation in data['transformations']:
+            headers.append(transformation)
+        renderer_context['header'] = headers
+        converted_data = []
+        for ix, accession in enumerate(data['accessions']):
+            row = {'accession_id': data['accessions'][ix][0]}
+            for transformation, info in data['transformations'].items():
+                row[transformation] = info['values'][ix][1]
+            converted_data.append(row)
+        return super(TransformationRenderer, self).render(converted_data, media_type, renderer_context,writer_opts)
+
 
 class PhenotypeMatrixRenderer(CSVRenderer):
     labels = {'obs_unit_id':'replicate_id'}

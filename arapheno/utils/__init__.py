@@ -7,14 +7,18 @@ import uuid
 import logging
 import zipfile
 import numpy as np
+import math
 
 from django.db import transaction
 from phenotypedb.models import (Accession, ObservationUnit, Phenotype,
                                 PhenotypeValue, Species, Study, Submission)
 from utils.data_io import parse_plink_file, parse_csv_file, parse_meta_information_file
 from utils.isa_tab import parse_isatab, save_isatab
+from utils import statistics
 
 logger = logging.getLogger(__name__)
+
+
 
 def import_study(fhandle):
     """
@@ -125,3 +129,29 @@ def save_plink_or_csv(plink_data, name):
                 phenotype_value = PhenotypeValue(value=value, phenotype=phenotypes[i], obs_unit=obs_unit)
                 phenotype_value.save()
     return study
+
+
+def calculate_phenotype_transformations(phenotype, trans = None):
+    """
+    Calculates transformations for the phenotype
+    """
+    labels = []
+    accessions = []
+    values = []
+    for item in phenotype.phenotypevalue_set.all():
+        accessions.append((item.obs_unit.accession.id, item.obs_unit.accession.name))
+        labels.append("%s(%s)" % (item.obs_unit.accession.name, item.id))
+        values.append(item.value)
+    data = {'accessions': accessions}
+    transformations = {}
+    for transformation in statistics.SUPPORTED_TRANSFORMATIONS:
+        if trans and trans != transformation:
+            continue
+        transformed_values = statistics.transform(values, transformation)
+        if transformed_values is not None:
+            sp_pval = statistics.calculate_sp_pval(transformed_values.tolist())
+            transformations[transformation] = {'values': zip(labels, transformed_values.tolist()), 'sp_pval': sp_pval}
+            if sp_pval < 1 and sp_pval > 0:
+                transformations[transformation]['sp_score'] = -math.log10(sp_pval)
+    data['transformations'] = transformations
+    return data

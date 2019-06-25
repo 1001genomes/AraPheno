@@ -216,6 +216,9 @@
             </ul>
         </div>
         <div id="histogram" class="col s12" style="height:500px">
+            <h5>
+                <center><a href="{% url 'transformation-results' pk=object.id %}">Show transformations</a></center>
+            </h5>
             <div id="histogram_chart" class="chart"></div>
         </div>
         <div id="explorer" class="col s12" style="height:500px;width:100%;">
