@@ -109,8 +109,10 @@ class StudyUpdateForm(forms.ModelForm):
     def clean(self):
         cd = super(StudyUpdateForm, self).clean()
         try:
-            if cd['file']:
+            if cd['file'] is not None:
                 meta_information = parse_meta_information_file(cd['file'],close_handle=False)
+            else:
+                return cd
         except Exception as error:
             self.add_error('file', "Format is wrong")
             raise forms.ValidationError('Bulk-update file format is wrong')
