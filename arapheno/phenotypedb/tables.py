@@ -52,7 +52,7 @@ class AccessionPhenotypeTable(PhenotypeTable):
     """
     Table that is displayed in the accession detial view
     """
-    value = tables.Column(empty_values=(),verbose_name='Value (mean)')
+    value = tables.Column(empty_values=(),verbose_name='Value (mean)', orderable=False)
 
     def __init__(self, accession_id, *args, **kwargs):
         super(AccessionPhenotypeTable, self).__init__(*args, **kwargs)
