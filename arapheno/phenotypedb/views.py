@@ -12,7 +12,8 @@ from django.views.generic.edit import DeleteView, UpdateView
 from django_tables2 import RequestConfig
 
 from phenotypedb.forms import (CorrelationWizardForm, PhenotypeUpdateForm,
-                               StudyUpdateForm, UploadFileForm, SubmitFeedbackForm)
+                               StudyUpdateForm, UploadFileForm, SubmitFeedbackForm,
+                               TransformationWizardForm)
 from phenotypedb.models import (Accession, OntologyTerm, Phenotype, Study,
                                 Submission, OntologySource)
 from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
@@ -88,6 +89,17 @@ def correlation_results(request, ids=None):
     Shows the correlation result
     """
     return render(request, 'phenotypedb/correlation_results.html', {"phenotype_ids":ids})
+
+def transformation_wizard(request):
+    """
+    Shows the transformation wizard form
+    """
+    wizard_form = TransformationWizardForm()
+    if "phenotype_search" in request.POST:
+        query = request.POST.getlist("phenotype_search")
+        #query = ",".join(map(str,query))
+        return HttpResponseRedirect("/phenotype/" + str(query[0]) + "/transformation/")
+    return render(request, 'phenotypedb/transformation_wizard.html', {"transformation_wizard":wizard_form})
 
 def transformation_results(request, pk):
     """

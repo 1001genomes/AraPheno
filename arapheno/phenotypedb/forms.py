@@ -57,6 +57,13 @@ class CorrelationWizardForm(forms.Form):
     # TODO comment out if you get an error during migration
     phenotype_search = autocomplete_light.MultipleChoiceField("PhenotypeCorrelationAutocomplete")
 
+class TransformationWizardForm(forms.Form):
+    """
+    Form for correlation wizard
+    """
+    # TODO comment out if you get an error during migration
+    phenotype_search = autocomplete_light.MultipleChoiceField("PhenotypeTransformationAutocomplete")
+
 class UploadFileForm(forms.ModelForm):
     """
     Form for uploading a study
