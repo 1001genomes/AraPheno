@@ -503,7 +503,9 @@ class Publication(models.Model):
 
     @property
     def pages_as_list(self):
-        return self.pages.split("-")
+        if self.pages:
+            return self.pages.split("-")
+        return []
 
 
     def __unicode__(self):
