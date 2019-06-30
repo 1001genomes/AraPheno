@@ -486,7 +486,7 @@ class Publication(models.Model):
     Publication model
     """
     author_order = models.TextField() #order of author names
-    publication_tag = models.CharField(max_length=255) #publication tag
+    publication_tag = models.CharField(max_length=255, null=True, blank=True) #publication tag
     pub_year = models.IntegerField(blank=True, null=True) #year of publication
     title = models.CharField(max_length=255, db_index=True) #title of publication
     journal = models.CharField(max_length=255) #journal of puplication
@@ -495,7 +495,7 @@ class Publication(models.Model):
     doi = models.CharField(max_length=255, db_index=True, blank=True, null=True) #doi
     pubmed_id = models.CharField(max_length=255, db_index=True, blank=True, null=True) #pubmed id
 
-    authors = models.ManyToManyField("Author") #author link
+    authors = models.ManyToManyField("Author", null=True, blank=True) #author link
 
     @property
     def author_order_as_list(self):
