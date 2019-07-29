@@ -156,7 +156,7 @@ def parse_meta_information_file(f, close_handle=True):
             if phenotype in meta_information:
                 logger.warn("%s is duplicated only taking last row", phenotype)
             if 'Type' in row:
-                row['Type'] = {'quantitive':0, 'categorical': 1,'binary': 2}.get(row['Type'].lower())
+                row['Type'] = {'quantitative':0, 'categorical': 1,'binary': 2}.get(row['Type'].lower())
             meta_information[phenotype] = row
         return meta_information
     except Exception as error:

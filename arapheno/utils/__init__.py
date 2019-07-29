@@ -62,7 +62,7 @@ def update_study(submission_id, fhandle):
     for phenotype_name, meta_info in meta_information.items():
         if 'id' in meta_info:
             phenotype = study.phenotype_set.all().get(pk=meta_info['id'])
-            for key in ('Scoring', 'eo_term_id', 'to_term_id', 'uo_term_id', 'Type'):
+            for key in ('Scoring', 'eo_term_id', 'to_term_id', 'uo_term_id', 'Type', 'growth_conditions'):
                 if key in meta_info:
                     setattr(phenotype, key.lower(), meta_info[key])
             phenotype.save()

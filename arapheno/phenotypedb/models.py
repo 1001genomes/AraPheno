@@ -28,7 +28,7 @@ STATUS_CHOICES = (
 
 PHENOTYPE_TYPE = (
     (
-        (0, 'Quantitive'),
+        (0, 'Quantitative'),
         (1, 'Categorical'),
         (2, 'Binary')
     )
