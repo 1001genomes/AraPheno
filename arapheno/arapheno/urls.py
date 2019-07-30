@@ -20,10 +20,12 @@ import phenotypedb.views
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_swagger.views import get_swagger_view
 from django.views.decorators.csrf import csrf_exempt
 from utils.statistics import SUPPORTED_TRANSFORMATIONS
 admin.autodiscover()
 al.autodiscover()
+schema_view = get_swagger_view(title='AraPheno API')
 
 ID_REGEX = r"[0-9]+"
 REGEX_STUDY = ID_REGEX + "|" + rest.DOI_REGEX_STUDY
@@ -61,7 +63,7 @@ urlpatterns = [
     url(r'^faq/content/$', home.views.faqcontent),
     url(r'^faq/tutorials/$', home.views.faqtutorial),
     url(r'^faq/rest/$', home.views.faqrest),
-    url(r'^faq/rest/swagger/', include('rest_framework_swagger.urls')),
+    url(r'^faq/rest/swagger/', schema_view),
     url(r'^faq/cite/$', home.views.faqcite),
     url(r'^faq/issue/$', home.views.faqissue),
     url(r'^feedback/$', phenotypedb.views.submit_feedback, name="feedback"),

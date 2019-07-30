@@ -34,6 +34,15 @@ PHENOTYPE_TYPE = (
     )
 )
 
+GENOTYPE_TYPE = (
+    (
+        (0, 'SNP chip'),
+        (1, 'Full sequence'),
+        (2, 'Imputed full sequence'),
+        (3, 'RNA sequence')
+    )
+)
+
 class Species(models.Model):
     """
     Species model
@@ -328,6 +337,9 @@ class Accession(models.Model):
     cs_number = models.CharField(max_length=255, blank=True, null=True) # Stock center number
     species = models.ForeignKey("Species") #species foreign key
 
+    def has_genotype(self, genotype_id):
+        return self.genotype_set.filter(pk=genotype_id).exists()
+
 
     @property
     def count_phenotypes(self):
@@ -343,6 +355,18 @@ class Accession(models.Model):
 
     def __unicode__(self):
         return u"%s (Accession)" % (mark_safe(self.name))
+
+class Genotype(models.Model):
+    """
+    Genotype models
+    """
+    name = models.CharField(max_length=255)
+    type = models.PositiveSmallIntegerField(choices=GENOTYPE_TYPE, db_index=True)
+    accessions = models.ManyToManyField("Accession", null=True, blank=True) #author link
+
+
+    def __unicode__(self):
+        return u"%s (Genotype)" % (mark_safe(self.name))
 
 
 class ObservationUnit(models.Model):

@@ -10,12 +10,13 @@ from django.shortcuts import render
 from django.views.generic import DetailView
 from django.views.generic.edit import DeleteView, UpdateView
 from django_tables2 import RequestConfig
+import django_tables2 as tables
 
 from phenotypedb.forms import (CorrelationWizardForm, PhenotypeUpdateForm,
                                StudyUpdateForm, UploadFileForm, SubmitFeedbackForm,
                                TransformationWizardForm)
 from phenotypedb.models import (Accession, OntologyTerm, Phenotype, Study,
-                                Submission, OntologySource)
+                                Submission, OntologySource, Genotype)
 from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
                                 PhenotypeTable, ReducedPhenotypeTable,
                                 StudyTable, AccessionPhenotypeTable)
@@ -114,6 +115,12 @@ def list_accessions(request):
     """
     Displays table with all accessions
     """
+    # extra_columns = [item.name for item in Genotype.objects.all()]
+    # import pdb; pdb.set_trace()
+    # extra_columns =[]
+    # template = '{{ record.has_genotype(genotype) }}<i class="material-icons dp48">check</i>'
+    # for genotype in Genotype.objects.all():
+    #     extra_columns.append((genotype.name, tables.TemplateColumn(template, extra_context={'genotype': genotype.pk} )))
     table = AccessionTable(Accession.objects.all(), order_by="-name")
     RequestConfig(request, paginate={"per_page":20}).configure(table)
     return render(request, 'phenotypedb/accession_list.html', {"accession_table":table})

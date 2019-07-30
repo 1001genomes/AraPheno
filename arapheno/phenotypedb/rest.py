@@ -533,7 +533,8 @@ def accession_list(request,format=None):
         - text/csv
         - application/json
     """
-    accessions = Accession.objects.all().prefetch_related('species')
+    accessions = Accession.objects.all().select_related('species')
+
     if request.method == "GET":
         serializer = AccessionListSerializer(accessions,many=True)
         return Response(serializer.data)

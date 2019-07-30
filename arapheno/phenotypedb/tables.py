@@ -105,8 +105,8 @@ class AccessionTable(tables.Table):
     longitude = tables.Column(accessor="longitude", verbose_name="Longitude", order_by="longitude")
     latitude = tables.Column(accessor="latitude", verbose_name="Latitude", order_by="latitude")
     cs_number = tables.URLColumn({"target":"_blank"},lambda record: record.cs_number, accessor="cs_number_url", verbose_name="CS Number", order_by="cs_number")
+    genotypes = tables.ManyToManyColumn(accessor="genotype_set", transform=lambda genotype: genotype.name)
     number_of_phenotypes = tables.Column(accessor="count_phenotypes",verbose_name='# Phenotypes')
-
 
     class Meta:
         attrs = {"class": "striped"}
