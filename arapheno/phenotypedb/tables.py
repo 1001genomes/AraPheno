@@ -1,6 +1,7 @@
 """
 Tables for django-table2
 """
+from django.db.models import Count
 import django_tables2 as tables
 from django_tables2.utils import A
 from django.utils.safestring import mark_safe
@@ -110,6 +111,10 @@ class AccessionTable(tables.Table):
 
     class Meta:
         attrs = {"class": "striped"}
+
+    def order_number_of_phenotypes(self,QuerySet,is_descending):
+        QuerySet = QuerySet.annotate(count=Count('observationunit__phenotypevalue__phenotype',distinct=True)).order_by(('-' if is_descending else '') + 'count')
+        return (QuerySet, True)
 
 
 class StatusColumn(tables.Column):
