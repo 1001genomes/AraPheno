@@ -500,11 +500,6 @@ def arapheno_db_archive(request,format=None):
     """
     Generate archive containing all studies in AraPheno
     ---
-<<<<<<< HEAD
-    parameters:
-        - None
-=======
->>>>>>> de4bb8ac375f40ff2b2af80271799a435c1ecc13
     produces:
         - application/zip
     """

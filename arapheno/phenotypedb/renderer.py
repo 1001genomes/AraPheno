@@ -17,13 +17,8 @@ class PhenotypeListRenderer(CSVRenderer):
 
 class StudyListRenderer(CSVRenderer):
     header = ['id','name','description','phenotype_count']
-<<<<<<< HEAD
-        
-        
-=======
 
 
->>>>>>> de4bb8ac375f40ff2b2af80271799a435c1ecc13
 class PhenotypeValueRenderer(CSVRenderer):
     header = ['phenotype_name','accession_id','accession_name','accession_cs_number','accession_longitude',
               'accession_latitude','accession_country','phenotype_value','obs_unit_id']
