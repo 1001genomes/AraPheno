@@ -24,7 +24,7 @@ ADMINS = [('Uemit', 'uemit.seren@gmi.oeaw.ac.at')]
 SECRET_KEY = '1g)fcq3@lg*lb^@ia#uw3&!)-a3__v(_oc56*%s82o16og*hg8'
 
 
-ALLOWED_HOSTS = ['arapheno.1001genomes.org','arapheno.sci.gmi.oeaw.ac.at']
+ALLOWED_HOSTS = ['arapheno.1001genomes.org','arapheno.sci.gmi.oeaw.ac.at', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -166,9 +166,9 @@ LOGGING = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'www.1001genomes.org',
-    'aragwas.1001genomes.org',
-    'localhost:8000',
-    'localhost:8080',
-    '127.0.0.1:8080'
+    'http://www.1001genomes.org',
+    'http://aragwas.1001genomes.org',
+    'http://localhost:8000',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080'
 )

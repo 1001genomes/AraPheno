@@ -28,9 +28,18 @@ STATUS_CHOICES = (
 
 PHENOTYPE_TYPE = (
     (
-        (0, 'Quantitive'),
+        (0, 'Quantitative'),
         (1, 'Categorical'),
         (2, 'Binary')
+    )
+)
+
+GENOTYPE_TYPE = (
+    (
+        (0, 'SNP chip'),
+        (1, 'Full sequence'),
+        (2, 'Imputed full sequence'),
+        (3, 'RNA sequence')
     )
 )
 
@@ -328,6 +337,9 @@ class Accession(models.Model):
     cs_number = models.CharField(max_length=255, blank=True, null=True) # Stock center number
     species = models.ForeignKey("Species") #species foreign key
 
+    def has_genotype(self, genotype_id):
+        return self.genotype_set.filter(pk=genotype_id).exists()
+
 
     @property
     def count_phenotypes(self):
@@ -343,6 +355,18 @@ class Accession(models.Model):
 
     def __unicode__(self):
         return u"%s (Accession)" % (mark_safe(self.name))
+
+class Genotype(models.Model):
+    """
+    Genotype models
+    """
+    name = models.CharField(max_length=255)
+    type = models.PositiveSmallIntegerField(choices=GENOTYPE_TYPE, db_index=True)
+    accessions = models.ManyToManyField("Accession", null=True, blank=True) #author link
+
+
+    def __unicode__(self):
+        return u"%s (Genotype)" % (mark_safe(self.name))
 
 
 class ObservationUnit(models.Model):
@@ -486,7 +510,7 @@ class Publication(models.Model):
     Publication model
     """
     author_order = models.TextField() #order of author names
-    publication_tag = models.CharField(max_length=255) #publication tag
+    publication_tag = models.CharField(max_length=255, null=True, blank=True) #publication tag
     pub_year = models.IntegerField(blank=True, null=True) #year of publication
     title = models.CharField(max_length=255, db_index=True) #title of publication
     journal = models.CharField(max_length=255) #journal of puplication
@@ -495,7 +519,7 @@ class Publication(models.Model):
     doi = models.CharField(max_length=255, db_index=True, blank=True, null=True) #doi
     pubmed_id = models.CharField(max_length=255, db_index=True, blank=True, null=True) #pubmed id
 
-    authors = models.ManyToManyField("Author") #author link
+    authors = models.ManyToManyField("Author", null=True, blank=True) #author link
 
     @property
     def author_order_as_list(self):
@@ -503,7 +527,9 @@ class Publication(models.Model):
 
     @property
     def pages_as_list(self):
-        return self.pages.split("-")
+        if self.pages:
+            return self.pages.split("-")
+        return []
 
 
     def __unicode__(self):

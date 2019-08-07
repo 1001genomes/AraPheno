@@ -76,6 +76,24 @@
                         </div>
                     </li>
                     <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>How to get transformed phenotype values for a certain phenotype?</div>
+                            <div class="collapsible-body"><p>You can use either the primary id or DOI to get transformed phenotype values for a certain phenotype.
+                            Just replace &lt;q&gt; with the phenotype id or DOI. This will return transformed phenotype values for all transformations (sqrt, box-cox, log)
+                            <br><br>
+                            <strong>For CSV format: http://arapheno.1001genomes.org/rest/phenotype/&lt;q&gt;/transformations.csv</strong>
+                            <br><br>
+                            <strong>For JSON format: http://arapheno.1001genomes.org/rest/phenotype/&lt;q&gt;/transformations.json</strong>
+                            <br><br>
+                            Example: <a href="/rest/phenotype/1/transformations.json">http://arapheno.1001genomes.org/rest/phenotype/1/transformations.json</a>
+                            <br><br>
+                            It is also possible to retrieve the transformed phenotype values for a specific transformation by extending the URL with the desired transformation name:
+                            <a href="/rest/phenotype/1/transformations/box_cox.json">http://arapheno.1001genomes.org/rest/phenotype/1/transformations/box_cox.json</a>
+                            <br><br>
+                            A more detailed API description can be found here: <a href="/faq/rest/swagger/">API Documentation</a>
+                            </p>
+                            </div>
+                        </li>
+                    <li>
                         <div class="collapsible-header"><i class="material-icons">code</i>How to get a list of all studies?</div>
                         <div class="collapsible-body"><p>You can use one of the following URL to retrive a list of studies.
                         <br><br>

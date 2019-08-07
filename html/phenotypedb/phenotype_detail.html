@@ -98,6 +98,14 @@
             </div>
             <div class="row">
                 <div class="col s3">
+                    <span>AraGWAS Associations:</span>
+                </div>
+                <div class="col s9">
+			<span><a href="https://aragwas.1001genomes.org/#/study/{{object.id}}" target="_blank">AraGWAS:{{ object.id }}</a> </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
                     <span>Scoring:</span>
                 </div>
                 <div class="col s9">
@@ -216,6 +224,9 @@
             </ul>
         </div>
         <div id="histogram" class="col s12" style="height:500px">
+            <h5>
+                <center><a href="{% url 'transformation-results' pk=object.id %}">Show transformations</a></center>
+            </h5>
             <div id="histogram_chart" class="chart"></div>
         </div>
         <div id="explorer" class="col s12" style="height:500px;width:100%;">

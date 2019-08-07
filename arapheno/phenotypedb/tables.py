@@ -1,6 +1,7 @@
 """
 Tables for django-table2
 """
+from django.db.models import Count
 import django_tables2 as tables
 from django_tables2.utils import A
 from django.utils.safestring import mark_safe
@@ -52,7 +53,7 @@ class AccessionPhenotypeTable(PhenotypeTable):
     """
     Table that is displayed in the accession detial view
     """
-    value = tables.Column(empty_values=(),verbose_name='Value (mean)')
+    value = tables.Column(empty_values=(),verbose_name='Value (mean)', orderable=False)
 
     def __init__(self, accession_id, *args, **kwargs):
         super(AccessionPhenotypeTable, self).__init__(*args, **kwargs)
@@ -105,11 +106,15 @@ class AccessionTable(tables.Table):
     longitude = tables.Column(accessor="longitude", verbose_name="Longitude", order_by="longitude")
     latitude = tables.Column(accessor="latitude", verbose_name="Latitude", order_by="latitude")
     cs_number = tables.URLColumn({"target":"_blank"},lambda record: record.cs_number, accessor="cs_number_url", verbose_name="CS Number", order_by="cs_number")
+    genotypes = tables.ManyToManyColumn(accessor="genotype_set", transform=lambda genotype: genotype.name)
     number_of_phenotypes = tables.Column(accessor="count_phenotypes",verbose_name='# Phenotypes')
-
 
     class Meta:
         attrs = {"class": "striped"}
+
+    def order_number_of_phenotypes(self,QuerySet,is_descending):
+        QuerySet = QuerySet.annotate(count=Count('observationunit__phenotypevalue__phenotype',distinct=True)).order_by(('-' if is_descending else '') + 'count')
+        return (QuerySet, True)
 
 
 class StatusColumn(tables.Column):

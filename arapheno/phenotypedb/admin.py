@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
-from phenotypedb.models import Submission, Study, Phenotype, Curation, StudyCuration, PhenotypeCuration
+from phenotypedb.models import Submission, Study, Phenotype, Curation, StudyCuration, PhenotypeCuration, Publication
 from django.core.mail import EmailMessage
 from django.conf import settings
 from utils.datacite import submit_submission_to_datacite
@@ -46,14 +46,14 @@ class SubmissionAdmin(admin.ModelAdmin):
     def submit_to_datacite(self, request, queryset):
         success = []
         error = []
-        for submission in queryset:        
+        for submission in queryset:
             try:
                 if submission.status == PUBLISHED:
                     submit_submission_to_datacite(submission)
                     subccess.append(submission)
             except Exception as err:
                 error.append((submission, str(err)))
-                
+
         if len(error) == 0:
             self.message_user(request, "Successuflly sent all selected submissions to datacite", level=INFO)
         else:
@@ -75,5 +75,10 @@ class PhenotypeAdmin(admin.ModelAdmin):
     list_display = ['name','study','scoring', 'to_term','eo_term','uo_term','curation']
     readonly_fields = ('study',)
     inlines = [PhenotypeCurationInline, ]
+
+
+@admin.register(Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    list_display = ['author_order','pub_year','title', 'journal','doi']
 
 

@@ -10,16 +10,19 @@ from django.shortcuts import render
 from django.views.generic import DetailView
 from django.views.generic.edit import DeleteView, UpdateView
 from django_tables2 import RequestConfig
+import django_tables2 as tables
 
 from phenotypedb.forms import (CorrelationWizardForm, PhenotypeUpdateForm,
-                               StudyUpdateForm, UploadFileForm, SubmitFeedbackForm)
+                               StudyUpdateForm, UploadFileForm, SubmitFeedbackForm,
+                               TransformationWizardForm)
 from phenotypedb.models import (Accession, OntologyTerm, Phenotype, Study,
-                                Submission, OntologySource)
+                                Submission, OntologySource, Genotype)
 from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
                                 PhenotypeTable, ReducedPhenotypeTable,
                                 StudyTable, AccessionPhenotypeTable)
 from scipy.stats import shapiro
 import json, itertools
+from utils import calculate_phenotype_transformations
 
 
 # Create your views here.
@@ -88,10 +91,36 @@ def correlation_results(request, ids=None):
     """
     return render(request, 'phenotypedb/correlation_results.html', {"phenotype_ids":ids})
 
+def transformation_wizard(request):
+    """
+    Shows the transformation wizard form
+    """
+    wizard_form = TransformationWizardForm()
+    if "phenotype_search" in request.POST:
+        query = request.POST.getlist("phenotype_search")
+        #query = ",".join(map(str,query))
+        return HttpResponseRedirect("/phenotype/" + str(query[0]) + "/transformation/")
+    return render(request, 'phenotypedb/transformation_wizard.html', {"transformation_wizard":wizard_form})
+
+def transformation_results(request, pk):
+    """
+    SHow transformation result
+    """
+    phenotype = Phenotype.objects.get(id=pk)
+    data = calculate_phenotype_transformations(phenotype)
+    data['object'] = phenotype
+    return render(request, 'phenotypedb/transformation_results.html', data)
+
 def list_accessions(request):
     """
     Displays table with all accessions
     """
+    # extra_columns = [item.name for item in Genotype.objects.all()]
+    # import pdb; pdb.set_trace()
+    # extra_columns =[]
+    # template = '{{ record.has_genotype(genotype) }}<i class="material-icons dp48">check</i>'
+    # for genotype in Genotype.objects.all():
+    #     extra_columns.append((genotype.name, tables.TemplateColumn(template, extra_context={'genotype': genotype.pk} )))
     table = AccessionTable(Accession.objects.all(), order_by="-name")
     RequestConfig(request, paginate={"per_page":20}).configure(table)
     return render(request, 'phenotypedb/accession_list.html', {"accession_table":table})

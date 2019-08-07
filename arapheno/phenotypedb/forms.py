@@ -8,7 +8,8 @@ from autocomplete_light import shortcuts as autocomplete_light
 from django import forms
 from django.db import transaction
 from phenotypedb.models import Phenotype, Study, Submission, OntologyTerm, PHENOTYPE_TYPE
-from utils import import_study
+from utils import import_study, update_study, add_phenotype_ids
+from utils.data_io import parse_meta_information_file
 
 TEXT_WIDGET = forms.TextInput(attrs={'class':'validate'})
 SUPPORTED_EXTENSION = ('.csv', '.plink', '.zip', '.tar.gz')
@@ -54,7 +55,14 @@ class CorrelationWizardForm(forms.Form):
     Form for correlation wizard
     """
     # TODO comment out if you get an error during migration
-    phenotype_search = autocomplete_light.MultipleChoiceField("PhenotypeCorrelationAutocomplete")
+    phenotype_search = autocomplete_light.MultipleChoiceField("PhenotypeCorrelationAutocomplete", required=False)
+
+class TransformationWizardForm(forms.Form):
+    """
+    Form for correlation wizard
+    """
+    # TODO comment out if you get an error during migration
+    phenotype_search = autocomplete_light.MultipleChoiceField("PhenotypeTransformationAutocomplete", required=False)
 
 class UploadFileForm(forms.ModelForm):
     """
@@ -86,7 +94,7 @@ class StudyUpdateForm(forms.ModelForm):
     """
     Form for updating study of a submission
     """
-
+    file = forms.FileField(required=False)
     class Meta:
         model = Study
         fields = ('name', 'description')
@@ -94,7 +102,31 @@ class StudyUpdateForm(forms.ModelForm):
             'name': TEXT_WIDGET,
             'description': forms.Textarea(attrs={'class': 'validate materialize-textarea', 'required':True})
         }
+    @transaction.atomic
+    def save(self, commit=True):
+        study = super(StudyUpdateForm, self).save(commit)
+        if commit and self.cleaned_data['file']:
+            #try:
 
+            failed_phenotypes = update_study(study.submission.id, self.cleaned_data['file'])
+            #except Exception as error:
+             #  pass
+        return study
+
+    def clean(self):
+        cd = super(StudyUpdateForm, self).clean()
+        try:
+            if cd['file'] is not None:
+                meta_information = parse_meta_information_file(cd['file'],close_handle=False)
+            else:
+                return cd
+        except Exception as error:
+            self.add_error('file', "Format is wrong")
+            raise forms.ValidationError('Bulk-update file format is wrong')
+        meta_information, failed_phenotypes = add_phenotype_ids(self.instance,meta_information)
+        if len(failed_phenotypes) > 0:
+            raise forms.ValidationError('Following phenotypes are not found: %s' % ', '.join(failed_phenotypes))
+        return cd
 
 class PhenotypeUpdateForm(forms.ModelForm):
     """
