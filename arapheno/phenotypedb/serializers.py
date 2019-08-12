@@ -191,7 +191,10 @@ class PhenotypeValueSerializer(serializers.ModelSerializer):
         try:
             return obj.phenotype.name
         except:
-            return ""
+            try:
+                return obj.rnaseq.name
+            except:
+                return ""
 
     def get_accession_name(self,obj):
         try:

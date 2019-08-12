@@ -10,3 +10,4 @@ static_deploy
 env/
 venv/
 db.sqlite3
+data/

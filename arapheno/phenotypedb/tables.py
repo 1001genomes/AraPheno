@@ -39,6 +39,7 @@ class ReducedPhenotypeTable(tables.Table):
     class Meta:
         attrs = {"class": "striped"}
 
+
 class PhenotypeTable(ReducedPhenotypeTable):
     """
     Table that is displayed in the general phenotype list view
@@ -64,7 +65,23 @@ class AccessionPhenotypeTable(PhenotypeTable):
         if not values:
             return "N/A"
         return str(np.mean(values))
+class ReducedRNASeqTable(tables.Table):
+    """
+    Table that is displayed in the Study detail view
+    """
+    name = tables.LinkColumn("rnaseq_detail", args=[A('id')], text=lambda record: record.name, verbose_name="RNASeq Element", order_by="name")
 
+    class Meta:
+        attrs = {"class": "striped"}
+
+class RNASeqTable(ReducedRNASeqTable):
+    """
+    Table that is displayed in the general RNASeq list view
+    """
+    study = tables.LinkColumn("study_detail", args=[A('study.id')], text=lambda record: record.study.name, verbose_name="Study", order_by="study.name")
+
+    class Meta:
+        attrs = {"class": "striped"}
 
 class StudyTable(tables.Table):
     """
@@ -78,6 +95,17 @@ class StudyTable(tables.Table):
     class Meta:
         attrs = {"class": "striped"}
 
+class RNASeqStudyTable(tables.Table):
+    """
+    Table that is displayed in the study list view
+    """
+    name = tables.LinkColumn("study_detail", args=[A('id')], text=lambda record: record.name, verbose_name="Study Name", order_by="name")
+    description = tables.Column(accessor="description", verbose_name="Description", order_by="description")
+    phenotypes = tables.Column(accessor="rna_count", verbose_name="#RNASeqs", order_by="rnaseq")
+    update_date = tables.DateTimeColumn(accessor="update_date", verbose_name="Date Added", order_by="update_date",format="M/d/Y")
+
+    class Meta:
+        attrs = {"class": "striped"}
 
 class PublicationTable(tables.Table):
     """

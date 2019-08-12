@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - RNAseq {{object.name}} {% endblock title %}
+
+{% block content %}
+{% with citation=rnaseq type='rnaseq' publications=rnaseq.study.publications submission=rnaseq.study.submission%}
+{% include 'phenotypedb/citation_box.html' %}
+{% endwith %}
+<div id="index-banner" class="parallax-container" style="height:80px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h5 class="black-text">RNAseq: {{ object.name }}</h5>
+            <div style="position: relative;">
+            <div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block; bottom: -4px; right: 0px;z-index:1;">
+                <a class="btn-floating btn-large white">
+                    <i class="large material-icons blue-text text-darken-3" id="download_btn">file_download</i>
+                </a>
+                <ul>
+                    <li><a href="#downloadmodal" class="btn-floating green black-text waves-effect modal-trigger" style="font-size:10px;text-align:center;font-weight:bold">Values</a></li>
+                </ul>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div id="downloadmodal" class="modal">
+    <div class="modal-content">
+        <h4>Choose a download format</h4>
+        <ul class="collection">
+            <a href="/rest/rnaseq/{{object.id}}/values.csv">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle brown">file_download</i>
+                <span class="title black-text">CSV</span>
+                <p class="black-text light">
+                Download the RNAseq values for <strong>{{object.name}}</strong> in CSV format<br>
+                This format includes meta-information for the accessions, such as latitude and longitude.
+                </p>
+                </li></div>
+            </a>
+            <a href="/rest/rnaseq/{{object.id}}/values.json">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle light-blue">file_download</i>
+                <span class="title black-text">JSON</span>
+                <p class="black-text light">
+                Download the RNAseq values for <strong>{{object.name}}</strong> in JSON format<br>
+                This format includes meta-information for the accessions, such as latitude and longitude.
+                </p>
+                </li></div>
+            </a>
+        </ul>
+    </div>
+</div>
+
+<div class="container">
+        <br>
+        <div class="row">
+        <div class="col s12 m5" id="infos">
+            <div class="row">
+                    <div class="col s3">
+                        <span>Name:</span>
+                    </div>
+                    <div class="col s9">
+                        {{ object.name }}
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>ID:</span>
+                </div>
+                <div class="col s9">
+                    {{ object.id }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Study:</span>
+                </div>
+                <div class="col s9">
+                    <a href="/study/{{object.study.id}}"><span>{{ object.study.name }}</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>DOI:</span>
+                </div>
+                <div class="col s9">
+                    <span><a href="{{ object.doi_link }}" target="_blank">{{ object.doi }}</a> (<a  class="modal-trigger" href="#citationModal"><i class="material-icons">format_quote</i>Cite
+                    </a>)</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Scoring:</span>
+                </div>
+                <div class="col s9">
+                    <span>{{ object.scoring }}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Shapiro-Wilk*:</span>
+                </div>
+                <div class="col s9">
+                    <span>
+                        {{ shapiro|floatformat:"-2e" }} (p-value)
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s3">
+                    <span>Submission date:</span>
+                </div>
+                <div class="col s9">
+                    <span>{{ object.integration_date }}</span>
+                </div>
+            </div>
+            <div class="row">
+            <span style="font-size:11px;">* The Shapiro-Wilk test tests the null hypothesis that the data was drawn from a normal distribution.</span>
+            </div>
+        </div>
+        <div class="col s12 m7" style="text-align:center" id="geo_chart_container">
+            <span >Geographic distribution of {{ object.rnaseqvalue_set.count }} accessions</span>
+            <div id="geo_chart" style="width:100%;height:100%"></div>
+        </div>
+            <div class="row">
+                <div class="col s12"><h5>RNASeq Publications</h5></div>
+                <div class="col s12">
+                     <ul class="collection">
+                        {% for p in object.study.publications.all %}
+                            <li class="collection-item">
+                                <span class="title">
+                                    {% if p.pubmed_id %}
+                                    <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ p.pubmed_id }}" target="_blank">{{ p.title }}</a>
+                                    {% else %}
+                                    {{ p.title }}
+                                    {% endif %}
+                                </span>
+                                <p class="author-list">
+                                    {{ p.author_order }}
+                                </p>
+                                <p class="publication-details">
+                                    {{ p.journal }}. {{ p.pub_year }} {{ p.volume }}: {{ p.pages }}. doi: {{ p.doi }}
+                                </p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <ul class="tabs">
+                <li class="tab col s2"><a href="#histogram" id="histogram_link" class="active blue-text text-darken-3">Histogram</a></li>
+                <li class="tab col s2"><a href="#table" id="table_link" class="blue-text text-darken-3">Table</a></li>
+                <div class="indicator blue darken-3" style="z-index:1"></div>
+            </ul>
+        </div>
+        <div id="histogram" class="col s12" style="height:500px">
+            <h5>
+                <center><a href="{% url 'transformation-results' pk=object.id %}">Show transformations</a></center>
+            </h5>
+            <div id="histogram_chart" class="chart"></div>
+        </div>
+        <div id="table" class="col s12" style="height:500px">
+            <div id="table_chart" class="chart"></div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var geoChrt,geoChartData,histogramChart,histogramData,explorerChart,explorerData, tableChart;
+    $(document).ready(function(){
+        $('.parallax').parallax();
+        // change footer
+        var footer = document.getElementById('footer')
+        var footerdark = document.getElementById('footerdark')
+        footer.className = footer.className.replace("brown lighten-2", "blue");
+        footerdark.className = footerdark.className.replace("brown", "blue darken-3");
+        // change header
+        var title = document.getElementById('logo-container')
+        title.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+        title.href = '/rnaseq_home'
+
+        var other = document.getElementById('other-view')
+        other.innerHTML = 'AraPheno'
+        other.className = other.className.replace('blue-text text-lighten-4', 'grey-text text-lighten-1')
+        other.href = '/'
+
+        $('.modal-trigger').leanModal({
+            dimissible:true,
+            in_duration: 300,
+        });
+
+        $('ul.tabs').on('click', 'a', function(e) {
+            var target = e.currentTarget;
+            if (target.id === 'explorer_link') {
+                width = $('#explorer').width();
+                explorerChart.draw(explorerData,{width:width,height:500});
+            }
+        });
+
+    });
+    google.load('visualization', '1.0', {'packages':['corechart','geochart','motionchart','table']});
+    google.setOnLoadCallback(drawCharts);
+
+    function drawCharts() {
+        geoChart =  new google.visualization.GeoChart(document.getElementById('geo_chart'));
+        histogramChart =  new google.visualization.Histogram(document.getElementById('histogram_chart'));
+        tableChart = new google.visualization.Table(document.getElementById('table_chart'));
+
+        {% autoescape off %}
+        geoChartData = google.visualization.arrayToDataTable([
+          ['Country', 'Frequency'],
+          {% for geo in geo_chart_data %}
+             [ "{{ geo.country }}", {{ geo.count }} ],
+          {% endfor %}
+        ],false);
+
+        histogramData = google.visualization.arrayToDataTable([
+          ['RNASeq Value', 'Frequency'],
+          {% for item in object.rnaseqvalue_set.all %}[ "{{ item.obs_unit.accession.name }} ({{ item.id }})", {{ item.value }} ],{% endfor %}
+        ],false);
+
+        tableData = google.visualization.arrayToDataTable([
+          ['ID','Accession','Longitude','Latitude','RNASeq Value','Country'],
+          {% for item in pheno_acc_infos %}
+             [ "<a href=\"{% url 'accession_detail' item.obs_unit.accession.id  %}\">{{ item.obs_unit.accession.id }}</a>", "{{ item.obs_unit.accession.name }}", {{ item.obs_unit.accession.longitude | default_if_none:"null" }}, {{ item.obs_unit.accession.latitude |default_if_none:"null" }},
+              {{ item.value }},"{{ item.obs_unit.accession.country }}"
+            ],
+          {% endfor %}
+          ],false);
+
+        {% endautoescape %}
+
+        var geoOptions = {};
+        var histogramOptions = {height:500,width:"100%",legend: { position: 'none' },hAxis:{title:'RNASeq Value'},vAxis:{title:'Frequency'}};
+        var explorerOptions = {height:500};
+        var tableOptions = {height:500, width:"100%",allowHtml:true};
+
+        geoChart.draw(geoChartData, geoOptions);
+        histogramChart.draw(histogramData,histogramOptions)
+        tableChart.draw(tableData,tableOptions);
+    }
+</script>
+{% endblock content %}

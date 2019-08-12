@@ -132,19 +132,30 @@ class Study(models.Model):
     update_date = models.DateTimeField(default=None, null=True, blank=True)
     objects = StudyQuerySet.as_manager()
 
-    def value_as_dataframe(self):
+    def value_as_dataframe(self, kind='phenotype'):
         """
         Returns the PhenotypValue records for this study as a pandas dataframe
         """
         cursor = connection.cursor()
-        cursor.execute("""
-            SELECT v.id,o.id,o.accession_id,a.name,s.ncbi_id,p.id as phenotype_id,p.name as phenotype_name, v.value
-            FROM phenotypedb_phenotypevalue as v
-            LEFT JOIN phenotypedb_observationunit o ON v.obs_unit_id = o.id
-            LEFT JOIN phenotypedb_phenotype as p ON p.id = v.phenotype_id
-            LEFT JOIN phenotypedb_accession as a ON a.id = o.accession_id
-            LEFT JOIN phenotypedb_species as s ON s.id = a.species_id
-            WHERE p.study_id = %s ORDER BY o.accession_id,p.id ASC """ % self.id)
+        if kind == 'phenotype':
+            cursor.execute("""
+                SELECT v.id,o.id,o.accession_id,a.name,s.ncbi_id,p.id as phenotype_id,p.name as phenotype_name, v.value
+                FROM phenotypedb_phenotypevalue as v
+                LEFT JOIN phenotypedb_observationunit o ON v.obs_unit_id = o.id
+                LEFT JOIN phenotypedb_phenotype as p ON p.id = v.phenotype_id
+                LEFT JOIN phenotypedb_accession as a ON a.id = o.accession_id
+                LEFT JOIN phenotypedb_species as s ON s.id = a.species_id
+                WHERE p.study_id = %s ORDER BY o.accession_id,p.id ASC """ % self.id)
+        elif kind=='rnaseq':
+            # TODO: this is too slow, need to serve csv direclty...
+            cursor.execute("""
+                SELECT v.id,o.id,o.accession_id,a.name,s.ncbi_id,p.id as rnaseq_id,p.name as rnaseq_name, v.value
+                FROM phenotypedb_rnaseqvalue as v
+                LEFT JOIN phenotypedb_observationunit o ON v.obs_unit_id = o.id
+                LEFT JOIN phenotypedb_rnaseq as p ON p.id = v.rnaseq_id
+                LEFT JOIN phenotypedb_accession as a ON a.id = o.accession_id
+                LEFT JOIN phenotypedb_species as s ON s.id = a.species_id
+                WHERE p.study_id = %s ORDER BY o.accession_id,p.id ASC """ % self.id)
         data = pd.DataFrame(cursor.fetchall(),
                             columns=['id', 'obs_unit_id', 'accession_id', 'accession_name',
                                      'ncbi_id', 'phenotype_id', 'phenotype_name',
@@ -153,7 +164,8 @@ class Study(models.Model):
 
     def get_matrix_and_accession_map(self, column='phenotype_name'):
         """Returns both the dataframe and a matrix version of it"""
-        data = self.value_as_dataframe()
+        kind = 'rnaseq' if self.phenotype_set.count()==0 and self.rnaseq_set.count()>0 else 'phenotype'
+        data = self.value_as_dataframe(kind)
         data.set_index(['obs_unit_id'], inplace=True)
         df_pivot = data.pivot(columns=column, values='value')
         data.drop(['value', 'phenotype_id', 'phenotype_name'], axis=1, inplace=True)
@@ -590,3 +602,58 @@ class OntologySource(models.Model):
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.acronym)
+
+
+"""
+RNASeq related models
+"""
+class RNASeq(models.Model):
+    """
+    RNASeq model
+    """
+    name = models.CharField(max_length=255, db_index=True) #gene or RNA name
+    scoring = models.TextField(blank=True, null=True) #how was the scoring of the RNASeq done, most of the time this is transcripts per kilobase million (TPM)
+    shapiro_test_statistic = models.FloatField(blank=True, null=True) #Shapiro Wilk test for normality
+    shapiro_p_value = models.FloatField(blank=True, null=True) #p-value of Shapiro Wilk test
+    number_replicates = models.IntegerField(default=0) #number of replicates for this RNASeq
+    integration_date = models.DateTimeField(auto_now_add=True) #date of phenotype integration/submission
+
+    species = models.ForeignKey('Species')
+    study = models.ForeignKey('Study')
+    update_date = models.DateTimeField(default=None, null=True, blank=True)
+
+
+
+    def get_absolute_url(self):
+        """returns the rnaseq page"""
+        return reverse('rnaseq_detail', args=[str(self.id)])
+
+
+    @property
+    def doi_link(self):
+        """Returns the DOI link to datacite"""
+        return '%s/%s' % (settings.DATACITE_DOI_URL, self.doi)
+
+    def get_values_for_acc(self,accession_id):
+        """
+        Retrieves the RNASeq value for a specific accession
+        """
+        return self.rnaseqvalue_set.filter(obs_unit__accession_id=accession_id).values_list("value", flat=True)
+
+
+    @property
+    def doi(self):
+        """Returns the DOI"""
+        return '%s/rnaseq:%s' % (settings.DATACITE_PREFIX, self.id)
+
+    def __unicode__(self):
+        return u"%s (RNASeq score)" % (mark_safe(self.name))
+
+class RNASeqValue(models.Model):
+    """
+    RNASeqValue model
+    The indivudal RNASeq values. Connected to RNASeq and ObservationUnit
+    """
+    value = models.FloatField()
+    rnaseq = models.ForeignKey('RNASeq')
+    obs_unit = models.ForeignKey('ObservationUnit')
