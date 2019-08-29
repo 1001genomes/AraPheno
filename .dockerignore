@@ -2,3 +2,6 @@
 .gitignore
 .dockerignore
 docker-compose.yml
+.vscode/
+.tox/
+.cache/

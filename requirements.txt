@@ -14,3 +14,4 @@ django-widget-tweaks==1.4.5
 requests==2.22.0
 git+git://github.com/timeu/biopy-isatab.git#egg=biopy-isatab
 django-cors-headers==3.0.2
+psycopg2==2.8.3

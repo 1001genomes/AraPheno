@@ -65,9 +65,4 @@ class Migration(migrations.Migration):
             name='study',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='phenotypedb.Study'),
         ),
-        migrations.AddField(
-            model_name='phenotypecuration',
-            name='phenotype',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='phenotypedb.Phenotype'),
-        ),
     ]
