@@ -1,16 +1,13 @@
 FROM python:2.7
 MAINTAINER Ümit Seren
 
-ENV PYTHONUNBUFFERED 1
+COPY requirements.txt .
 
-RUN mkdir /code
+RUN pip install --no-cache-dir -r requirements.txt && pip install gunicorn
 
-WORKDIR /code
+COPY . /srv/web
+RUN chmod 755 /srv/web/web-entrypoint.sh
 
-VOLUME /code
-
-ADD requirements.txt /code/
-
-RUN pip install --upgrade pip
-
-RUN pip install -r requirements.txt && pip install gunicorn
+WORKDIR /srv/web/arapheno
+ENTRYPOINT ["/srv/web/web-entrypoint.sh"]
+CMD ["manage.py"]
