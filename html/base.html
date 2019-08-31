@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 {% load staticfiles %}
+{% load core_tags %}
+{% load humanize %}
 <html>
     <head>
         <!--Import Google Icon Font-->
@@ -139,8 +141,36 @@
             </div>
             <div id="footerdark" class="footer-copyright brown">
                 <div class="container">
-			AraPheno is a public database for <em>Arabidopsis thaliana</em> phenotypes (&copy 2016-2019)
-                 <a class="modal-trigger waves-effect waves-light white-text text-lighten-4 right" href="#footermodal">Impressum</a>
+            AraPheno is a public database for <em>Arabidopsis thaliana</em> phenotypes (&copy 2016-2019)
+            <a class="modal-trigger waves-effect waves-light white-text text-lighten-4 right" href="#footermodal">Impressum</a>
+            <div class="version hidden-sm-and-down">
+                <ul>
+                    <li>
+                        {{ version.version }}
+                    </li>
+                    <li>
+                        {% if version.build_status_url %}
+                            <a href="{{ version.build_status_url }}/{{ version.build }}" target="_blank">{{version.build}}</a>
+                        {% else %}
+                            {{version.build}}
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if version.github_url %}
+                            <a href="{{ version.github_url}}/{{ version.githash }}" target="_blank">{{version.githash}}</a>
+                        {% else %}
+                            {{version.githash}}
+                        {% endif %}
+                    </li>
+                    <li>
+                        <time datetime="{{ version.date }}">{{version.date | parse_dt | naturaltime }}</time>
+                    </li>
+                    <li>
+
+                    </li>
+                </ul>
+            </div>
+
                 </div>
             </div>
         </footer>
