@@ -15,3 +15,4 @@ requests==2.22.0
 git+git://github.com/timeu/biopy-isatab.git#egg=biopy-isatab
 django-cors-headers==3.0.2
 psycopg2==2.8.3
+pytest-django==3.1.2

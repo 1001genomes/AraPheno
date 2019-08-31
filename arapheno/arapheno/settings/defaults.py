@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'home',
     'phenotypedb',
     'django_tables2',
@@ -84,6 +85,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'phenotypedb.context_processors.version',
             ],
         },
     },
@@ -141,10 +143,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR,'../static'),]
 # Needed to get     request.is_secure() == True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-
+GITHUB_URL='https://github.com/1001genomes/AraPheno/commit'
 DATACITE_PREFIX = '10.21958'
-DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
-DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
+DATACITE_USERNAME = os.environ.get('DATACITE_USERNAME', None)
+DATACITE_PASSWORD = os.environ.get('DATACITE_PASSWORD', None)
 DATACITE_DOI_URL = 'http://search.datacite.org/works'
 DOI_BASE_URL = 'http://arapheno.1001genomes.org'
 
