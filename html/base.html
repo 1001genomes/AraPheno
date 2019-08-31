@@ -47,8 +47,17 @@
         {% include 'autocomplete_light/static.html' %}
         <div class="navbar-fixed">
         <nav class="white">
-            <div class="nav-wrapper container">
-                <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
+            <div class="nav-wrapper row">
+                <div id="title-container" class="container">
+                    <div class="col s3">
+                        <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
+                    </div>
+                    <div class="col s3">
+                        <a id="other-view" href="/rnaseq_home" class="brand-logo blue-text text-lighten-4">AraPheno <b>RNASeq</b></a>
+                    </div>
+                    </div>
+
+                <!-- </div> -->
                 <ul class="right hide-on-med-and-down black-text">
                     <li>
                         <a class="dropdown-button black-text" href="#!" data-activates="datadropdown">Data<i class="material-icons right black-text">arrow_drop_down</i></a>
@@ -56,6 +65,8 @@
                             <li><a class="white-text" href="/studies">Studies</a></li>
                             <li class="divider"></li>
                             <li><a class="white-text" href="/phenotypes">Phenotypes</a></li>
+                            <li class="divider"></li>
+                            <li><a class="white-text" href="/rnaseqs">RNASeq</a></li>
                             <li class="divider"></li>
                             <li><a class="white-text" href="/accessions">Accessions</a></li>
                             <li class="divider"></li>
@@ -122,11 +133,11 @@
         <main>
         {% block content %}{% endblock content %}
         </main>
-        <footer class="page-footer brown lighten-2">
+        <footer id="footer" class="page-footer brown lighten-2">
             <div class="container">
 
             </div>
-            <div class="footer-copyright brown">
+            <div id="footerdark" class="footer-copyright brown">
                 <div class="container">
 			AraPheno is a public database for <em>Arabidopsis thaliana</em> phenotypes (&copy 2016-2019)
                  <a class="modal-trigger waves-effect waves-light white-text text-lighten-4 right" href="#footermodal">Impressum</a>

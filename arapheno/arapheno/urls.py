@@ -38,9 +38,11 @@ ONTOLOGY_SOURCE_REGEX = "(PECO|PTO|UO)"
 urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$', home.views.home, name="home"),
+    url(r'^rnaseq_home$', home.views.home_rnaseq, name="home"),
     url(ur'^search_results/$', home.views.SearchResults, name="searchresults"),
     url(ur'^search_results//$', home.views.SearchResults, name="searchresults"),
     url(ur'^search_results/(?P<query>.*)/$', home.views.SearchResults, name="searchresults"),
+    url(ur'^rnaseq_search_results/(?P<query>.*)/$', home.views.SearchResultsRNASeq, name="searchresults"),
     url(r'^phenotypes/$', phenotypedb.views.list_phenotypes, name="phenotypes"),
     url(r'^download/$', phenotypedb.views.download, name="download"),
     url(r'^correlation/$', phenotypedb.views.correlation_wizard, name="correlation-wizard"),
@@ -57,6 +59,10 @@ urlpatterns = [
     url(r'^ontology/(?P<acronym>%s)/(?P<term_id>%s)/$' % (ONTOLOGY_SOURCE_REGEX,ONTOLOGY_REGEX), phenotypedb.views.detail_ontology_source,name="ontology_detail"),
     url(r'^term/(?P<pk>%s)/$' % ONTOLOGY_REGEX, phenotypedb.views.detail_ontology_term,name="term_detail"),
     url(r'^term/$', phenotypedb.views.detail_ontology_term),
+    url(r'^rnaseqs/$', phenotypedb.views.list_rnaseqs, name="rnaseqs"),
+    url(r'^rnaseq/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.RNASeqDetail.as_view(), name="rnaseq_detail"),
+    url(r'^rnaseq/(?P<pk>%s)/transformation/$' % ID_REGEX, phenotypedb.views.rnaseq_transformation_results, name="transformation-results"),
+    url(r'^rnaseq_studies/$', phenotypedb.views.list_rnaseq_studies, name="rnaseq_studies"),
     url(r'^about/$', home.views.about),
     url(r'^links/$', home.views.links),
     url(r'^faq/$', home.views.faq),
@@ -146,6 +152,8 @@ restpatterns = [
     url(r'rest/terms/(?P<term_id>%s)/$' % ONTOLOGY_REGEX, rest.ontology_tree_data,name='ontology_tree_children'),
     #url(r'rest/ontology/(?P<pk>%s)/(?P<term_id>%s)' % ID_REGEX )
     url(r'rest/download/$', rest.arapheno_db_archive),
+
+    url(r'^rest/rnaseq/(?P<q>%s)/values/$' % REGEX_PHENOTYPE, rest.rnaseq_value),
 
 ]
 #extend restpatterns with suffix options

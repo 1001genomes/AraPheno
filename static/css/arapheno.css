@@ -10,7 +10,13 @@
     border-radius: .30em;
     background-color: rgb(121,85,72);
 }
+.switch label input[type=checkbox]:checked+.lever {
+    background-color: #42A5F5;
+}
 
+.switch label input[type=checkbox]:checked+.lever:after {
+    background-color: #1565C0;
+}
 .collection-item p {
     margin:0;
     margin-top:5px;

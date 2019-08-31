@@ -131,14 +131,18 @@ def save_plink_or_csv(plink_data, name):
     return study
 
 
-def calculate_phenotype_transformations(phenotype, trans = None):
+def calculate_phenotype_transformations(phenotype, trans = None, rnaseq=False):
     """
     Calculates transformations for the phenotype
     """
     labels = []
     accessions = []
     values = []
-    for item in phenotype.phenotypevalue_set.all():
+    if rnaseq:
+        iterator = phenotype.rnaseqvalue_set.all()
+    else:
+        iterator = phenotype.phenotypevalue_set.all()
+    for item in iterator:
         accessions.append((item.obs_unit.accession.id, item.obs_unit.accession.name))
         labels.append("%s(%s)" % (item.obs_unit.accession.name, item.id))
         values.append(item.value)

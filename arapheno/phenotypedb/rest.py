@@ -12,7 +12,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser, FileUploadParser, MultiPartParser, FormParser
 from rest_framework.views import APIView
 
-from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession, Submission, OntologyTerm, OntologySource
+from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession, Submission, OntologyTerm, OntologySource, RNASeq
 from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer, OntologyTermListSerializer
 from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeValueSerializer
 from phenotypedb.serializers import AccessionListSerializer, SubmissionDetailSerializer, AccessionPhenotypesSerializer
@@ -210,6 +210,42 @@ def phenotype_value(request,q,format=None):
 
     if request.method == "GET":
         pheno_acc_infos = phenotype.phenotypevalue_set.prefetch_related('obs_unit__accession')
+        value_serializer = PhenotypeValueSerializer(pheno_acc_infos,many=True)
+        return Response(value_serializer.data)
+
+'''
+Get all rnaseq values
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeValueRenderer,JSONRenderer,PLINKRenderer,))
+def rnaseq_value(request,q,format=None):
+    """
+    List of the rnaseq values
+    ---
+    parameters:
+        - name: q
+          description: the id or doi of the rnaseq
+          required: true
+          type: string
+          paramType: path
+
+    serializer: PhenotypeValueSerializer
+    omit_serializer: false
+
+    produces:
+        - text/csv
+        - application/json
+    """
+    doi = _is_doi(DOI_PATTERN_PHENOTYPE, q)
+    try:
+        id = doi if doi else int(q)
+        rnaseq = RNASeq.objects.get(pk=id)
+    except:
+        return HttpResponse(status=404)
+
+    if request.method == "GET":
+        pheno_acc_infos = rnaseq.rnaseqvalue_set.prefetch_related('obs_unit__accession')
         value_serializer = PhenotypeValueSerializer(pheno_acc_infos,many=True)
         return Response(value_serializer.data)
 

@@ -16,10 +16,11 @@ from phenotypedb.forms import (CorrelationWizardForm, PhenotypeUpdateForm,
                                StudyUpdateForm, UploadFileForm, SubmitFeedbackForm,
                                TransformationWizardForm)
 from phenotypedb.models import (Accession, OntologyTerm, Phenotype, Study,
-                                Submission, OntologySource, Genotype)
+                                Submission, OntologySource, Genotype, RNASeq)
 from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
                                 PhenotypeTable, ReducedPhenotypeTable,
-                                StudyTable, AccessionPhenotypeTable)
+                                StudyTable, AccessionPhenotypeTable,
+                                RNASeqTable, RNASeqStudyTable)
 from scipy.stats import shapiro
 import json, itertools
 from utils import calculate_phenotype_transformations
@@ -35,6 +36,25 @@ def list_phenotypes(request):
     RequestConfig(request, paginate={"per_page":20}).configure(table)
     return render(request, 'phenotypedb/phenotype_list.html', {"phenotype_table":table})
 
+def list_rnaseqs(request):
+    """
+    Displays table of all published RNASeq
+    """
+    table = RNASeqTable(RNASeq.objects.all(), order_by="-name")
+    RequestConfig(request, paginate={"per_page":50}).configure(table)
+    return render(request, 'phenotypedb/rnaseq_data_list.html', {"rnaseq_table":table})
+
+def list_rnaseq_studies(request):
+    """
+    Displays table of all published RNASeq
+    """
+    # Only keep rnaseq studies
+    # studies = Study.objects.filter(phenotype__count=0)
+    studies = Study.objects.annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
+    studies = studies.filter(pheno_count=0).filter(rna_count__gt=0)
+    table = RNASeqStudyTable(studies, order_by="-name")
+    RequestConfig(request, paginate={"per_page":50}).configure(table)
+    return render(request, 'phenotypedb/rnaseq_study_list.html', {"study_table":table})
 
 class PhenotypeDetail(DetailView):
     """
@@ -47,6 +67,20 @@ class PhenotypeDetail(DetailView):
         context['pheno_acc_infos'] = self.object.phenotypevalue_set.select_related('obs_unit__accession')
         context['geo_chart_data'] = Accession.objects.filter(observationunit__phenotypevalue__phenotype_id=1).values('country').annotate(count=Count('country'))
         context['values'] = self.object.phenotypevalue_set.all().values_list("value", flat=True)
+        context['shapiro'] = "%.2e"%shapiro(context['values'])[1]
+        return context
+
+class RNASeqDetail(DetailView):
+    """
+    Detailed view for a single RNASeq
+    """
+    model = RNASeq
+
+    def get_context_data(self, **kwargs):
+        context = super(RNASeqDetail, self).get_context_data(**kwargs)
+        context['pheno_acc_infos'] = self.object.rnaseqvalue_set.select_related('obs_unit__accession')
+        context['geo_chart_data'] = Accession.objects.filter(observationunit__rnaseqvalue__rnaseq_id=1).values('country').annotate(count=Count('country'))
+        context['values'] = self.object.rnaseqvalue_set.all().values_list("value", flat=True)
         context['shapiro'] = "%.2e"%shapiro(context['values'])[1]
         return context
 
@@ -64,7 +98,11 @@ def detail_study(request, pk=None):
     Detailed view of a single study
     """
     study = Study.objects.published().get(id=pk)
-    phenotype_table = ReducedPhenotypeTable(Phenotype.objects.published().filter(study__id=pk), order_by="-name")
+    # Check if RNASeq or Phenotypes:
+    if len(Phenotype.objects.published().filter(study__id=pk)) > 0:
+        phenotype_table = ReducedPhenotypeTable(Phenotype.objects.published().filter(study__id=pk), order_by="-name")
+    else:
+        phenotype_table = RNASeqTable(RNASeq.objects.filter(study__id=pk), order_by="-name")
     RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
@@ -110,6 +148,15 @@ def transformation_results(request, pk):
     data = calculate_phenotype_transformations(phenotype)
     data['object'] = phenotype
     return render(request, 'phenotypedb/transformation_results.html', data)
+
+def rnaseq_transformation_results(request, pk):
+    """
+    SHow transformation result
+    """
+    rnaseq = RNASeq.objects.get(id=pk)
+    data = calculate_phenotype_transformations(rnaseq, rnaseq=True)
+    data['object'] = rnaseq
+    return render(request, 'phenotypedb/rnaseq_transformation_results.html', data)
 
 def list_accessions(request):
     """

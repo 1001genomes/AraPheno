@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - Search Results{% endblock title %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:80px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h5>Search results for query: {{ query }}</h5>
+            <div style="position:relative;">
+             <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block;bottom:-5px;z-index:1;">
+            <a class="btn-floating btn-large waves-effect white modal-trigger" href="#downloadmodal"><i class=" material-icons brown-text" id="download_btn">file_download</i></a>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara1.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+<div id="downloadmodal" class="modal">
+    <div class="modal-content">
+        <h4>Choose a download format</h4>
+        <ul class="collection">
+            <!--<a href="{{download_url}}.csv">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle brown">file_download</i>
+                <span class="title black-text">CSV</span>
+                <p class="black-text light">
+                Download the phenotypic values for the phenotype <strong>{{object.name}}</strong> in CSV format<br>
+                </p>
+                </li></div>
+            </a>-->
+            <a href="{{download_url}}.json">
+                <div>
+                <li class="collection-item avatar">
+                <i class="material-icons circle light-blue">file_download</i>
+                <span class="title black-text">JSON</span>
+                <p class="black-text light">
+                Download the download search results for query <strong>{{query}}</strong> in JSON format<br>
+                </p>
+                </li></div>
+            </a>
+        </ul>
+    </div>
+</div>
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col l12 m12 s12">
+            <ul class="tabs">
+                <li class="tab col s3"><a class="active brown-text" href="#phenotypes">Results: Phenotypes
+                {% if nphenotypes == 1 %}
+                       <div class="right"><span class="arabadge">{{nphenotypes}} Result</span></div>
+                    {% else %}
+                       <div class="right"><span class="arabadge">{{nphenotypes}} Results</span></div>
+                    {% endif %}
+                </a></li>
+                <li class="tab col s3"><a href="#studies" class="brown-text">Results: Studies
+                    {% if nstudies == 1 %}
+                       <div class="right"><span class="arabadge">{{nstudies}} Result</span></div>
+                    {% else %}
+                       <div class="right"><span class="arabadge">{{nstudies}} Results</span></div>
+                    {% endif %}
+                </a></li>
+                 <li class="tab col s3"><a href="#accessions" class="brown-text">Results: Accessions
+                    {% if naccessions == 1 %}
+                       <div class="right"><span class="arabadge">{{naccessions}} Result</span></div>
+                    {% else %}
+                       <div class="right"><span class="arabadge">{{naccessions}} Results</span></div>
+                    {% endif %}
+                </a></li>
+                <li class="tab col s3"><a href="#ontologies" class="brown-text">Results: Ontologies
+                    {% if nontologies == 1 %}
+                       <div class="right"><span class="arabadge">{{nontologies}} Result</span></div>
+                    {% else %}
+                       <div class="right"><span class="arabadge">{{nontologies}} Results</span></div>
+                    {% endif %}
+                </a></li>
+                <div class="indicator brown" style="z-index:1"></div>
+            </ul>
+            <div id="phenotypes" class="col s12"><br>
+                {% if nphenotypes == 0 %}
+                    <h5 class="brown-text center">No Phenotypes found for query: {{query}}</h5>
+                {% else %}
+                    {% render_table phenotype_table %}
+                {% endif %}
+            </div>
+            <div id="studies" class="col s12"><br>
+                {% if nstudies == 0 %}
+                        <h5 class="brown-text center">No Studies found for query: {{query}}</h5>
+                {% else %}
+                    {% render_table study_table %}
+                {% endif %}
+                </div>
+            </div>
+            <div id="accessions" class="col s12"><br>
+                {% if naccessions == 0 %}
+                        <h5 class="brown-text center">No Accessions found for query: {{query}}</h5>
+                {% else %}
+                    {% render_table accession_table %}
+                {% endif %}
+                </div>
+
+            </div>
+             <div id="ontologies" class="col s12"><br>
+                {% if nontologies == 0 %}
+                        <h5 class="brown-text center">No Ontologies found for query: {{query}}</h5>
+                {% else %}
+                    {% render_table ontologies_table %}
+                {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.parallax').parallax();
+        $('.modal-trigger').leanModal({
+            dimissible:true,
+            in_duration: 300,
+        });
+    });
+</script>
+{% endblock content %}
