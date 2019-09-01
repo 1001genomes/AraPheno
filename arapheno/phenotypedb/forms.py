@@ -8,7 +8,7 @@ from autocomplete_light import shortcuts as autocomplete_light
 from django import forms
 from django.db import transaction
 from phenotypedb.models import Phenotype, Study, Submission, OntologyTerm, PHENOTYPE_TYPE
-from utils import import_study, update_study, add_phenotype_ids
+from utils import import_study, update_study, add_phenotype_ids, add_publication_to_study
 from utils.data_io import parse_meta_information_file
 
 TEXT_WIDGET = forms.TextInput(attrs={'class':'validate'})
@@ -95,6 +95,7 @@ class StudyUpdateForm(forms.ModelForm):
     Form for updating study of a submission
     """
     file = forms.FileField(required=False)
+    doi = forms.CharField(widget=forms.TextInput(attrs={'class':'validate', 'required':False}), required=False)
     class Meta:
         model = Study
         fields = ('name', 'description')
@@ -102,15 +103,21 @@ class StudyUpdateForm(forms.ModelForm):
             'name': TEXT_WIDGET,
             'description': forms.Textarea(attrs={'class': 'validate materialize-textarea', 'required':True})
         }
+
+    def __init__(self, *args, **kwargs):
+        super(StudyUpdateForm, self).__init__(*args,**kwargs)
+        if self.instance.publications.count() > 0:
+            self.fields['doi'].initial  = self.instance.publications.all()[0].doi
+
+
     @transaction.atomic
     def save(self, commit=True):
         study = super(StudyUpdateForm, self).save(commit)
+        study.publications.clear()
+        if self.cleaned_data['doi']:
+            pub = add_publication_to_study(study, self.cleaned_data['doi'])
         if commit and self.cleaned_data['file']:
-            #try:
-
             failed_phenotypes = update_study(study.submission.id, self.cleaned_data['file'])
-            #except Exception as error:
-             #  pass
         return study
 
     def clean(self):

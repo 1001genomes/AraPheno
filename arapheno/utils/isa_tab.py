@@ -5,7 +5,6 @@ import tempfile
 import csv
 import shutil
 import codecs
-import pdb
 from phenotypedb.models import Study,Phenotype,PhenotypeValue,Publication, Accession, Species, Author, ObservationUnit, OntologyTerm
 from django.db import transaction
 import datetime
