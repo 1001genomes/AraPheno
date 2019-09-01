@@ -59,7 +59,12 @@ class PhenotypeMatrixRenderer(CSVRenderer):
 
 class AccessionListRenderer(CSVRenderer):
     header = ['pk','name','country','latitude','longitude',
-              'collector','collection_date','cs_number','species']
+              'collector','collection_date','cs_number','species', 'genotypes']
+
+    def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        for element in data:
+            element['genotypes'] = ','.join(['%s (%s)' % (item['name'], item['id']) for item in element['genotypes']])
+        return super(AccessionListRenderer, self).render(data, media_type, renderer_context,writer_opts)
 
 
 class PLINKMatrixRenderer(PhenotypeMatrixRenderer):

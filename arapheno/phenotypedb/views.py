@@ -164,15 +164,18 @@ def list_accessions(request):
     """
     Displays table with all accessions
     """
-    # extra_columns = [item.name for item in Genotype.objects.all()]
-    # import pdb; pdb.set_trace()
-    # extra_columns =[]
-    # template = '{{ record.has_genotype(genotype) }}<i class="material-icons dp48">check</i>'
-    # for genotype in Genotype.objects.all():
-    #     extra_columns.append((genotype.name, tables.TemplateColumn(template, extra_context={'genotype': genotype.pk} )))
-    table = AccessionTable(Accession.objects.all(), order_by="-name")
+    filtered_genotypes = set(map(int,request.POST.getlist('genotypes')))
+    if len(filtered_genotypes) > 0:
+        accessions = Accession.objects.prefetch_related('genotype_set').filter(genotype__pk__in = filtered_genotypes)
+    else:
+        accessions = Accession.objects.prefetch_related('genotype_set').all()
+
+    table = AccessionTable(accessions, order_by="-name")
+    genotypes = Genotype.objects.all()
+    for genotype in genotypes:
+        genotype.selected = genotype.pk in filtered_genotypes
     RequestConfig(request, paginate={"per_page":20}).configure(table)
-    return render(request, 'phenotypedb/accession_list.html', {"accession_table":table})
+    return render(request, 'phenotypedb/accession_list.html', {"accession_table":table, "genotypes": genotypes, "filtered_genotypes": list(filtered_genotypes)})
 
 
 def detail_accession(request, pk=None):

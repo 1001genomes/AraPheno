@@ -290,11 +290,17 @@ Accession List Serializer Class (read-only: might be extended to also allow inte
 '''
 class AccessionListSerializer(serializers.ModelSerializer):
     species = serializers.SerializerMethodField()
+    genotypes = serializers.SerializerMethodField()
 
     class Meta:
         model = Accession
-        fields = ('pk','name','country','sitename','collector','collection_date','longitude','latitude','cs_number','species')
+        fields = ('pk','name','country','sitename','collector','collection_date','longitude','latitude','cs_number','species', 'genotypes')
 
+    def get_genotypes(self, obj):
+        try:
+            return [{'id': genotype.pk, 'name': genotype.name } for genotype in obj.genotype_set.all()]
+        except:
+            return ""
 
     def get_species(self,obj):
         try:

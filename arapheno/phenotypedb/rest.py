@@ -569,9 +569,12 @@ def accession_list(request,format=None):
         - text/csv
         - application/json
     """
-    accessions = Accession.objects.all().select_related('species')
-
     if request.method == "GET":
+        if 'genotypes' in request.GET:
+            genotype_ids = map(int, request.GET['genotypes'].split(','))
+            accessions = Accession.objects.select_related('species').prefetch_related('genotype_set').filter(genotype__pk__in = genotype_ids)
+        else:
+            accessions = Accession.objects.select_related('species').prefetch_related('genotype_set').all()
         serializer = AccessionListSerializer(accessions,many=True)
         return Response(serializer.data)
 
