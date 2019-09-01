@@ -183,7 +183,7 @@ def add_publication_to_study(study, doi):
         pub.title = doi_data['title']
         pub.journal = doi_data['container-title']
         pub.pub_year = doi_data['issued']['date-parts'][0][0]
-        pub.author_order = ','.join(['%s %s' %(item['given'], item['family']) for item in doi_data['author']])
+        pub.author_order = ', '.join([item.get('name', '%s %s' % (item.get('given',''), item.get('family',''))) for item in doi_data['author']])
         pub.save()
     study.publications.add(pub)
 

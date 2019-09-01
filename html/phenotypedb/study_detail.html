@@ -78,11 +78,7 @@
                         {% for p in study.publications.all %}
                             <li class="collection-item">
                                 <span class="title">
-                                    {% if p.pubmed_id %}
-                                    <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ p.pubmed_id }}" target="_blank">{{ p.title }}</a>
-                                    {% else %}
-                                    {{ p.title }}
-                                    {% endif %}
+                                   <a href="https://doi.org/{{ p.doi }}" target="_blank">{{ p.title }}</a>
                                 </span>
                                 <p class="author-list">
                                     {{ p.author_order }}
