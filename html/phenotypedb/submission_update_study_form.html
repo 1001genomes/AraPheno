@@ -37,6 +37,13 @@
             </div>
         </div>
         <div class="row">
+            <div class="input-field col s12">
+                {{ form.doi }}
+                <label for="{{ form.doi.id_for_label }}" data-error="{{ form.doi.errors.0 }}"
+                    data-success="ok">DOI</label>
+            </div>
+        </div>
+        <div class="row">
             <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Save
                 <i class="material-icons right">save</i>
             </button>

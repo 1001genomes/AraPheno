@@ -9,6 +9,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import DetailView
 from django.views.generic.edit import DeleteView, UpdateView
+from django.views.decorators.http import require_http_methods
+from django.core.exceptions import PermissionDenied
 from django_tables2 import RequestConfig
 import django_tables2 as tables
 
@@ -23,7 +25,7 @@ from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
                                 RNASeqTable, RNASeqStudyTable)
 from scipy.stats import shapiro
 import json, itertools
-from utils import calculate_phenotype_transformations
+from utils import calculate_phenotype_transformations, add_publication_to_study
 
 
 # Create your views here.
@@ -412,3 +414,14 @@ def download(request):
     Download data
     """
     return render(request, 'phenotypedb/download.html')
+
+@require_http_methods(["POST"])
+def add_doi(request, pk):
+    """
+    Adds publication to a study is a DOI
+    """
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    study = Study.objects.get(pk=pk)
+    pub = add_publication_to_study(study, request.POST['doi'])
+    return HttpResponseRedirect('/study/%s/' % pk)

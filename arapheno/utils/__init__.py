@@ -8,14 +8,16 @@ import logging
 import zipfile
 import numpy as np
 import math
+import requests
 
 from django.db import transaction
+from django.http import HttpResponseNotFound
 from phenotypedb.models import (Accession, ObservationUnit, Phenotype,
-                                PhenotypeValue, Species, Study, Submission)
+                                PhenotypeValue, Species, Study, Submission, Publication)
 from utils.data_io import parse_plink_file, parse_csv_file, parse_meta_information_file
 from utils.isa_tab import parse_isatab, save_isatab
 from utils import statistics
-
+1
 logger = logging.getLogger(__name__)
 
 
@@ -159,3 +161,35 @@ def calculate_phenotype_transformations(phenotype, trans = None, rnaseq=False):
                 transformations[transformation]['sp_score'] = -math.log10(sp_pval)
     data['transformations'] = transformations
     return data
+
+
+def remove_publication_from_study(study_id, doi):
+    """
+    Removes a publication from a study
+    """
+    publication = Publication.objects.get(doi=doi)
+    study = Study.objects.get(pk=study_id)
+    study.publications.remove(publication)
+
+def add_publication_to_study(study, doi):
+    """
+    Adds a publication from a study
+    """
+    doi_data = _retrieve_publication_from_doi(doi)
+    pub, created = Publication.objects.get_or_create(doi=doi)
+    if created or pub.title == '':
+        pub.volume = doi_data.get('volume',None)
+        pub.pages = doi_data.get('page', None)
+        pub.title = doi_data['title']
+        pub.journal = doi_data['container-title']
+        pub.pub_year = doi_data['issued']['date-parts'][0][0]
+        pub.author_order = ','.join(['%s %s' %(item['given'], item['family']) for item in doi_data['author']])
+        pub.save()
+    study.publications.add(pub)
+
+def _retrieve_publication_from_doi(doi):
+    response = requests.get('https://doi.org/%s' % doi,
+                            headers={'Accept': 'application/vnd.citationstyles.csl+json;q=1.0'})
+    if response.status_code != 200:
+        raise Exception('Publication with %s not found' % doi)
+    return response.json()

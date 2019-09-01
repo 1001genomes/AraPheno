@@ -54,6 +54,7 @@ urlpatterns = [
     url(r'^accessions/$', phenotypedb.views.list_accessions, name="accessions"),
     url(r'^accession/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.detail_accession, name="accession_detail"),
     url(r'^study/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.detail_study, name="study_detail"),
+    url(r'^study/(?P<pk>%s)/doi$' % ID_REGEX, phenotypedb.views.add_doi, name="add_doi"),
     url(r'^ontology/$', phenotypedb.views.list_ontology_sources,name="ontologysource_list"),
     url(r'^ontology/(?P<acronym>%s)/$' % ONTOLOGY_SOURCE_REGEX, phenotypedb.views.detail_ontology_source,name="ontologysource_detail"),
     url(r'^ontology/(?P<acronym>%s)/(?P<term_id>%s)/$' % (ONTOLOGY_SOURCE_REGEX,ONTOLOGY_REGEX), phenotypedb.views.detail_ontology_source,name="ontology_detail"),

@@ -94,6 +94,23 @@
                         {% endfor %}
                     </ul>
                 </div>
+                {% if user.is_superuser %}
+                <div class="col s12">
+                    <form  action="{% url 'add_doi' study.pk %}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col s8">
+                                <input placeholder="DOI" id="doi" name="doi" type="text" class="validate">
+                            </div>
+                            <div class="col s3">
+                                <button class="btn waves-effect waves-light" type="submit" name="action">Add
+                                <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
             </div>
         </div>
         <div class="col s12 m6">
