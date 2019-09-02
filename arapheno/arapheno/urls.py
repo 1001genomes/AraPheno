@@ -38,7 +38,7 @@ ONTOLOGY_SOURCE_REGEX = "(PECO|PTO|UO)"
 urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$', home.views.home, name="home"),
-    url(r'^rnaseq_home$', home.views.home_rnaseq, name="home"),
+    url(r'^rnaseq/$', home.views.home_rnaseq, name="home"),
     url(ur'^search_results/$', home.views.SearchResults, name="searchresults"),
     url(ur'^search_results//$', home.views.SearchResults, name="searchresults"),
     url(ur'^search_results/(?P<query>.*)/$', home.views.SearchResults, name="searchresults"),
