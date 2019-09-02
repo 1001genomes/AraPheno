@@ -54,7 +54,7 @@
                     <div class="col s3">
                         <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
                     </div>
-                    <div class="col s3">
+                    <div class="col s3 hide-on-med-and-down">
                         <a id="other-view" href="/rnaseq_home" class="brand-logo blue-text text-lighten-4">AraPheno <b>RNASeq</b></a>
                     </div>
                     </div>
@@ -99,12 +99,26 @@
                     <a class="collapsible-header waves-effect waves-grey"><strong>AraPheno Data</strong></a>
                     <div class="collapsible-body" style="display: block;">
                         <ul>
-                        <li><a class="black-text" href="/phenotypes">View Phenotypes</a></li>
                         <li><a class="black-text" href="/studies">View Studies</a></li>
+                        <li><a class="black-text" href="/phenotypes">View Phenotypes</a></li>
+                        <li><a class="black-text" href="/accessions">View Master Accessions</a></li>
                         </ul>
                     </div>
                     </li>
                     </ul>
+                    
+		    <li class="divider"></li>
+                    <ul class="collapsible collapsible-accordion">
+                    <li>
+                    <a class="collapsible-header waves-effect waves-grey"><strong>AraPheno RNASeq</strong></a>
+                    <div class="collapsible-body" style="display: block;">
+                        <ul>
+                            <li><a class="black-text" href="/rnaseq_studies">View RNASeq Studies</a></li>
+                            <li><a class="black-text" href="/rnaseqs">View RNASeq Data</a></li>
+                        </ul>
+                    </div>
+                    </li>
+		    </ul>
 
                     <li class="divider"></li>
                     <ul class="collapsible collapsible-accordion">
@@ -113,7 +127,7 @@
                     <div class="collapsible-body" style="display: block;">
                         <ul>
                             <li><a class="black-text" href="/correlation">Phenotype Correlation</a></li>
-                            <li><a class="white-text" href="/transformation">Phenotype Transform</a></li>
+                            <li><a class="black-text" href="/transformation">Phenotype Transform</a></li>
                             <li><a class="black-text" href="/faq/rest/">REST API</a></li>
                         </ul>
                     </div>

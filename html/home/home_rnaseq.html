@@ -24,6 +24,20 @@
     </div>
     <div class="parallax"><img src="static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
 </div>
+<div class="parallax-container" style="height:100px;height:auto;">
+<div class="right" style="margin-right:100px;margin-bottom:0px;">
+<div class="switch"> 
+    <label>
+	    <h6>
+      		AraPheno
+      		<input checked type="checkbox" id="rnaseq-input">
+      		<span id="rnaseq-lever" class="lever" ></span>
+		<span class="blue-text text-darken-3">RNASeq</span>
+	    </h6>
+    </label>
+  </div>
+</div>
+</div>
 
 <div class="container scale-transition scale-out" id="rnaseq-container">
     <div class="section">
@@ -137,6 +151,10 @@
     });
     $('#submit_search').click(function(){
         document.forms['_search_form'].submit();
+    });
+    
+    $('#rnaseq-input').click(function(){
+    	window.location = "/";
     });
 
     $('#start_tour').click(function() {

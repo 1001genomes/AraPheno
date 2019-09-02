@@ -24,37 +24,26 @@
     </div>
     <div class="parallax"><img src="static/img/ara1.jpg" alt="Unsplashed background img 1"></div>
 </div>
+<div class="parallax-container" style="height:100px;height:auto;">
+<div class="right" style="margin-right:100px;margin-bottom:0px;">
+<div class="switch"> 
+    <label>
+	    <h6>
+      		AraPheno
+      		<input type="checkbox" id="rnaseq-input">
+      		<span id="rnaseq-lever" class="lever" ></span>
+		<span class="blue-text text-darken-3">RNASeq</span>
+	    </h6>
+    </label>
+  </div>
+</div>
+</div>
 
 <div class="container scale-transition" id="phenotype-container">
     <div class="section">
 
         <div class="row center">
             <!--<div class="col s12 m6 offset-m3 l4 offset-l4">-->
-            <div class="col s12 m6 l4">
-                 <div class="icon-block">
-                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">backup</i></h3>
-                     <h5 class="center">Submit Phenotypes</h5>
-                     <p class="light">Submit and publish your own studies and phenotypes in order to share it with the community</p>
-                 </div>
-                 <a class="waves-effect waves-light btn-large brown"  href="/submission/"><i class="material-icons left">backup</i>Submit Phenotypes</a>
-             </div>
-            <div class="col s12 m6 l4">
-                 <div class="icon-block">
-                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">cloud_download</i></h3>
-                     <h5 class="center">Download Database</h5>
-                     <p class="light">Here you can download the full database, including all phenotypes and meta-information</p>
-                 </div>
-                 <a class="waves-effect waves-light btn-large brown"  href="/rest/download/" onclick="window.alert('Your download is being prepared, this can take a few seconds. Please click OK.'); return true;"><i class="material-icons left">cloud_download</i>Download Database</a>
-             </div>
-            <div class="col s12 m6 l4 offset-m3">
-                <div class="icon-block">
-                    <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">code</i></h3>
-                    <h5 class="center">REST API</h5>
-                    <p class="light">The REST API can be used to retrive phenotype data and meta-information from AraPheno via URLs.</p>
-                </div>
-                <a class="waves-effect waves-light btn-large brown" id="rest_button" href="/faq/rest/"><i class="material-icons left">code</i>REST API</a>
-            </div>
-	    </div>
 
         <div class="row center">
             <div class="col s12 m6 l4">
@@ -82,6 +71,31 @@
 		<a class="waves-effect waves-light btn-large brown" id="view_accession_button" href="{% url 'accessions' %}"><i class="material-icons left">bubble_chart</i>View Accessions</a>
             </div>
         </div>
+            <div class="col s12 m6 l4">
+                 <div class="icon-block">
+                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">backup</i></h3>
+                     <h5 class="center">Submit Phenotypes</h5>
+                     <p class="light">Submit and publish your own studies and phenotypes in order to share it with the community</p>
+                 </div>
+                 <a class="waves-effect waves-light btn-large brown"  href="/submission/"><i class="material-icons left">backup</i>Submit Phenotypes</a>
+             </div>
+            <div class="col s12 m6 l4">
+                 <div class="icon-block">
+                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">cloud_download</i></h3>
+                     <h5 class="center">Download Database</h5>
+                     <p class="light">Here you can download the full database, including all phenotypes and meta-information</p>
+                 </div>
+                 <a class="waves-effect waves-light btn-large brown"  href="/rest/download/" onclick="window.alert('Your download is being prepared, this can take a few seconds. Please click OK.'); return true;"><i class="material-icons left">cloud_download</i>Download Database</a>
+             </div>
+            <div class="col s12 m6 l4 offset-m3">
+                <div class="icon-block">
+                    <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">code</i></h3>
+                    <h5 class="center">REST API</h5>
+                    <p class="light">The REST API can be used to retrive phenotype data and meta-information from AraPheno via URLs.</p>
+                </div>
+                <a class="waves-effect waves-light btn-large brown" id="rest_button" href="/faq/rest/"><i class="material-icons left">code</i>REST API</a>
+            </div>
+	    </div>
 
         <div class="row center">
             <div class="col s12 m6 l4">
@@ -187,6 +201,10 @@
 
     $('#submit_search').click(function(){
         document.forms['_search_form'].submit();
+    });
+
+    $('#rnaseq-input').click(function(){
+    	window.location = "/rnaseq_home";
     });
 
     $('#start_tour').click(function() {
