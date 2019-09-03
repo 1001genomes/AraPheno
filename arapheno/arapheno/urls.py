@@ -62,7 +62,7 @@ urlpatterns = [
     url(r'^term/$', phenotypedb.views.detail_ontology_term),
     url(r'^rnaseqs/$', phenotypedb.views.list_rnaseqs, name="rnaseqs"),
     url(r'^rnaseq/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.RNASeqDetail.as_view(), name="rnaseq_detail"),
-    url(r'^rnaseq/(?P<pk>%s)/transformation/$' % ID_REGEX, phenotypedb.views.rnaseq_transformation_results, name="transformation-results"),
+    url(r'^rnaseq/(?P<pk>%s)/transformation/$' % ID_REGEX, phenotypedb.views.rnaseq_transformation_results, name="rnaseq-transformation-results"),
     url(r'^rnaseq_studies/$', phenotypedb.views.list_rnaseq_studies, name="rnaseq_studies"),
     url(r'^about/$', home.views.about),
     url(r'^links/$', home.views.links),
