@@ -3,6 +3,7 @@ from phenotypedb.models import Study,RNASeq,RNASeqValue,Publication, Accession, 
 
 from django.db import transaction
 import csv
+import requests
 
 def parse_rnacsv(rnaseq_csv):
     """parse a csv file and extract accessions and rnaseq names"""
@@ -21,16 +22,25 @@ def parse_rnacsv(rnaseq_csv):
                 rnavalues[rna_id].append(float(line[1+i]))
     return accession_ids, rnavalues
 
-def parse_pubinfo(publication_file):
-    """parse a file containing the publication information."""
-    with open(publication_file, 'r') as f:
-        # The parser splits lines using ': '
-        publi_dict = dict()
-        for line in f:
-            cols = line[:-1].split(': ')
-            fieldname = cols[0].lower()
-            fieldname = ' '.join(fieldname.split(' ')) # remove trailing spaces
-            publi_dict[cols[0].lower()] = cols[1]
+def parse_pubinfo(pubmed_id):
+    """Download publication information from pubmed."""
+    # Fetch json
+    r = requests.get('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id={}&retmode=json'.format(pubmed_id))
+    pubmed_json = r.json()['result'][str(pubmed_id)]
+    # Information of interest for us: author order, title, journal, year, DOI, pages, volume, pubmed_id
+    publi_dict = {'pubmed_id': pubmed_id}
+    publi_dict['journal'] = pubmed_json['source']
+    publi_dict['volume'] = pubmed_json['volume']
+    publi_dict['pub_year'] = pubmed_json['sortpubdate'][:4]
+    publi_dict['pages'] = pubmed_json['pages']
+    # Get doi info
+    for x in pubmed_json['articleids']:
+        if x['idtype']=='doi':
+            publi_dict['doi'] = x['value']
+        else:
+            continue
+    publi_dict['title'] = pubmed_json['title']
+    publi_dict['author_order'] = ', '.join([x['name'] for x in pubmed_json['authors']])
     return publi_dict
 
 
@@ -48,19 +58,15 @@ def save_rnaseq(accession_list, rnavalues, options):
     study.save()
     # initialize publications
     print("Study created. Initializing publications.")
-    if options['publication'] is not None:
-        parsed_pub = parse_pubinfo(options['publication'])
-
-        publication = Publication()
+    if options['pubmed_id'] is not None:
+        parsed_pub = parse_pubinfo(options['pubmed_id'])
         try:
-            publication.doi = parsed_pub['doi']
-            publication.title = parsed_pub['title']
-            publication.author_order = parsed_pub['publication author list']
-            publication.pubmed_id = parsed_pub['pubmed id']
+            publication = Publication(**parsed_pub)
+            publication.save()
+            study.publications.add(publication)
         except:
-            print('Publication information could not be read, please include fields DOI, Title, Publication Author List, PubMed ID.')
-        publication.save()
-        study.publications.add(publication)
+            print('Publication information could not be stored')
+        
 
     # Create list of accessions
     obs_map = {}
@@ -103,11 +109,11 @@ class Command(BaseCommand):
                             type=str,
                             required=True,
                             help='Specify the name of the study')
-        parser.add_argument('--publication',
+        parser.add_argument('--pubmed-id',
                             type=str,
                             default=None,
                             required=False,
-                            help='Specify the filename of the bibtex for the publication')
+                            help='Specify the PubMed ID of the publication')
         parser.add_argument('--scoring',
                             type=str,
                             default='TPM',

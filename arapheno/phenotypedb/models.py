@@ -615,6 +615,7 @@ class RNASeq(models.Model):
     scoring = models.TextField(blank=True, null=True) #how was the scoring of the RNASeq done, most of the time this is transcripts per kilobase million (TPM)
     shapiro_test_statistic = models.FloatField(blank=True, null=True) #Shapiro Wilk test for normality
     shapiro_p_value = models.FloatField(blank=True, null=True) #p-value of Shapiro Wilk test
+    growth_conditions = models.TextField(blank=True, null=True) #description of the growth conditions of the phenotype
     number_replicates = models.IntegerField(default=0) #number of replicates for this RNASeq
     integration_date = models.DateTimeField(auto_now_add=True) #date of phenotype integration/submission
 
