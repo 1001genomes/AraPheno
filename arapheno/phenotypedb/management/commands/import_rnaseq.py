@@ -52,11 +52,11 @@ def save_rnaseq(accession_list, rnavalues, options):
     study.name = options['study_name']
     study.species = Species.objects.get(pk=1)
     # Create a submission
+    study.save()
     submission = Submission()
     submission.status = 2 # Published
     study.submission = submission
     submission.save()
-    study.save()
     # initialize publications
     print("Study created. Initializing publications.")
     if options['pubmed_id'] is not None:
