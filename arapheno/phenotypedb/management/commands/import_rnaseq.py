@@ -55,6 +55,7 @@ def save_rnaseq(accession_list, rnavalues, options):
     submission = Submission()
     submission.status = 2 # Published
     study.submission = submission
+    submission.save()
     study.save()
     # initialize publications
     print("Study created. Initializing publications.")
@@ -66,35 +67,57 @@ def save_rnaseq(accession_list, rnavalues, options):
             study.publications.add(publication)
         except:
             print('Publication information could not be stored')
+    else:
+        print('Publication information missing!')
         
 
     # Create list of accessions
     obs_map = {}
     # Need to skip missing accessions
     skipped_sample_ids = []
+    if options['growth_conditions']:
+        growth_conditions = set([x.split('_')[-1] for x in accession_list])
+        obs_map_gc = {}
     for sample_id, accession_id in enumerate(accession_list):
-        accession_id = int(accession_id)
+        if options['growth_conditions']:
+            gc = accession_id.split('_')[-1]
+            accession_id = int(accession_id.split('_')[0])
+        else:
+            accession_id = int(accession_id)
         try:
             obs_unit = ObservationUnit(study=study,accession=Accession.objects.get(pk=accession_id))
             obs_unit.save()
             obs_map[sample_id] = obs_unit
+            if options['growth_conditions']:
+                obs_map_gc[sample_id] = gc
         except:
             print("Accession {} does not exist, skipping.".format(accession_id))
             skipped_sample_ids.append(sample_id)
-
+    # Ensure that only conditions with matching accession ids are kept
+    if options['growth_conditions']:
+        growth_conditions = growth_conditions.intersection(set(obs_map_gc.values()))
     # Iterate through RNASeq measurements and save values
     print("There are {} RNA entries for each accessions.".format(len(rnavalues)))
     c = 0
     for rna_id in list(rnavalues.keys()):
         c+=1
-        rnaseq = RNASeq(name=rna_id, scoring=options['scoring'],study=study,species=study.species)
-        rnaseq.save()
+        # If several growth conditions are present, save different RNASeq objects for each gene
+        if options['growth_conditions']:
+            rnaseq_dict = {gc: RNASeq(name=rna_id, scoring=options['scoring'],study=study,species=study.species, growth_conditions=gc) for gc in growth_conditions}
+            for rnaseq in rnaseq_dict.values():
+                rnaseq.save()
+        else:
+            rnaseq = RNASeq(name=rna_id, scoring=options['scoring'],study=study,species=study.species)
+            rnaseq.save()
         if c % 100 == 0:
             print("{} / {}".format(c, len(rnavalues)))
         for sample_id, value in enumerate(rnavalues[rna_id]):
             if sample_id in skipped_sample_ids:
                 continue
-            rnaseq_value = RNASeqValue(value=value, rnaseq=rnaseq, obs_unit = obs_map[sample_id])
+            if options['growth_conditions']:
+                rnaseq_value = RNASeqValue(value=value, rnaseq=rnaseq_dict[obs_map_gc[sample_id]], obs_unit = obs_map[sample_id])
+            else:
+                rnaseq_value = RNASeqValue(value=value, rnaseq=rnaseq, obs_unit = obs_map[sample_id])
             rnaseq_value.save()
     print("Successfully added RNASeq values for {} accessions across {} loci.".format(len(obs_map),len(rnavalues)))
     return study
@@ -105,7 +128,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('filename')
-        parser.add_argument('--study_name',
+        parser.add_argument('--study-name',
                             type=str,
                             required=True,
                             help='Specify the name of the study')
@@ -119,6 +142,10 @@ class Command(BaseCommand):
                             default='TPM',
                             required=False,
                             help='Specify the scoring system for the RNASeq assay')
+        parser.add_argument('--growth-conditions',
+                            default=False,
+                            action='store_true',
+                            help='Specify if there are different growth conditions, these should be appended (after undescore) to the accession_id in the csv.')
 
 
     def handle(self, *args, **options):
