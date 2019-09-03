@@ -52,46 +52,39 @@
         <div class="row">
             <div class="col l12 m12 s12">
             <ul class="tabs">
-                <li class="tab col s3"><a class="active brown-text" href="#phenotypes">Results: Phenotypes
-                {% if nphenotypes == 1 %}
-                       <div class="right"><span class="arabadge">{{nphenotypes}} Result</span></div>
+                <li class="tab col s3"><a class="active blue-text text-darken-3" href="#phenotypes">Results: RNASeqs
+                {% if nrnaseqs == 1 %}
+                       <div class="right"><span class="arabadge">{{nrnaseqs}} Result</span></div>
                     {% else %}
-                       <div class="right"><span class="arabadge">{{nphenotypes}} Results</span></div>
+                       <div class="right"><span class="arabadge">{{nrnaseqs}} Results</span></div>
                     {% endif %}
                 </a></li>
-                <li class="tab col s3"><a href="#studies" class="brown-text">Results: Studies
+                <li class="tab col s3"><a href="#studies" class="blue-text text-darken-3">Results: Studies
                     {% if nstudies == 1 %}
                        <div class="right"><span class="arabadge">{{nstudies}} Result</span></div>
                     {% else %}
                        <div class="right"><span class="arabadge">{{nstudies}} Results</span></div>
                     {% endif %}
                 </a></li>
-                 <li class="tab col s3"><a href="#accessions" class="brown-text">Results: Accessions
+                 <li class="tab col s3"><a href="#accessions" class="blue-text text-darken-3">Results: Accessions
                     {% if naccessions == 1 %}
                        <div class="right"><span class="arabadge">{{naccessions}} Result</span></div>
                     {% else %}
                        <div class="right"><span class="arabadge">{{naccessions}} Results</span></div>
                     {% endif %}
                 </a></li>
-                <li class="tab col s3"><a href="#ontologies" class="brown-text">Results: Ontologies
-                    {% if nontologies == 1 %}
-                       <div class="right"><span class="arabadge">{{nontologies}} Result</span></div>
-                    {% else %}
-                       <div class="right"><span class="arabadge">{{nontologies}} Results</span></div>
-                    {% endif %}
-                </a></li>
-                <div class="indicator brown" style="z-index:1"></div>
+                <div class="indicator blue" style="z-index:1"></div>
             </ul>
             <div id="phenotypes" class="col s12"><br>
-                {% if nphenotypes == 0 %}
-                    <h5 class="brown-text center">No Phenotypes found for query: {{query}}</h5>
+                {% if nrnaseqs == 0 %}
+                    <h5 class="blue-text text-darken-3 center">No RNASeqs found for query: {{query}}</h5>
                 {% else %}
-                    {% render_table phenotype_table %}
+                    {% render_table rnaseq_table %}
                 {% endif %}
             </div>
             <div id="studies" class="col s12"><br>
                 {% if nstudies == 0 %}
-                        <h5 class="brown-text center">No Studies found for query: {{query}}</h5>
+                        <h5 class="blue-text text-darken-3 center">No Studies found for query: {{query}}</h5>
                 {% else %}
                     {% render_table study_table %}
                 {% endif %}
@@ -99,21 +92,11 @@
             </div>
             <div id="accessions" class="col s12"><br>
                 {% if naccessions == 0 %}
-                        <h5 class="brown-text center">No Accessions found for query: {{query}}</h5>
+                        <h5 class="blue-text text-darken-3 center">No Accessions found for query: {{query}}</h5>
                 {% else %}
                     {% render_table accession_table %}
                 {% endif %}
                 </div>
-
-            </div>
-             <div id="ontologies" class="col s12"><br>
-                {% if nontologies == 0 %}
-                        <h5 class="brown-text center">No Ontologies found for query: {{query}}</h5>
-                {% else %}
-                    {% render_table ontologies_table %}
-                {% endif %}
-                </div>
-
             </div>
         </div>
     </div>
@@ -126,6 +109,23 @@
             dimissible:true,
             in_duration: 300,
         });
+        // change footer
+        var footer = document.getElementById('footer')
+        var footerdark = document.getElementById('footerdark')
+        footer.className = footer.className.replace("brown lighten-2", "blue");
+        footerdark.className = footerdark.className.replace("brown", "blue darken-3");
+        // change header
+        var title = document.getElementById('logo-container')
+        title.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+        title.href = '/rnaseq'
+
+        var other = document.getElementById('other-view')
+        other.innerHTML = 'AraPheno'
+        other.className = other.className.replace('blue-text text-lighten-4', 'grey-text text-lighten-1')
+        other.href = '/'
+        // paginate color
+        var pag = document.getElementById('paginatebutton')
+        pag.className = pag.className.replace("brown", "blue darken-3");
     });
 </script>
 {% endblock content %}

@@ -5,7 +5,7 @@ from django.db.models import Q
 from forms import GlobalSearchForm, RNASeqGlobalSearchForm
 
 from phenotypedb.models import Study, Phenotype, Accession, OntologyTerm, RNASeq
-from phenotypedb.tables import PhenotypeTable, StudyTable, AccessionTable, OntologyTermTable, RNASeqTable
+from phenotypedb.tables import PhenotypeTable, StudyTable, AccessionTable, OntologyTermTable, RNASeqTable, RNASeqStudyTable
 
 from django.db.models import Count
 from django_tables2 import RequestConfig
@@ -29,6 +29,7 @@ def home_rnaseq(request):
     search_form = RNASeqGlobalSearchForm()
     if "rnaseq_global_search-autocomplete" in request.POST:
         query = request.POST.getlist('rnaseq_global_search-autocomplete')[0]
+        print(query)
         return HttpResponseRedirect("rnaseq_search_results/%s/"%(query))
     stats = {}
     studies = Study.objects.published().annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
@@ -136,14 +137,13 @@ def SearchResultsRNASeq(request,query=None):
     studies = Study.objects.published().annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
     studies = studies.filter(pheno_count=0).filter(rna_count__gt=0)
     if query==None:
-        rnaseqs = Phenotype.objects.published().all()
+        rnaseqs = RNASeq.objects.all()
         studies = studies.all()
         accessions = Accession.objects.all()
         download_url = "/rest/rnaseq_search"
     else:
         rnaseqs = RNASeq.objects.filter(Q(name__icontains=query) |
-                                        Q(to_term__id__icontains=query) |
-                                        Q(to_term__name__icontains=query))
+                                        Q(growth_conditions__icontains=query))
         studies = studies.filter(name__icontains=query)
         accessions = Accession.objects.filter(name__icontains=query)
         download_url = "/rest/rnaseq_search/" + str(query)
@@ -151,7 +151,7 @@ def SearchResultsRNASeq(request,query=None):
     rnaseq_table = RNASeqTable(rnaseqs,order_by="-name")
     RequestConfig(request,paginate={"per_page":10}).configure(rnaseq_table)
 
-    study_table = StudyTable(studies,order_by="-name")
+    study_table = RNASeqStudyTable(studies,order_by="-name")
     RequestConfig(request,paginate={"per_page":10}).configure(study_table)
 
     accession_table = AccessionTable(accessions,order_by="-name")
@@ -167,5 +167,7 @@ def SearchResultsRNASeq(request,query=None):
     variable_dict['nstudies'] = studies.count()
     variable_dict['naccessions'] = accessions.count()
     variable_dict['download_url'] = download_url
+
+    print(variable_dict)
 
     return render(request,'home/rnaseq_search_results.html',variable_dict)

@@ -55,7 +55,7 @@ class RNASeqGlobalSearchAutocomplete(autocomplete_light.AutocompleteGenericBase)
     studies = Study.objects.published().annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
     studies = studies.filter(pheno_count=0).filter(rna_count__gt=0)
 
-    choices = (RNASeq.objects,
+    choices = (RNASeq.objects.all(),
                studies,
                Accession.objects.all(),)
     search_fields = (('name',), #rnaseq search field
@@ -63,7 +63,7 @@ class RNASeqGlobalSearchAutocomplete(autocomplete_light.AutocompleteGenericBase)
                      ('name',), #Accession search field
                      )
 
-    attrs = {'placeholder':'Search a phenotype, study, trait ontology (e.g. type FRI for phenotype, Atwell for study, or concentration for ontology) or accession name',
+    attrs = {'placeholder':'Search a gene, study, or accession name',
              'data-autocomplete-minimum-characters':1}
 
     widget_attrs = {'data-widget-maximum-values':1, 'class':'', 'style':'width:95%;height:50px'}
@@ -80,11 +80,11 @@ class RNASeqGlobalSearchAutocomplete(autocomplete_light.AutocompleteGenericBase)
         html = ""
         for choice in self.choices_for_request():
             if isinstance(choice, RNASeq):
-                html += ("<a href='rnaseq/%d'>%s</a>" % (choice.id, self.choice_html(choice)))
+                html += ("<a href='/rnaseq/%d'>%s</a>" % (choice.id, self.choice_html(choice)))
             elif isinstance(choice, Study):
-                html += ("<a href='study/%d'>%s</a>" % (choice.id, self.choice_html(choice)))
+                html += ("<a href='/study/%d'>%s</a>" % (choice.id, self.choice_html(choice)))
             elif isinstance(choice, Accession):
-                html += ("<a href='accession/%d'>%s</a>" % (choice.id, self.choice_html(choice)))
+                html += ("<a href='/accession/%d'>%s</a>" % (choice.id, self.choice_html(choice)))
         return html
 
 autocomplete_light.register(RNASeqGlobalSearchAutocomplete)
