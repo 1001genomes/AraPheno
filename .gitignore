@@ -9,5 +9,6 @@ static_deploy
 .idea
 env/
 venv/
-db.sqlite3
+*db.sqlite3
 data/
+db.sqlite3*
