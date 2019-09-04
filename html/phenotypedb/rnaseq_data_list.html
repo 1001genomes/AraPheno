@@ -45,15 +45,14 @@
         // paginate color
         var pag = document.getElementById('paginatebutton')
         pag.className = pag.className.replace("brown", "blue darken-3");
+        
         // change header
         var title = document.getElementById('logo-container')
-        title.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
-        title.href = '/rnaseq'
+        title.className = title.className.replace('black-text', 'grey-text text-lighten-1')
 
         var other = document.getElementById('other-view')
-        other.innerHTML = 'AraPheno'
-        other.className = other.className.replace('blue-text text-lighten-4', 'grey-text text-lighten-1')
-        other.href = '/'
+        other.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+        other.className = other.className.replace('blue-text text-lighten-4', 'black-text')
 
     });
 </script>
