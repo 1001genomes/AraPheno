@@ -62,8 +62,9 @@ class AccessionListRenderer(CSVRenderer):
               'collector','collection_date','cs_number','species', 'genotypes', 'count_phenotypes']
 
     def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
-        for element in data:
-            element['genotypes'] = ','.join(['%s (%s)' % (item['name'], item['id']) for item in element['genotypes']])
+        if type(data) == list and len(data) > 0:
+            for element in data:
+                element['genotypes'] = ','.join(['%s (%s)' % (item['name'], item['id']) for item in element['genotypes']])
         return super(AccessionListRenderer, self).render(data, media_type, renderer_context,writer_opts)
 
 

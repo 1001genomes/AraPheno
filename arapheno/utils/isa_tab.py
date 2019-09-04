@@ -279,7 +279,7 @@ Investigation Person Roles Term Source REF
     status_terms = []
     status_refs = []
     for pub in study.publications.all():
-        pubmed_ids.append(pub.pubmed_id)
+        pubmed_ids.append(pub.pubmed_id if pub.pubmed_id else "")
         dois.append(pub.doi)
         authors.append(pub.author_order)
         titles.append(pub.title)
