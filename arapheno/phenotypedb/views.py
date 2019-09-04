@@ -90,7 +90,9 @@ def list_studies(request):
     """
     Displays table of all published studies
     """
-    table = StudyTable(Study.objects.published(), order_by="-update_date")
+    studies = Study.objects.published().annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
+    studies = studies.filter(pheno_count__gt=0).filter(rna_count=0)
+    table = StudyTable(studies, order_by="-update_date")
     RequestConfig(request, paginate={"per_page":20}).configure(table)
     return render(request, 'phenotypedb/study_list.html', {"study_table":table})
 

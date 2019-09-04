@@ -19,7 +19,8 @@ def home(request):
         query = request.POST.getlist('global_search-autocomplete')[0]
         return HttpResponseRedirect("search_results/%s/"%(query))
     stats = {}
-    stats['studies'] = Study.objects.published().count()
+    studies = Study.objects.published().annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
+    stats['studies'] = studies.filter(pheno_count__gt=0).filter(rna_count=0).count()
     stats['phenotypes_published'] = Phenotype.objects.published().count()
     stats['phenotypes'] = Phenotype.objects.all().count()
     stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y')
