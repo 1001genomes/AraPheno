@@ -195,6 +195,11 @@ class Study(models.Model):
             return reverse('study_detail', args=[str(self.pk)])
 
     @property
+    def name_link(self):
+        """Returns the name with empty string replaced by underscore"""
+        return self.name.replace(" ","_")
+
+    @property
     def doi_link(self):
         """Returns the DOI link to datacite"""
         return '%s/%s' % (settings.DATACITE_DOI_URL, self.doi)
