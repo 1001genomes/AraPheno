@@ -127,12 +127,13 @@
         {% for transformation, data in transformations.items %}
             histogramChart =  new google.visualization.Histogram(document.getElementById('histogram_chart_{{ transformation }}'));
              {% autoescape off %}
-            histogramData = google.visualization.arrayToDataTable([
-            ['Phenotype', 'Frequency'],
-            {% for accession, value in data.values %}[ "{{ accession }}", {{ value }} ],{% endfor %}
-            ],false);
+                histogramData = google.visualization.arrayToDataTable([
+                ['Phenotype', 'Frequency'],
+                {% for accession, value in data.values %}[ "{{ accession }}", {{ value }} ],{% endfor %}
+                ],false);
+
             {% endautoescape %}
-            var histogramOptions = {title: '{{ transformation }} transformation (Shapiro-Wilk-Score: {{ data.sp_score }})', height:500,width:"100%",legend: { position: 'none' },hAxis:{title:'Phenotypic Value'},vAxis:{title:'Frequency'}};
+            var histogramOptions = {title: '{{ transformation }} {% if data.values|length == 0 %}transformation not supported{% else %}transformation (Shapiro-Wilk-Score: {{ data.sp_score }}){% endif %}', height:500,width:"100%",legend: { position: 'none' },hAxis:{title:'Phenotypic Value'},vAxis:{title:'Frequency'}};
             histogramChart.draw(histogramData,histogramOptions)
         {% endfor %}
     }

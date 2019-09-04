@@ -155,10 +155,13 @@ def calculate_phenotype_transformations(phenotype, trans = None, rnaseq=False):
             continue
         transformed_values = statistics.transform(values, transformation)
         if transformed_values is not None:
-            sp_pval = statistics.calculate_sp_pval(transformed_values.tolist())
-            transformations[transformation] = {'values': zip(labels, transformed_values.tolist()), 'sp_pval': sp_pval}
-            if sp_pval < 1 and sp_pval > 0:
-                transformations[transformation]['sp_score'] = -math.log10(sp_pval)
+            if not np.any(np.iscomplex(transformed_values)):
+                sp_pval = statistics.calculate_sp_pval(transformed_values.tolist())
+                transformations[transformation] = {'values': zip(labels, transformed_values.tolist()), 'sp_pval': sp_pval}
+                if sp_pval < 1 and sp_pval > 0:
+                    transformations[transformation]['sp_score'] = -math.log10(sp_pval)
+            else:
+                transformations[transformation] = {'values': [], 'sp_pval':"not supported" }
     data['transformations'] = transformations
     return data
 
