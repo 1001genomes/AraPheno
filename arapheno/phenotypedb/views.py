@@ -168,9 +168,9 @@ def list_accessions(request):
     """
     filtered_genotypes = set(map(int,request.POST.getlist('genotypes')))
     if len(filtered_genotypes) > 0:
-        accessions = Accession.objects.prefetch_related('genotype_set').filter(genotype__pk__in = filtered_genotypes)
+        accessions = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).prefetch_related('genotype_set').filter(genotype__pk__in = filtered_genotypes)
     else:
-        accessions = Accession.objects.prefetch_related('genotype_set').all()
+        accessions = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).prefetch_related('genotype_set').all()
 
     table = AccessionTable(accessions, order_by="-name")
     genotypes = Genotype.objects.all()

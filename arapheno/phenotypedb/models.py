@@ -358,10 +358,6 @@ class Accession(models.Model):
         return self.genotype_set.filter(pk=genotype_id).exists()
 
 
-    @property
-    def count_phenotypes(self):
-        """Returns number of phenotypes"""
-        return self.observationunit_set.values('phenotypevalue__phenotype').distinct().count()
 
     @property
     def cs_number_url(self):

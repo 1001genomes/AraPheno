@@ -572,9 +572,9 @@ def accession_list(request,format=None):
     if request.method == "GET":
         if 'genotypes' in request.GET:
             genotype_ids = map(int, request.GET['genotypes'].split(','))
-            accessions = Accession.objects.select_related('species').prefetch_related('genotype_set').filter(genotype__pk__in = genotype_ids)
+            accessions = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).select_related('species').prefetch_related('genotype_set').filter(genotype__pk__in = genotype_ids)
         else:
-            accessions = Accession.objects.select_related('species').prefetch_related('genotype_set').all()
+            accessions = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).select_related('species').prefetch_related('genotype_set').all()
         serializer = AccessionListSerializer(accessions,many=True)
         return Response(serializer.data)
 

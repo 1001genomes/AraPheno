@@ -299,10 +299,11 @@ Accession List Serializer Class (read-only: might be extended to also allow inte
 class AccessionListSerializer(serializers.ModelSerializer):
     species = serializers.SerializerMethodField()
     genotypes = serializers.SerializerMethodField()
+    count_phenotypes = serializers.SerializerMethodField()
 
     class Meta:
         model = Accession
-        fields = ('pk','name','country','sitename','collector','collection_date','longitude','latitude','cs_number','species', 'genotypes')
+        fields = ('pk','name','country','sitename','collector','collection_date','longitude','latitude','cs_number','species', 'genotypes', 'count_phenotypes')
 
     def get_genotypes(self, obj):
         try:
@@ -313,6 +314,12 @@ class AccessionListSerializer(serializers.ModelSerializer):
     def get_species(self,obj):
         try:
             return '%s %s' % (obj.species.genus, obj.species.species)
+        except:
+            return ""
+
+    def get_count_phenotypes(self,obj):
+        try:
+            return obj.count_phenotypes
         except:
             return ""
 

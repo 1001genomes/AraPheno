@@ -59,7 +59,7 @@ class PhenotypeMatrixRenderer(CSVRenderer):
 
 class AccessionListRenderer(CSVRenderer):
     header = ['pk','name','country','latitude','longitude',
-              'collector','collection_date','cs_number','species', 'genotypes']
+              'collector','collection_date','cs_number','species', 'genotypes', 'count_phenotypes']
 
     def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
         for element in data:
