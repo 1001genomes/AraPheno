@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.db.models import Q
+from django.db.models import Count
 from django.http import FileResponse
 from django.core.mail import EmailMessage
 
@@ -101,8 +102,7 @@ def phenotype_list(request,format=None):
         - text/csv
         - application/json
     """
-    phenotypes = Phenotype.objects.published().all()
-
+    phenotypes = Phenotype.objects.annotate(num_values=Count('phenotypevalue')).published()
     if request.method == "GET":
         serializer = PhenotypeListSerializer(phenotypes,many=True)
         return Response(serializer.data)

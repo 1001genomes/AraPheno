@@ -13,7 +13,7 @@ class PhenotypeListRenderer(CSVRenderer):
               'eo_term','eo_name','eo_definition','eo_comment',
               'eo_source_acronym','eo_source_name','eo_source_url'
               'uo_term','uo_name','uo_definition','uo_comment',
-              'uo_source_acronym','uo_source_name','uo_source_url']
+              'uo_source_acronym','uo_source_name','uo_source_url', 'num_values']
 
 class StudyListRenderer(CSVRenderer):
     header = ['id','name','description','phenotype_count']

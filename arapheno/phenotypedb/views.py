@@ -34,7 +34,7 @@ def list_phenotypes(request):
     """
     Displays table of all published phenotypes
     """
-    table = PhenotypeTable(Phenotype.objects.published(), order_by="-name")
+    table = PhenotypeTable(Phenotype.objects.annotate(num_values=Count('phenotypevalue')).published(), order_by="-name")
     RequestConfig(request, paginate={"per_page":20}).configure(table)
     return render(request, 'phenotypedb/phenotype_list.html', {"phenotype_table":table})
 

@@ -28,6 +28,8 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
     uo_source_acronym = serializers.SerializerMethodField()
     uo_source_name = serializers.SerializerMethodField()
     uo_source_url = serializers.SerializerMethodField()
+    num_values = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Phenotype
@@ -39,7 +41,7 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
                   'eo_definition','eo_source_acronym','eo_source_name','eo_source_url',
                   'uo_term','uo_name','uo_comment',
                   'uo_definition','uo_source_acronym','uo_source_name','uo_source_url',
-                  'integration_date','number_replicates')
+                  'integration_date', 'num_values', 'number_replicates')
 
     def get_species(self,obj):
         return obj.species.genus + " " + obj.species.species + " (NCBI: " + str(obj.species.ncbi_id) + ")"
@@ -152,6 +154,12 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
     def get_uo_source_url(self,obj):
         try:
             return obj.uo_term.source.url
+        except:
+            return ""
+
+    def get_num_values (self, obj):
+        try:
+            return obj.num_values
         except:
             return ""
 

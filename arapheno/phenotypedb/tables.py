@@ -16,6 +16,7 @@ class ReducedPhenotypeTable(tables.Table):
     to = tables.Column(accessor="to_term.name", verbose_name="Trait Ontology (TO)", order_by="to_term.name")
     eo = tables.Column(accessor="eo_term.name", verbose_name="Environmental Ontoloy (EO)", order_by="eo_term.name")
     uo = tables.Column(accessor="uo_term.name", verbose_name="Unit Ontology (UO)", order_by="uo_term.name")
+    values = tables.Column(accessor="num_values", verbose_name="# values", order_by="num_values")
 
     ''' # Too many links in table might be confusing
     def render_to(self,record):
