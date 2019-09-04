@@ -69,7 +69,7 @@ class ReducedRNASeqTable(tables.Table):
     """
     Table that is displayed in the Study detail view
     """
-    name = tables.LinkColumn("rnaseq_detail", args=[A('id')], text=lambda record: record.name, verbose_name="RNASeq Element", order_by="name")
+    name = tables.LinkColumn("rnaseq_detail", args=[A('id')], text=lambda record: record.name, verbose_name="Gene", order_by="name")
     condition = tables.Column(accessor="growth_conditions", verbose_name="Growth conditions", order_by="growth_conditions")
 
     class Meta:
