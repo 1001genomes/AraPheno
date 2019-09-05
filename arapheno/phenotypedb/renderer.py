@@ -35,7 +35,8 @@ class TransformationRenderer(CSVRenderer):
         for ix, accession in enumerate(data['accessions']):
             row = {'accession_id': data['accessions'][ix][0]}
             for transformation, info in data['transformations'].items():
-                row[transformation] = info['values'][ix][1]
+                if len(info['values']) > 0:
+                    row[transformation] = info['values'][ix][1]
             converted_data.append(row)
         return super(TransformationRenderer, self).render(converted_data, media_type, renderer_context,writer_opts)
 
