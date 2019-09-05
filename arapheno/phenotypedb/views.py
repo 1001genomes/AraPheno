@@ -185,7 +185,7 @@ def detail_accession(request, pk=None):
     Detailed view of a single accession
     """
     accession = Accession.objects.get(id=pk)
-    phenotype_table = AccessionPhenotypeTable(pk,Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=pk), order_by="-id")
+    phenotype_table = AccessionPhenotypeTable(pk,Phenotype.objects.annotate(num_values=Count('phenotypevalue')).published().filter(phenotypevalue__obs_unit__accession_id=pk), order_by="-id")
     RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
