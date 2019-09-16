@@ -1,6 +1,7 @@
 """
 Tables for django-table2
 """
+from django.db.models import Count
 import django_tables2 as tables
 from django_tables2.utils import A
 from django.utils.safestring import mark_safe
@@ -15,6 +16,7 @@ class ReducedPhenotypeTable(tables.Table):
     to = tables.Column(accessor="to_term.name", verbose_name="Trait Ontology (TO)", order_by="to_term.name")
     eo = tables.Column(accessor="eo_term.name", verbose_name="Environmental Ontoloy (EO)", order_by="eo_term.name")
     uo = tables.Column(accessor="uo_term.name", verbose_name="Unit Ontology (UO)", order_by="uo_term.name")
+    values = tables.Column(accessor="num_values", verbose_name="# values", order_by="num_values")
 
     ''' # Too many links in table might be confusing
     def render_to(self,record):
@@ -38,6 +40,7 @@ class ReducedPhenotypeTable(tables.Table):
     class Meta:
         attrs = {"class": "striped"}
 
+
 class PhenotypeTable(ReducedPhenotypeTable):
     """
     Table that is displayed in the general phenotype list view
@@ -52,7 +55,7 @@ class AccessionPhenotypeTable(PhenotypeTable):
     """
     Table that is displayed in the accession detial view
     """
-    value = tables.Column(empty_values=(),verbose_name='Value (mean)')
+    value = tables.Column(empty_values=(),verbose_name='Value (mean)', orderable=False)
 
     def __init__(self, accession_id, *args, **kwargs):
         super(AccessionPhenotypeTable, self).__init__(*args, **kwargs)
@@ -63,7 +66,24 @@ class AccessionPhenotypeTable(PhenotypeTable):
         if not values:
             return "N/A"
         return str(np.mean(values))
+class ReducedRNASeqTable(tables.Table):
+    """
+    Table that is displayed in the Study detail view
+    """
+    name = tables.LinkColumn("rnaseq_detail", args=[A('id')], text=lambda record: record.name, verbose_name="Gene", order_by="name")
+    condition = tables.Column(accessor="growth_conditions", verbose_name="Growth conditions", order_by="growth_conditions")
 
+    class Meta:
+        attrs = {"class": "striped"}
+
+class RNASeqTable(ReducedRNASeqTable):
+    """
+    Table that is displayed in the general RNASeq list view
+    """
+    study = tables.LinkColumn("study_detail", args=[A('study.id')], text=lambda record: record.study.name, verbose_name="Study", order_by="study.name")
+
+    class Meta:
+        attrs = {"class": "striped"}
 
 class StudyTable(tables.Table):
     """
@@ -72,10 +92,22 @@ class StudyTable(tables.Table):
     name = tables.LinkColumn("study_detail", args=[A('id')], text=lambda record: record.name, verbose_name="Study Name", order_by="name")
     description = tables.Column(accessor="description", verbose_name="Description", order_by="description")
     phenotypes = tables.Column(accessor="count_phenotypes", verbose_name="#Phenotypes", order_by="phenotype")
+    update_date = tables.DateTimeColumn(accessor="update_date", verbose_name="Date Added", order_by="update_date",format="M/d/Y")
 
     class Meta:
         attrs = {"class": "striped"}
 
+class RNASeqStudyTable(tables.Table):
+    """
+    Table that is displayed in the study list view
+    """
+    name = tables.LinkColumn("study_detail", args=[A('id')], text=lambda record: record.name, verbose_name="Study Name", order_by="name")
+    description = tables.Column(accessor="description", verbose_name="Description", order_by="description")
+    phenotypes = tables.Column(accessor="rna_count", verbose_name="#RNASeqs", order_by="rnaseq")
+    update_date = tables.DateTimeColumn(accessor="update_date", verbose_name="Date Added", order_by="update_date",format="M/d/Y")
+
+    class Meta:
+        attrs = {"class": "striped"}
 
 class PublicationTable(tables.Table):
     """
@@ -104,11 +136,15 @@ class AccessionTable(tables.Table):
     longitude = tables.Column(accessor="longitude", verbose_name="Longitude", order_by="longitude")
     latitude = tables.Column(accessor="latitude", verbose_name="Latitude", order_by="latitude")
     cs_number = tables.URLColumn({"target":"_blank"},lambda record: record.cs_number, accessor="cs_number_url", verbose_name="CS Number", order_by="cs_number")
+    genotypes = tables.ManyToManyColumn(accessor="genotype_set", transform=lambda genotype: genotype.name)
     number_of_phenotypes = tables.Column(accessor="count_phenotypes",verbose_name='# Phenotypes')
-
 
     class Meta:
         attrs = {"class": "striped"}
+
+    def order_number_of_phenotypes(self,QuerySet,is_descending):
+        QuerySet = QuerySet.annotate(count=Count('observationunit__phenotypevalue__phenotype',distinct=True)).order_by(('-' if is_descending else '') + 'count')
+        return (QuerySet, True)
 
 
 class StatusColumn(tables.Column):

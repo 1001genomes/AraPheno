@@ -7,8 +7,9 @@ import os,re
 from autocomplete_light import shortcuts as autocomplete_light
 from django import forms
 from django.db import transaction
-from phenotypedb.models import Phenotype, Study, Submission, OntologyTerm
-from utils import import_study
+from phenotypedb.models import Phenotype, Study, Submission, OntologyTerm, PHENOTYPE_TYPE
+from utils import import_study, update_study, add_phenotype_ids, add_publication_to_study
+from utils.data_io import parse_meta_information_file
 
 TEXT_WIDGET = forms.TextInput(attrs={'class':'validate'})
 SUPPORTED_EXTENSION = ('.csv', '.plink', '.zip', '.tar.gz')
@@ -54,7 +55,14 @@ class CorrelationWizardForm(forms.Form):
     Form for correlation wizard
     """
     # TODO comment out if you get an error during migration
-    phenotype_search = autocomplete_light.MultipleChoiceField("PhenotypeCorrelationAutocomplete")
+    phenotype_search = autocomplete_light.MultipleChoiceField("PhenotypeCorrelationAutocomplete", required=False)
+
+class TransformationWizardForm(forms.Form):
+    """
+    Form for correlation wizard
+    """
+    # TODO comment out if you get an error during migration
+    phenotype_search = autocomplete_light.MultipleChoiceField("PhenotypeTransformationAutocomplete", required=False)
 
 class UploadFileForm(forms.ModelForm):
     """
@@ -86,7 +94,8 @@ class StudyUpdateForm(forms.ModelForm):
     """
     Form for updating study of a submission
     """
-
+    file = forms.FileField(required=False)
+    doi = forms.CharField(widget=forms.TextInput(attrs={'class':'validate', 'required':False}), required=False)
     class Meta:
         model = Study
         fields = ('name', 'description')
@@ -95,6 +104,36 @@ class StudyUpdateForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'validate materialize-textarea', 'required':True})
         }
 
+    def __init__(self, *args, **kwargs):
+        super(StudyUpdateForm, self).__init__(*args,**kwargs)
+        if self.instance.publications.count() > 0:
+            self.fields['doi'].initial  = self.instance.publications.all()[0].doi
+
+
+    @transaction.atomic
+    def save(self, commit=True):
+        study = super(StudyUpdateForm, self).save(commit)
+        study.publications.clear()
+        if self.cleaned_data['doi']:
+            pub = add_publication_to_study(study, self.cleaned_data['doi'])
+        if commit and self.cleaned_data['file']:
+            failed_phenotypes = update_study(study.submission.id, self.cleaned_data['file'])
+        return study
+
+    def clean(self):
+        cd = super(StudyUpdateForm, self).clean()
+        try:
+            if cd['file'] is not None:
+                meta_information = parse_meta_information_file(cd['file'],close_handle=False)
+            else:
+                return cd
+        except Exception as error:
+            self.add_error('file', "Format is wrong")
+            raise forms.ValidationError('Bulk-update file format is wrong')
+        meta_information, failed_phenotypes = add_phenotype_ids(self.instance,meta_information)
+        if len(failed_phenotypes) > 0:
+            raise forms.ValidationError('Following phenotypes are not found: %s' % ', '.join(failed_phenotypes))
+        return cd
 
 class PhenotypeUpdateForm(forms.ModelForm):
     """
@@ -107,11 +146,17 @@ class PhenotypeUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Phenotype
-        fields = ('name', 'scoring', 'source', 'type', 'growth_conditions', 'eo_term', 'to_term', 'uo_term')
+        fields = ('name', 'scoring', 'type', 'growth_conditions', 'eo_term', 'to_term', 'uo_term')
         widgets = {
             'name': TEXT_WIDGET,
             'scoring': forms.Textarea(attrs={'class': 'validate materialize-textarea', 'required':True}),
             'growth_conditions': forms.Textarea(attrs={'class': 'validate materialize-textarea', 'required':True}),
             'source': TEXT_WIDGET,
-            'type': TEXT_WIDGET
+            'type': forms.Select(choices=PHENOTYPE_TYPE)
         }
+
+class SubmitFeedbackForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'validate', 'required':True}), required=True)
+    firstname = forms.CharField(widget=forms.TextInput(attrs={'class':'validate', 'required':True}), required=True)
+    lastname = forms.CharField(widget=forms.TextInput(attrs={'class':'validate', 'required':True}), required=True)
+    message = forms.CharField(widget=forms.Textarea(attrs={'class':'validate materialize-textarea', 'required':True}), required=True)

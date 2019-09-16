@@ -1,12 +1,15 @@
 version: '2'
 services:
-  web:
-    restart: always
-    build: .
-    working_dir: /code/arapheno
-    command: /usr/local/bin/gunicorn arapheno.wsgi:application -w 2 -b :8000
+  db:
+    restart: unless-stopped
+    image: postgres:11-alpine
     volumes:
-      - .:/code
+      - postgres_data:/var/lib/postgresql/data/
+  web:
+    restart: unless-stopped
+    image: "docker.artifactory.imp.ac.at/the1001genomes/arapheno:latest"
+    volumes:
+      - /usr/share/nginx/html/static:/usr/share/nginx/html/static
     ports:
       - "8000:8000"
     environment:
@@ -15,3 +18,7 @@ services:
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_USER=${EMAIL_USER}
       - DJANGO_SETTINGS_MODULE=arapheno.settings.prod
+    depends_on:
+      - db
+volumes:
+  postgres_data:

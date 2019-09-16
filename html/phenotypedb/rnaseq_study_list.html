@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - All public studies {% endblock title %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:80px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h5 class="white-text">List of all studies</h5>
+            <div style="position:relative;">
+             <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block;bottom:-5px;z-index:1;">
+                <a class="btn-floating btn-large waves-effect white" href="/rest/study/list.csv"><i class="material-icons brown-text" id="download_btn">file_download</i></a>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
+</div>
+
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col s12">
+                {% render_table study_table %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.parallax').parallax();
+        // change header
+        var title = document.getElementById('logo-container')
+        title.className = title.className.replace('black-text', 'grey-text text-lighten-1')
+
+        var other = document.getElementById('other-view')
+        other.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+        other.className = other.className.replace('blue-text text-lighten-4', 'black-text')
+        // change footer
+        var footer = document.getElementById('footer')
+        var footerdark = document.getElementById('footerdark')
+        footer.className = footer.className.replace("brown lighten-2", "blue");
+        footerdark.className = footerdark.className.replace("brown", "blue darken-3");
+	    var menu = document.getElementById('datadropdown')
+        menu.className = menu.className.replace("brown", "blue");
+	    var toolsmenu = document.getElementById('toolsdropdown')
+        toolsmenu.className = toolsmenu.className.replace("brown", "blue");
+        
+    });
+</script>
+{% endblock content %}

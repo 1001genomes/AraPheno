@@ -20,13 +20,17 @@ import phenotypedb.views
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_swagger.views import get_swagger_view
 from django.views.decorators.csrf import csrf_exempt
+from utils.statistics import SUPPORTED_TRANSFORMATIONS
 admin.autodiscover()
 al.autodiscover()
+schema_view = get_swagger_view(title='AraPheno API')
 
 ID_REGEX = r"[0-9]+"
 REGEX_STUDY = ID_REGEX + "|" + rest.DOI_REGEX_STUDY
 REGEX_PHENOTYPE = ID_REGEX + "|" + rest.DOI_REGEX_PHENOTYPE
+REGEX_TRANSFORMATIONS = r"(%s)" % "|".join(SUPPORTED_TRANSFORMATIONS)
 UUID_REGEX = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 ONTOLOGY_REGEX = r"(EO|TO|UO){1}:[0-9]*"
 ONTOLOGY_SOURCE_REGEX = "(PECO|PTO|UO)"
@@ -34,29 +38,45 @@ ONTOLOGY_SOURCE_REGEX = "(PECO|PTO|UO)"
 urlpatterns = [
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$', home.views.home, name="home"),
+    url(r'^rnaseq/$', home.views.home_rnaseq, name="home"),
     url(ur'^search_results/$', home.views.SearchResults, name="searchresults"),
     url(ur'^search_results//$', home.views.SearchResults, name="searchresults"),
     url(ur'^search_results/(?P<query>.*)/$', home.views.SearchResults, name="searchresults"),
+    url(ur'^rnaseq/rnaseq_search_results/$', home.views.SearchResultsRNASeq, name="rnaseq-searchresults"),
+    url(ur'^rnaseq_search_results//$', home.views.SearchResultsRNASeq, name="rnaseq-searchresults"),
+    url(ur'^rnaseq/rnaseq_search_results/(?P<query>.*)/$', home.views.SearchResultsRNASeq, name="rnaseq-searchresults"),
     url(r'^phenotypes/$', phenotypedb.views.list_phenotypes, name="phenotypes"),
+    url(r'^download/$', phenotypedb.views.download, name="download"),
     url(r'^correlation/$', phenotypedb.views.correlation_wizard, name="correlation-wizard"),
     url(r'^correlation/(?P<ids>[\d,]+)/$', phenotypedb.views.correlation_results, name="correlation-results"),
+    url(r'^transformation/$', phenotypedb.views.transformation_wizard, name="transformation-wizard"),
+    url(r'^phenotype/(?P<pk>%s)/transformation/$' % ID_REGEX, phenotypedb.views.transformation_results, name="transformation-results"),
     url(r'^phenotype/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.PhenotypeDetail.as_view(), name="phenotype_detail"),
     url(r'^studies/$', phenotypedb.views.list_studies, name="studies"),
     url(r'^accessions/$', phenotypedb.views.list_accessions, name="accessions"),
     url(r'^accession/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.detail_accession, name="accession_detail"),
     url(r'^study/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.detail_study, name="study_detail"),
+    url(r'^study/(?P<pk>%s)/doi$' % ID_REGEX, phenotypedb.views.add_doi, name="add_doi"),
     url(r'^ontology/$', phenotypedb.views.list_ontology_sources,name="ontologysource_list"),
     url(r'^ontology/(?P<acronym>%s)/$' % ONTOLOGY_SOURCE_REGEX, phenotypedb.views.detail_ontology_source,name="ontologysource_detail"),
     url(r'^ontology/(?P<acronym>%s)/(?P<term_id>%s)/$' % (ONTOLOGY_SOURCE_REGEX,ONTOLOGY_REGEX), phenotypedb.views.detail_ontology_source,name="ontology_detail"),
     url(r'^term/(?P<pk>%s)/$' % ONTOLOGY_REGEX, phenotypedb.views.detail_ontology_term,name="term_detail"),
     url(r'^term/$', phenotypedb.views.detail_ontology_term),
+    url(r'^rnaseqs/$', phenotypedb.views.list_rnaseqs, name="rnaseqs"),
+    url(r'^rnaseq/(?P<pk>%s)/$' % ID_REGEX, phenotypedb.views.RNASeqDetail.as_view(), name="rnaseq_detail"),
+    url(r'^rnaseq/(?P<pk>%s)/transformation/$' % ID_REGEX, phenotypedb.views.rnaseq_transformation_results, name="rnaseq-transformation-results"),
+    url(r'^rnaseq_studies/$', phenotypedb.views.list_rnaseq_studies, name="rnaseq_studies"),
     url(r'^about/$', home.views.about),
+    url(r'^links/$', home.views.links),
     url(r'^faq/$', home.views.faq),
     url(r'^faq/content/$', home.views.faqcontent),
     url(r'^faq/tutorials/$', home.views.faqtutorial),
     url(r'^faq/rest/$', home.views.faqrest),
-    url(r'^faq/rest/swagger/', include('rest_framework_swagger.urls')),
+    url(r'^faq/rest/swagger/', schema_view),
     url(r'^faq/cite/$', home.views.faqcite),
+    url(r'^faq/issue/$', home.views.faqissue),
+    url(r'^feedback/$', phenotypedb.views.submit_feedback, name="feedback"),
+    url(r'^feedback/success/$', phenotypedb.views.submit_feedback_success, name="feedback_success"),
     url(r'^submission/$', phenotypedb.views.upload_file, name="submission"),
     url(r'^submission/(?P<pk>%s)/$' % UUID_REGEX, phenotypedb.views.SubmissionStudyResult.as_view(), name="submission_study_result"),
     url(r'^submission/(?P<pk>%s)/delete/$' % UUID_REGEX, phenotypedb.views.SubmissionStudyDeleteView.as_view(), name="submission_delete"),
@@ -96,6 +116,10 @@ restpatterns = [
     # phenotype detail
     url(r'^rest/phenotype/(?P<q>%s)/$' % REGEX_PHENOTYPE, rest.phenotype_detail),
 
+    url(r'^rest/phenotype/(?P<q>%s)/transformations/$' % REGEX_PHENOTYPE, rest.transformations),
+
+    url(r'^rest/phenotype/(?P<q>%s)/transformations/(?P<transformation>%s)/$' % (REGEX_PHENOTYPE, REGEX_TRANSFORMATIONS ), rest.transformations),
+
     url(r'^rest/phenotype/(?P<q>%s)/values/$' % REGEX_PHENOTYPE, rest.phenotype_value),
     url(r'^rest/phenotype/(?P<q>%s)/similar/$' % REGEX_PHENOTYPE, rest.phenotype_similar_list),
 
@@ -128,8 +152,11 @@ restpatterns = [
 
     url(r'rest/terms/(?P<acronym>%s)/$' % ONTOLOGY_SOURCE_REGEX, rest.ontology_tree_data,name='ontology_tree_root'),
 
-    url(r'rest/terms/(?P<term_id>%s)/$' % ONTOLOGY_REGEX, rest.ontology_tree_data,name='ontology_tree_children')
+    url(r'rest/terms/(?P<term_id>%s)/$' % ONTOLOGY_REGEX, rest.ontology_tree_data,name='ontology_tree_children'),
     #url(r'rest/ontology/(?P<pk>%s)/(?P<term_id>%s)' % ID_REGEX )
+    url(r'rest/download/$', rest.arapheno_db_archive),
+
+    url(r'^rest/rnaseq/(?P<q>%s)/values/$' % REGEX_PHENOTYPE, rest.rnaseq_value),
 
 ]
 #extend restpatterns with suffix options

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %} AraPheno - Links{% endblock title %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:130px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h3 class="header center white-text text-lighten-2">Links to Important Resources and Websites</h3>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
+</div>
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col s12 l12 m12">
+                <h5 class="light"><i class="material-icons brown-text" style="font-size:20px">link</i>Useful Links to Imporant Resources and Websites</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m12 l12">
+		     <ul class="collection">
+			    <li class="collection-item avatar">
+			      <img src="/static/img/aragwas_logo.jpg" alt="" class="circle">
+			      <span class="title"><a target="_blank" href="https://aragwas.1001genomes.org">The AraGWAS Catalog</a></span>
+			      <p>The AraGWAS Catalog is a public and manually curated database for standardised GWAS results for <em>Arabidopsis thaliana</em>
+			      </p>
+			      <a target="_blank" href="https://aragwas.1001genomes.org" class="secondary-content"><i class="material-icons">link</i></a>
+			    </li>
+			    <li class="collection-item avatar">
+			      <img src="/static/img/1001_logo.png" alt="" class="circle">
+			      <span class="title"><a target="_blank" href="http://1001genomes.org">1001 Genomes</a></span>
+			      <p>A Catalog of <em>Arabidopsis thaliana</em> Genetic Variation</p>
+			      <a target="_blank" href="http://1001genomes.org" class="secondary-content"><i class="material-icons">link</i></a>
+			    </li>
+
+			    <li class="collection-item avatar">
+			      <img src="/static/img/easygwas_logo.png" alt="" class="circle">
+			      <span class="title"><a target="_blank" href="https://easygwas.org">easyGWAS</a></span>
+			      <p>easyGWAS is a web-application for performing, analysing, visualising and comparing genome-wide association studies for any kind of model organism</p>
+			      <a target="_blank" href="https://easygwas.org" class="secondary-content"><i class="material-icons">link</i></a>
+			    </li>
+			    <li class="collection-item avatar">
+			      <img src="/static/img/gwaportal_logo.png" alt="" class="circle">
+			      <span class="title"><a target="_blank" href="https://gwas.gmi.oeaw.ac.at/">GWA-Portal</a></span>
+			      <p>GWA-Portal is a web-application for performing, analysing and visualising and comparing genome-wide association studies for <em>Arabidopsis thaliana</em></p>
+			      <a target="_blank" href="https://gwas.gmi.oeaw.ac.at/" class="secondary-content"><i class="material-icons">link</i></a>
+			    </li>
+			    <li class="collection-item avatar">
+			      <img src="https://rstudio.aws.science.psu.edu:3838/aaf11/AraCLIM/_w_bb26f9afb7bc65945dce11e609ba90a92350880d026edb45/picture2.png" alt="" class="circle">
+			      <span class="title"><a target="_blank" href="https://rstudio.aws.science.psu.edu:3838/aaf11/AraCLIM/">AraCLIM</a></span>
+			      <p>AraCLIM, provides an intuitive tool to define the environment at the site of origin of each of the 1,131 geo-referenced accessions sequenced as part of the 1,001 Genomes Project</p>
+			      <p><br>
+			      <div class="citation-title">Phenotypic and genome-wide association with the local environment of <em>Arabidopsis</em></div>
+			      <cite class="citation-author-list"><em>Ferrero-Serrano, Ángel, and Sarah M. Assmann.</em></cite><br>
+			      <cite class="citation-author-list"><strong>Nature ecology & evolution 3 (2019): 274-285.</strong> (<a href="https://www.nature.com/articles/s41559-018-0754-5">Link</a>)</cite>
+			      </p>
+			      <a target="_blank" href="https://rstudio.aws.science.psu.edu:3838/aaf11/AraCLIM/" class="secondary-content"><i class="material-icons">link</i></a>
+			    </li>
+		     </ul>
+        	</div>
+        </div>
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <h5 class="light"><i class="material-icons brown-text" style="font-size:20px">link</i>Code and Issue Tracker</h5>
+		     <ul class="collection">
+			    <li class="collection-item avatar">
+			      <i class="material-icons circle">code</i>
+				<span class="title"><a target="_blank" href="https://github.com/1001genomes/AraPheno">AraPheno GitHub Release</a></span>
+				<p>Link to the AraPheno GitHub Release, inlcuding code and issue tracker.
+				</p>
+			      <a target="_blank" href="https://github.com/1001genomes/AraPheno" class="secondary-content"><i class="material-icons">link</i></a>
+		</ul>
+	    </div>
+	</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){    
+        $('.parallax').parallax();
+    });
+</script>
+{% endblock content %}

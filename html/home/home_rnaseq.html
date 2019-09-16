@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="index-banner" class="parallax-container" style="height:370px">
+    <div class="section no-pad-bot">
+        <div class="container">
+            <h1 class="header center white-text text-lighten-2">AraPheno <b class="blue-text text-darken-3">RNASeq</b></h1>
+            <div class="row center">
+                <h5 class="header col s12 m12 l12 light">AraPheno also contains <em>Arabidopsis thaliana</em> RNASeq measurements.</h5>
+                <br>
+                <br>
+                <h5 class="header col s12 m12 l12 light">This database allows to look for them. </h5>
+            </div>
+            <form method="post" action="." name="_search_form">
+                {% csrf_token %}
+                    <div class="valign-wrapper white" id="search_box">
+                    <i class="material-icons prefix left valign blue-text text-darken-3">search</i>
+                    {{ search_form.rnaseq_global_search }}
+                    <li class="waves-effect"><a href="#!"><i class="material-icons prefix right valign blue-text text-darken-3" id="submit_search">chevron_right</i></a></li>
+                    </div>
+            </form>
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
+</div>
+<div class="parallax-container" style="height:100px;height:auto;">
+<div class="right" style="margin-right:100px;margin-bottom:0px;">
+<div class="switch"> 
+    <label>
+	    <h6>
+      		AraPheno
+      		<input checked type="checkbox" id="rnaseq-input">
+      		<span id="rnaseq-lever" class="lever" ></span>
+		<span class="blue-text text-darken-3">RNASeq</span>
+	    </h6>
+    </label>
+  </div>
+</div>
+</div>
+
+<div class="container scale-transition scale-out" id="rnaseq-container">
+    <div class="section">
+
+        <div class="row center">
+            <div class="col s12 m6 l4">
+                    <div class="icon-block">
+                        <h3 class="center blue-text text-darken-3"><i class="material-icons" style="font-size:35px">view_list</i></h3>
+                        <h5 class="center">Public RNASeq Studies</h5>
+                        <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> RNASeq studies and retrieve additional information.</p>
+                    </div>
+                    <a class="waves-effect waves-light btn-large blue darken-3" href="{% url 'rnaseq_studies' %}" id="view_studies_button"><i class="material-icons left">view_list</i>View Studies</a>
+                </div>
+                <div class="col s12 m6 l4">
+                    <div class="icon-block">
+                        <h3 class="center blue-text text-darken-3"><i class="material-icons" style="font-size:35px">blur_on</i></h3>
+                        <h5 class="center">Public RNASeq data</h5>
+                        <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> RNASeq values and retrieve additional information.</p>
+                    </div>
+                    <a class="waves-effect waves-light btn-large blue darken-3" href="{% url 'rnaseqs' %}" id="view_rnaseqs_button"><i class="material-icons left">blur_on</i>View RNASeq data</a>
+                </div>
+            <div class="col s12 m6 l4">
+                    <div class="icon-block">
+                        <h3 class="center blue-text"><i class="material-icons" style="font-size:35px">help_outline</i></h3>
+                        <h5 class="center">FAQ & Tutorials</h5>
+                        <p class="light">Here, you can find detailed help about the functions of AraPheno, its integrated data and frequently asked questions.</p>
+                    </div>
+                    <a class="waves-effect waves-light btn-large blue darken-3 modal-trigger" href="#faqmodal" id="faq_button"><i class="material-icons left">help_outline</i>FAQ</a>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="parallax-container" style="height:100px">
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 2"></div>
+</div>
+
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="col s12 l7 m12">
+                <h5 class="light"><i class="material-icons blue-text text-darken-3" style="font-size=35px">fiber_new</i> News & Updates</h5><div class="card brown lighten-5">
+                <div class="card-content black-text">
+                    <span class="card-title"><i class="material-icons blue-text text-darken-3" style="font-size=50px">library_books</i> AraGWAS Catalog paper published</span>
+                    <p class="light">
+                        We are happy to announce that the AraGWAS Catalog was published in the Database issue of Nucleic Acids Research:<br>
+                        <div style="padding:10px">Matteo Togninalli, Ümit Seren, Dazhe Meng, Joffrey Fitz, Magnus Nordborg, Detlef Weigel, Karsten Borgwardt, Arthur Korte, and Dominik G. Grimm; The <b></b>AraGWAS Catalog: a curated and standardized Arabidopsis thaliana GWAS catalog</b>; Nucleic Acids Research, gkx954,<br><a href="https://doi.org/10.1093/nar/gkx954" target="_blank">https://doi.org/10.1093/nar/gkx954</a> </div><br>
+                    </p>
+                    </div>
+                </div>
+                <div class="card brown lighten-5">
+                    <div class="card-content black-text">
+                       <span class="card-title"><i class="material-icons blue-text text-darken-3" style="font-size=50px">library_books</i> AraPheno paper published</span>
+                        <p class="light">
+                            We are happy to annouce that AraPheno was <a href="http://nar.oxfordjournals.org/content/early/2016/10/24/nar.gkw986.abstract" target="_blank">published</a> in the Database issue of Nucleic Acids Research (NAR):<br>
+                            <div style="padding:10px">Ümit Seren, Dominik Grimm, Joffrey Fitz, Detlef Weigel, Magnus Nordborg, Karsten Borgwardt, and Arthur Korte:AraPheno: A public database for Arabidopsis thaliana phenotype, Nucl. Acids Res. first published online October 24, 2016 doi:10.1093/nar/gkw986</div><br>
+                        </p>
+                    </div>
+                </div>
+                <div class="card brown lighten-5">
+                    <div class="card-content black-text">
+                       <span class="card-title"><i class="material-icons blue-text text-darken-3" style="font-size=50px">new_releases</i> AraPheno is online</span>
+                        <p class="light">
+                            We are proud to annouce that the first public phenotype database for the model organism <em>Arabidopsis thaliana</em> has launched.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 l5 m12">
+                <h5 class="light"><i class="material-icons blue-text text-darken-3" style="font-size=35px">insert_chart</i> Quick Stats</h5><div class="card brown lighten-5">
+                <div class="card-content black-text">
+                        <span style="white-space:nowrap" class="card-title"><i class="material-icons blue-text text-darken-3" style="font-size=50px">view_list</i> {{stats.studies}} RNASeq studies</span><br>
+            <span style="white-space:nowrap" class="card-title"><i class="material-icons blue-text text-darken-3" style="font-size=50px">blur_on</i> {{stats.rnaseqs}} RNASeqs total</span><br>
+                        <span style="white-space:nowrap" class="card-title"><i class="material-icons blue-text text-darken-3" style="font-size=50px">history</i> Last Update: {{stats.last_update}}</span>
+                </div>
+            </div>
+            </div>
+            <div class="col s12 l5 m12">
+                <h5 class="light"><i class="material-icons blue-text text-darken-3" style="font-size=35px">insert_chart</i> Twitter</h5><div class="card brown lighten-5">
+	    <a class="twitter-timeline" href="https://twitter.com/aragwas?ref_src=twsrc%5Etfw" data-tweet-limit="3">Tweets by aragwas</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="parallax-container" style="height:100px">
+    <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 2"></div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.parallax').parallax();
+        var footer = document.getElementById('footer')
+        var footerdark = document.getElementById('footerdark')
+        footer.className = footer.className.replace("brown lighten-2", "blue");
+        footerdark.className = footerdark.className.replace("brown", "blue darken-3");
+        
+	var menu = document.getElementById('datadropdown')
+        menu.className = menu.className.replace("brown", "blue");
+	var toolsmenu = document.getElementById('toolsdropdown')
+        toolsmenu.className = toolsmenu.className.replace("brown", "blue");
+
+        
+        // change header
+        var title = document.getElementById('logo-container')
+        title.className = title.className.replace('black-text', 'grey-text text-lighten-1')
+
+        var other = document.getElementById('other-view')
+        other.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+        other.className = other.className.replace('blue-text text-lighten-4', 'black-text')
+    });
+
+    $('#id_rnaseq_global_search-autocomplete').yourlabsAutocomplete({
+        choiceSelector: '[data-url]'
+    });
+    $('#submit_search').click(function(){
+        document.forms['_search_form'].submit();
+    });
+    
+    $('#rnaseq-input').click(function(){
+    	window.location = "/";
+    });
+
+    $('#start_tour').click(function() {
+        ga('send', 'event', 'Tour', 'start','Home');
+        var steps = [
+            {
+                element: '.header',
+                intro: 'AraPheno is a public database collection of <em>Arabidopsis thaliana</em> phenotypes. This tour will show the important features'
+            },
+            {
+                element: '#search_box',
+                intro: 'The global search form allows the user to search across all phenotypes and studies'
+            },
+            {
+                element: '#faq_button',
+                intro: 'The FAQ section provides tutorials of the various features of AraPheno'
+            },
+            {
+                element: '#rest_button',
+                intro: 'AraPheno provides a well-documented REST API for programmatic access to the data'
+            },
+            {
+                element: '#view_phenotypes_button',
+                intro: 'Users can view a list of public phenotypes and studies'
+            }
+
+        ];
+        var intro = introJs();
+        intro.setOptions({doneLabel:'Next page',steps:steps});
+        intro.start().oncomplete(function() {
+          ga('send', 'event', 'Tour', 'nextpage','Home');
+          window.location.href = 'phenotypes/?multipage=true';
+        }).onexit(function() {
+          ga('send', 'event', 'Tour', 'exit','Home');
+        });
+    });
+
+    </script>
+{% endblock content %}

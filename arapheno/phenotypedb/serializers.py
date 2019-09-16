@@ -28,18 +28,20 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
     uo_source_acronym = serializers.SerializerMethodField()
     uo_source_name = serializers.SerializerMethodField()
     uo_source_url = serializers.SerializerMethodField()
+    num_values = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Phenotype
         fields = ('species','phenotype_id','name','doi','study','scoring',
-                  'source','type','growth_conditions',
+                  'type','growth_conditions',
                   'to_term','to_name','to_comment',
                   'to_definition','to_source_acronym','to_source_name','to_source_url',
                   'eo_term','eo_name','eo_comment',
                   'eo_definition','eo_source_acronym','eo_source_name','eo_source_url',
                   'uo_term','uo_name','uo_comment',
                   'uo_definition','uo_source_acronym','uo_source_name','uo_source_url',
-                  'integration_date','number_replicates')
+                  'integration_date', 'num_values', 'number_replicates')
 
     def get_species(self,obj):
         return obj.species.genus + " " + obj.species.species + " (NCBI: " + str(obj.species.ncbi_id) + ")"
@@ -155,6 +157,12 @@ class PhenotypeListSerializer(serializers.ModelSerializer):
         except:
             return ""
 
+    def get_num_values (self, obj):
+        try:
+            return obj.num_values
+        except:
+            return ""
+
 
 class AccessionPhenotypesSerializer(serializers.Serializer):
 
@@ -191,7 +199,10 @@ class PhenotypeValueSerializer(serializers.ModelSerializer):
         try:
             return obj.phenotype.name
         except:
-            return ""
+            try:
+                return obj.rnaseq.name
+            except:
+                return ""
 
     def get_accession_name(self,obj):
         try:
@@ -250,7 +261,7 @@ class StudyListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Study
-        fields = ('name','description','phenotype_count')
+        fields = ('id','name','description','phenotype_count')
 
     def get_phenotype_count(self,obj):
         try:
@@ -287,15 +298,28 @@ Accession List Serializer Class (read-only: might be extended to also allow inte
 '''
 class AccessionListSerializer(serializers.ModelSerializer):
     species = serializers.SerializerMethodField()
+    genotypes = serializers.SerializerMethodField()
+    count_phenotypes = serializers.SerializerMethodField()
 
     class Meta:
         model = Accession
-        fields = ('pk','name','country','sitename','collector','collection_date','longitude','latitude','cs_number','species')
+        fields = ('pk','name','country','sitename','collector','collection_date','longitude','latitude','cs_number','species', 'genotypes', 'count_phenotypes')
 
+    def get_genotypes(self, obj):
+        try:
+            return [{'id': genotype.pk, 'name': genotype.name } for genotype in obj.genotype_set.all()]
+        except:
+            return ""
 
     def get_species(self,obj):
         try:
             return '%s %s' % (obj.species.genus, obj.species.species)
+        except:
+            return ""
+
+    def get_count_phenotypes(self,obj):
+        try:
+            return obj.count_phenotypes
         except:
             return ""
 

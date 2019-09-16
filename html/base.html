@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 {% load staticfiles %}
+{% load core_tags %}
+{% load humanize %}
 <html>
     <head>
         <!--Import Google Icon Font-->
@@ -20,7 +22,7 @@
 
             main {
                 flex: 1 0 auto;
-                display:flex; 
+                display:flex;
                 flex-direction:column;
             }
             .chart {
@@ -47,8 +49,17 @@
         {% include 'autocomplete_light/static.html' %}
         <div class="navbar-fixed">
         <nav class="white">
-            <div class="nav-wrapper container">
-                <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
+            <div class="nav-wrapper row">
+                <div id="title-container" class="container">
+                    <div class="col s3">
+                        <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
+                    </div>
+                    <div class="col s3 hide-on-med-and-down">
+                        <a id="other-view" href="/rnaseq" class="brand-logo blue-text text-lighten-4">AraPheno <b>RNASeq</b></a>
+                    </div>
+                    </div>
+
+                <!-- </div> -->
                 <ul class="right hide-on-med-and-down black-text">
                     <li>
                         <a class="dropdown-button black-text" href="#!" data-activates="datadropdown">Data<i class="material-icons right black-text">arrow_drop_down</i></a>
@@ -57,10 +68,12 @@
                             <li class="divider"></li>
                             <li><a class="white-text" href="/phenotypes">Phenotypes</a></li>
                             <li class="divider"></li>
+                            <li><a class="white-text" href="/rnaseqs">RNASeq</a></li>
+                            <li class="divider"></li>
                             <li><a class="white-text" href="/accessions">Accessions</a></li>
                             <li class="divider"></li>
                             <li><a class="white-text" href="{% url 'ontologysource_list' %}">Ontologies</a></li>
-                            
+
                         </ul>
                     </li>
                     <li>
@@ -68,11 +81,14 @@
                         <ul id="toolsdropdown" class="dropdown-content brown">
                             <li><a class="white-text" href="/correlation">Phenotype Correlation</a></li>
                             <li class="divider"></li>
+                            <li><a class="white-text" href="/transformation">Phenotype Transform</a></li>
+                            <li class="divider"></li>
                             <li><a class="white-text" href="/faq/rest/">REST API</a></li>
                         </ul>
                     </li>
-                    
+
                     <li><a class="black-text" href="/about">About</a></li>
+                    <li><a class="black-text" href="/links">Links</a></li>
                     <li><a class="black-text modal-trigger" href="#faqmodal">FAQ</a></li>
                 </ul>
 
@@ -83,13 +99,27 @@
                     <a class="collapsible-header waves-effect waves-grey"><strong>AraPheno Data</strong></a>
                     <div class="collapsible-body" style="display: block;">
                         <ul>
-                        <li><a class="black-text" href="/phenotypes">View Phenotypes</a></li>
                         <li><a class="black-text" href="/studies">View Studies</a></li>
+                        <li><a class="black-text" href="/phenotypes">View Phenotypes</a></li>
+                        <li><a class="black-text" href="/accessions">View Master Accessions</a></li>
                         </ul>
                     </div>
                     </li>
                     </ul>
                     
+		    <li class="divider"></li>
+                    <ul class="collapsible collapsible-accordion">
+                    <li>
+                    <a class="collapsible-header waves-effect waves-grey"><strong>AraPheno RNASeq</strong></a>
+                    <div class="collapsible-body" style="display: block;">
+                        <ul>
+                            <li><a class="black-text" href="/rnaseq_studies">View RNASeq Studies</a></li>
+                            <li><a class="black-text" href="/rnaseqs">View RNASeq Data</a></li>
+                        </ul>
+                    </div>
+                    </li>
+		    </ul>
+
                     <li class="divider"></li>
                     <ul class="collapsible collapsible-accordion">
                     <li>
@@ -97,34 +127,64 @@
                     <div class="collapsible-body" style="display: block;">
                         <ul>
                             <li><a class="black-text" href="/correlation">Phenotype Correlation</a></li>
+                            <li><a class="black-text" href="/transformation">Phenotype Transform</a></li>
                             <li><a class="black-text" href="/faq/rest/">REST API</a></li>
                         </ul>
                     </div>
                     </li>
                     </ul>
-                    
+
                     <li class="divider"></li>
                     <li><a class="black-text" href="/about">About</a></li>
+                    <li><a class="black-text" href="/links">Links</a></li>
                     <li><a class="black-text" href="/faq">FAQ</a></li>
-                    
+
                     </li>
-                    
+
                 </ul>
                 <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons black-text">menu</i></a>
-            </div>        
+            </div>
         </nav>
         </div>
         <main>
         {% block content %}{% endblock content %}
         </main>
-        <footer class="page-footer brown lighten-2">
+        <footer id="footer" class="page-footer brown lighten-2">
             <div class="container">
 
             </div>
-            <div class="footer-copyright brown">
+            <div id="footerdark" class="footer-copyright brown">
                 <div class="container">
-                 AraPheno is a public database for <em>Arabidopsis thaliana</em> phenotypes.
-                 <a class="modal-trigger waves-effect waves-light white-text text-lighten-4 right" href="#footermodal">Impressum</a>
+            AraPheno is a public database for <em>Arabidopsis thaliana</em> phenotypes (&copy 2016-2019)
+            <a class="modal-trigger waves-effect waves-light white-text text-lighten-4 right" href="#footermodal">Impressum</a>
+            <div class="version hidden-sm-and-down">
+                <ul>
+                    <li>
+                        {{ version.version }}
+                    </li>
+                    <li>
+                        {% if version.build_status_url %}
+                            <a href="{{ version.build_status_url }}/{{ version.build }}" target="_blank">{{version.build}}</a>
+                        {% else %}
+                            {{version.build}}
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if version.github_url %}
+                            <a href="{{ version.github_url}}/{{ version.githash }}" target="_blank">{{version.githash}}</a>
+                        {% else %}
+                            {{version.githash}}
+                        {% endif %}
+                    </li>
+                    <li>
+                        <time datetime="{{ version.date }}">{{version.date | parse_dt | naturaltime }}</time>
+                    </li>
+                    <li>
+
+                    </li>
+                </ul>
+            </div>
+
                 </div>
             </div>
         </footer>
@@ -162,8 +222,8 @@ This website provides information about research at the GMI. GMI makes no guaran
                 <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
             </div>
         </div>
-        
-        <div id="faqmodal" class="modal bottom-sheet" style="z-index: 1003; display: none; opacity: 0; bottom: -100%;">
+
+        <div id="faqmodal" class="modal bottom-sheet" style="max-height:80%; z-index: 1003; display: none; opacity: 0; bottom: -100%;">
             <div class="modal-content">
                 <h4>FAQ & Tutorials</h4>
                 {% include "home/faqlist.html" %}
@@ -173,7 +233,7 @@ This website provides information about research at the GMI. GMI makes no guaran
 
 
     <script type="text/javascript">
-        $(document).ready(function(){    
+        $(document).ready(function(){
             $('.button-collapse').sideNav();
             $('.modal-trigger').leanModal({
                 dimissible:true,

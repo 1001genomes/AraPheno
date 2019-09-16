@@ -13,15 +13,33 @@ class PhenotypeListRenderer(CSVRenderer):
               'eo_term','eo_name','eo_definition','eo_comment',
               'eo_source_acronym','eo_source_name','eo_source_url'
               'uo_term','uo_name','uo_definition','uo_comment',
-              'uo_source_acronym','uo_source_name','uo_source_url']
+              'uo_source_acronym','uo_source_name','uo_source_url', 'num_values']
 
 class StudyListRenderer(CSVRenderer):
-    header = ['name','description','phenotype_count']
-        
-        
+    header = ['id','name','description','phenotype_count']
+
+
 class PhenotypeValueRenderer(CSVRenderer):
     header = ['phenotype_name','accession_id','accession_name','accession_cs_number','accession_longitude',
               'accession_latitude','accession_country','phenotype_value','obs_unit_id']
+
+class TransformationRenderer(CSVRenderer):
+    labels = {'obs_unit_id': 'replicate_id'}
+
+    def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        headers = ['accession_id']
+        for transformation in data['transformations']:
+            headers.append(transformation)
+        renderer_context['header'] = headers
+        converted_data = []
+        for ix, accession in enumerate(data['accessions']):
+            row = {'accession_id': data['accessions'][ix][0]}
+            for transformation, info in data['transformations'].items():
+                if len(info['values']) > 0:
+                    row[transformation] = info['values'][ix][1]
+            converted_data.append(row)
+        return super(TransformationRenderer, self).render(converted_data, media_type, renderer_context,writer_opts)
+
 
 class PhenotypeMatrixRenderer(CSVRenderer):
     labels = {'obs_unit_id':'replicate_id'}
@@ -42,7 +60,13 @@ class PhenotypeMatrixRenderer(CSVRenderer):
 
 class AccessionListRenderer(CSVRenderer):
     header = ['pk','name','country','latitude','longitude',
-              'collector','collection_date','cs_number','species']
+              'collector','collection_date','cs_number','species', 'genotypes', 'count_phenotypes']
+
+    def render(self, data, media_type=None, renderer_context={}, writer_opts=None):
+        if type(data) == list and len(data) > 0:
+            for element in data:
+                element['genotypes'] = ','.join(['%s (%s)' % (item['name'], item['id']) for item in element['genotypes']])
+        return super(AccessionListRenderer, self).render(data, media_type, renderer_context,writer_opts)
 
 
 class PLINKMatrixRenderer(PhenotypeMatrixRenderer):
@@ -129,6 +153,13 @@ class IsaTabDerivedDataFileRenderer(IsaTabRenderer):
 class IsaTabFileRenderer(renderers.BaseRenderer):
     media_type = "application/isatab"
     format = "isatab"
+
+    def render(self,data,media_type=None,renderer_context=None):
+        pass
+
+class ZipFileRenderer(renderers.BaseRenderer):
+    media_type = "application/zip"
+    format = "zip"
 
     def render(self,data,media_type=None,renderer_context=None):
         pass

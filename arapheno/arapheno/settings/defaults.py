@@ -24,7 +24,7 @@ ADMINS = [('Uemit', 'uemit.seren@gmi.oeaw.ac.at')]
 SECRET_KEY = '1g)fcq3@lg*lb^@ia#uw3&!)-a3__v(_oc56*%s82o16og*hg8'
 
 
-ALLOWED_HOSTS = ['arapheno.1001genomes.org','arapheno.sci.gmi.oeaw.ac.at']
+ALLOWED_HOSTS = ['arapheno.1001genomes.org','arapheno.sci.gmi.oeaw.ac.at', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'home',
     'phenotypedb',
     'django_tables2',
@@ -76,7 +77,7 @@ ROOT_URLCONF = 'arapheno.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['../html/', '../xml/'],
+        'DIRS': [os.path.join(BASE_DIR, '../html'), os.path.join(BASE_DIR,'../xml/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,6 +85,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'phenotypedb.context_processors.version',
             ],
         },
     },
@@ -116,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
-
+PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -132,19 +134,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/usr/share/nginx/html/static'
 
-STATIC_ROOT = '../static_deploy'
 
-STATICFILES_DIRS = ['../static',]
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'../static'),]
 
 # https://github.com/marcgibbons/django-rest-swagger/issues/220
 # Needed to get     request.is_secure() == True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-
+GITHUB_URL='https://github.com/1001genomes/AraPheno/commit'
 DATACITE_PREFIX = '10.21958'
-DATACITE_USERNAME = os.environ['DATACITE_USERNAME']
-DATACITE_PASSWORD = os.environ['DATACITE_PASSWORD']
+DATACITE_USERNAME = os.environ.get('DATACITE_USERNAME', None)
+DATACITE_PASSWORD = os.environ.get('DATACITE_PASSWORD', None)
 DATACITE_DOI_URL = 'http://search.datacite.org/works'
 DOI_BASE_URL = 'http://arapheno.1001genomes.org'
 
@@ -166,9 +168,9 @@ LOGGING = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'www.1001genomes.org',
-    'aragwas.1001genomes.org',
-    'localhost:8000',
-    'localhost:8080',
-    '127.0.0.1:8080'
+    'http://www.1001genomes.org',
+    'http://aragwas.1001genomes.org',
+    'http://localhost:8000',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080'
 )

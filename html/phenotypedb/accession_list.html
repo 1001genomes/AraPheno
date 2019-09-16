@@ -12,7 +12,7 @@
             <h5 class="white-text">List of all accessions</h5>
             <div style="position:relative;">
              <div class="fixed-action-btn horizontal" style="position: absolute; display: inline-block;bottom:-5px;z-index:1;">
-                <a class="btn-floating btn-large waves-effect white" href="/rest/accession/list.csv"><i class="material-icons brown-text" id="download_btn">file_download</i></a>
+                <a class="btn-floating btn-large waves-effect white" href="/rest/accession/list.csv{% if filtered_genotypes|length > 0 %}?genotypes={{ filtered_genotypes|join:","  }} {% endif%}"><i class="material-icons brown-text" id="download_btn">file_download</i></a>
             </div>
             </div>
         </div>
@@ -24,6 +24,25 @@
 <div class="container">
     <div class="section">
         <div class="row">
+            <form method="POST">
+            {% csrf_token %}
+            <div class="input-field col s9">
+                <select multiple  style="overflow:auto;" name='genotypes'>
+                    <option value="" disabled selected>Choose a genotype</option>
+                    {% for genotype in genotypes %}
+                    <option {% if genotype.selected %} selected {% endif %} value="{{ genotype.pk }}">{{ genotype.name }}</option>
+                    {% endfor %}
+                </select>
+                <label>Filter by genotype</label>
+            </div>
+            <div class="input-field  col s3">
+                <button id="filterBtn" class="btn waves-effect waves-light" type="submit"  name="action">Filter
+                <i class="material-icons right">send</i>
+                </button>
+            </div>
+            </form>
+        </div>
+        <div class="row">
             <div class="col s12">
                 {% render_table accession_table %}
             </div>
@@ -32,8 +51,13 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function(){    
+    $(document).ready(function(){
         $('.parallax').parallax();
+        $('select').material_select();
+        $('#filterBtn').on('click', function() {
+            console.log('test');
+        });
+
     });
 </script>
 {% endblock content %}

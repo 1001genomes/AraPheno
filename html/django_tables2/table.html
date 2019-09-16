@@ -62,7 +62,7 @@
     {% endblock pagination.previous %}
     {% endif %}
     {% block pagination.current %}
-    	<li class="active brown"><a href="#">{% blocktrans with current=table.page.number total=table.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</a></li>
+	<li id="paginatebutton" class="active brown"><a href="#">{% blocktrans with current=table.page.number total=table.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</a></li>
     {% endblock pagination.current %}
     {% if table.page.has_next %}
     {% block pagination.next %}

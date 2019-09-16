@@ -15,29 +15,26 @@
 
          {% csrf_token %}
         <div class="row">
-            <div class="input-field col s12">
+            <div class="input-field col s12 m6">
                 {{ form.name }}
                 <label for="{{ form.name.id_for_label }}" data-error="{{ form.name.errors.0 }}" data-success="ok">Name</label>
             </div>
+            <div class="input-field col s12 m6">
+                    {{ form.type }}
+                    <label for="{{ form.type.id_for_label }}" data-error="{{ form.type.errors.0 }}" data-success="ok">Type</label>
+            </div>
         </div>
         <div class="row">
-            <div class="input-field col s12 m6">
+            <div class="input-field col s12">
                 {{ form.scoring }}
                 <label for="{{ form.scoring.id_for_label }}" data-error="{{ form.scoring.errors.0 }}" data-success="ok">Scoring</label>
             </div>
-            <div class="input-field col s12 m6">
-                {{ form.growth_conditions }}
-                <label for="{{ form.growth_conditions.id_for_label }}" data-error="{{ form.growth_conditions.errors.0 }}" data-success="ok">Growth condition</label>
-            </div>
+
         </div>
         <div class="row">
-            <div class="input-field col s12 m6">
-                {{ form.source }}
-                <label for="{{ form.source.id_for_label }}" data-error="{{ form.source.errors.0 }}" data-success="ok">Source</label>
-            </div>
-            <div class="input-field col s12 m6">
-                {{ form.type }}
-                <label for="{{ form.type.id_for_label }}" data-error="{{ form.type.errors.0 }}" data-success="ok">Type</label>
+            <div class="input-field col s12">
+                {{ form.growth_conditions }}
+                <label for="{{ form.growth_conditions.id_for_label }}" data-error="{{ form.growth_conditions.errors.0 }}" data-success="ok">Growth condition</label>
             </div>
         </div>
          <div class="row">
@@ -62,8 +59,8 @@
             <h6>To see a list of available Ontology terms click <a href="{% url 'ontologysource_list' %}" target="_blank">here</a></h6>
         </div>
         <div class="row">
-            <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Submit
-                <i class="material-icons right">send</i>
+            <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Save
+                <i class="material-icons right">save</i>
             </button>
             <div class="right">
                 <a href="{% url 'submission_study_result' submission.id %} " class="s12  btn waves-effect waves-light grey">
@@ -76,6 +73,7 @@
 {% endwith %}
 <script>
     $(document).ready(function(){
+        $('select').material_select();
         $('#{{ form.uo_term.id_for_label }}').autocomplete({
             data: {
             {% autoescape off %}

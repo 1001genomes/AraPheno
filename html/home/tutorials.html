@@ -14,7 +14,7 @@
     <div class="section">
         <div class="row">
             <div class="col s12 l12 m12">
-            
+
                 <ul class="collection">
                 <li class="collection-item avatar">
                 <i class="material-icons circle green">child_friendly</i>
@@ -49,14 +49,21 @@
                         <div class="collapsible-header"><i class="material-icons">child_friendly</i>How to get detailed information and meta-information about a study?</div>
                         <div class="collapsible-body"><p>
                         Each entry in the study table is clickable. Thus, you will be redirected to the study specific view with additional information and meta-information.
-                        You will see all phenotypes that are linked to this study. Furthermore, you can retrive additional information about trait ontologies, environment ontoloties and units. 
+                        You will see all phenotypes that are linked to this study. Furthermore, you can retrive additional information about trait ontologies, environment ontoloties and units.
                         </p></div>
                     </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">child_friendly</i>How to view transformations of the phenotype values?</div>
+                            <div class="collapsible-body"><p>
+                            In the detailed view of a phenotype, click on the "Show transformations" link above the histogram.
+                            This will show the histograms and <a href="https://en.wikipedia.org/wiki/Shapiro%E2%80%93Wilk_test" target=_blank>Shapiro-Wilk scores</a> of various transformations (log, sqrt, box-cox, ...).
+                            </p></div>
+                        </li>
                     <li>
                         <div class="collapsible-header"><i class="material-icons">child_friendly</i>How to get detailed information and meta-information about a phenotype?</div>
                         <div class="collapsible-body"><p>
                         Each entry in the phenotype table is clickable. Thus, you will be redirected to the phenotype specific view with additional information and meta-information.
-                        Here, you can see the geographic distribution of all accessions of this phentype, as well as dynamic visualisations about the measurment distribution. 
+                        Here, you can see the geographic distribution of all accessions of this phentype, as well as dynamic visualisations about the measurment distribution.
                         </p></div>
                     </li>
                     <li>
@@ -69,13 +76,13 @@
                         <div class="collapsible-header"><i class="material-icons">child_friendly</i>How to group phenotypes by ontologies?</div>
                         <div class="collapsible-body">
                             <p>
-                                Phenotypes can be annotated by various ontologies (<b>Plant Trait Ontology</b>, <b>Plant Environmental Conditions</b> and <b>Unit of Measurement</b>). 
-                                This makes it possible to view all available phenotypes for a specific ontology term.  
-                                To access this feature, first choose "<i>Ontologies</i>" from the "<i>Data</i>" menu in the top toolbar. 
+                                Phenotypes can be annotated by various ontologies (<b>Plant Trait Ontology</b>, <b>Plant Environmental Conditions</b> and <b>Unit of Measurement</b>).
+                                This makes it possible to view all available phenotypes for a specific ontology term.
+                                To access this feature, first choose "<i>Ontologies</i>" from the "<i>Data</i>" menu in the top toolbar.
                                 This will display a list of available ontologies. By clicking on the "<i>Show</i>" button, the user will be navigated to the corresponding
-                                ontology detail view. On the left side a tree widget displays all ontology terms that are part of the selected ontology. 
+                                ontology detail view. On the left side a tree widget displays all ontology terms that are part of the selected ontology.
                                 By selecting an ontology term from the tree widget, detailed information about the selected term is displayed on the right side.
-                                Below that a table of phenotypes that are annotated by the selected term or any of its subterms will be shown.        
+                                Below that a table of phenotypes that are annotated by the selected term or any of its subterms will be shown.
                             </p>
                         </div>
                     </li>
@@ -84,10 +91,10 @@
                         <div class="collapsible-body">
                             <p>
                                 You can upload a study by clicking on the "<i>Submit Phenotypes</i>" button on the landing page.<br>
-                                The data has to be provided in either <a href="http://cropnet.pl/phenotypes/?page_id=37" target="_blank">ISA-TAB</a> 
-                                (<a href="/rest/study/12/isatab" target="_blank">sample</a>), PLINK (<a href="/rest/study/12/values.plink" target="_blank">sample</a>) or CSV format (<a href="/rest/study/12/values.csv" target="_blank">sample</a>).  
+                                The data has to be provided in either <a href="http://cropnet.pl/phenotypes/?page_id=37" target="_blank">ISA-TAB</a>
+                                (<a href="/rest/study/12/isatab" target="_blank">sample</a>), PLINK (<a href="/rest/study/12/values.plink" target="_blank">sample</a>) or CSV format (<a href="/rest/study/12/values.csv" target="_blank">sample</a>).
                                 Additionally you must provide contact information (email + name).<br>
-                                Once uploaded, the submission will be reviewed by one of our curators and you will be automatically redirected to a submission status page. Additionally an email containing the URL to the submission status page will be sent 
+                                Once uploaded, the submission will be reviewed by one of our curators and you will be automatically redirected to a submission status page. Additionally an email containing the URL to the submission status page will be sent
                                 to your specified email address, so you can check your submission at a later time. If the curators raise issues, you can view them there.
                                 If there are no issues left, the curators will make the submission public and everyone will be able to access your submitted study.
                             </p>
@@ -120,8 +127,27 @@
                             </p>
                         </div>
                     </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">child_friendly</i>How to bulk-update the meta-information for all the phenotypes in a submission?</div>
+                        <div class="collapsible-body">
+                            <p>
+                                In case you submit a study with many phenotypes, it can be cumbersome to edit the meta-information (trait, environment and unit ontology, scoring, type, etc) of all the phenotypes manually. The submission detail view provides a feature to upload a CSV with meta-information for one or more phenotypes in the study. To do so open the submission detail page (link that was sent in the email), select the CSV file with the meta-information for the phenotypes in your study and save the study. The phenotypes for which the CSV file contains the meta-information are updated.
+                                The CSV has following format:
+                            </p>
+                            <pre>
+            Phenotype,  Scoring,               growth_conditions,             eo_term_id, to_term_id, uo_term_id, Type
+            phenotype1, Scoring of phenotype1, Growth condition of phenotyp1, EO:0007256, TO:0000371, UO:0000005, binary
+            phenotype2, Scoring of phenotype2, Growth condition of phenotyp1, EO:0007256, TO:0000202, UO:0000270, quantitative
+            phenotype3, Scoring of phenotype3, Growth condition of phenotyp1, EO:0007256, TO:0000183, UO:0000304, categorical
+            ...
+                            </pre>
+                            <p>
+                            The IDs for eo_term_id (environment ontology), to_term_id (trait ontology) and uo_term_id (unit ontology) can be found on the <a href="/ontology/">Ontologies page</a>
+                            </p>
+                        </div>
+                    </li>
                  </ul>
-                
+
                 </li>
                 </ul>
 
@@ -131,7 +157,7 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function(){    
+    $(document).ready(function(){
         $('.parallax').parallax();
     });
 </script>

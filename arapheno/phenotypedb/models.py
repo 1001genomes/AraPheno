@@ -26,6 +26,23 @@ STATUS_CHOICES = (
     )
 )
 
+PHENOTYPE_TYPE = (
+    (
+        (0, 'Quantitative'),
+        (1, 'Categorical'),
+        (2, 'Binary')
+    )
+)
+
+GENOTYPE_TYPE = (
+    (
+        (0, 'SNP chip'),
+        (1, 'Full sequence'),
+        (2, 'Imputed full sequence'),
+        (3, 'RNA sequence')
+    )
+)
+
 class Species(models.Model):
     """
     Species model
@@ -115,19 +132,30 @@ class Study(models.Model):
     update_date = models.DateTimeField(default=None, null=True, blank=True)
     objects = StudyQuerySet.as_manager()
 
-    def value_as_dataframe(self):
+    def value_as_dataframe(self, kind='phenotype'):
         """
         Returns the PhenotypValue records for this study as a pandas dataframe
         """
         cursor = connection.cursor()
-        cursor.execute("""
-            SELECT v.id,o.id,o.accession_id,a.name,s.ncbi_id,p.id as phenotype_id,p.name as phenotype_name, v.value
-            FROM phenotypedb_phenotypevalue as v
-            LEFT JOIN phenotypedb_observationunit o ON v.obs_unit_id = o.id
-            LEFT JOIN phenotypedb_phenotype as p ON p.id = v.phenotype_id
-            LEFT JOIN phenotypedb_accession as a ON a.id = o.accession_id
-            LEFT JOIN phenotypedb_species as s ON s.id = a.species_id
-            WHERE p.study_id = %s ORDER BY o.accession_id,p.id ASC """ % self.id)
+        if kind == 'phenotype':
+            cursor.execute("""
+                SELECT v.id,o.id,o.accession_id,a.name,s.ncbi_id,p.id as phenotype_id,p.name as phenotype_name, v.value
+                FROM phenotypedb_phenotypevalue as v
+                LEFT JOIN phenotypedb_observationunit o ON v.obs_unit_id = o.id
+                LEFT JOIN phenotypedb_phenotype as p ON p.id = v.phenotype_id
+                LEFT JOIN phenotypedb_accession as a ON a.id = o.accession_id
+                LEFT JOIN phenotypedb_species as s ON s.id = a.species_id
+                WHERE p.study_id = %s ORDER BY o.accession_id,p.id ASC """ % self.id)
+        elif kind=='rnaseq':
+            # TODO: this is too slow, need to serve csv direclty...
+            cursor.execute("""
+                SELECT v.id,o.id,o.accession_id,a.name,s.ncbi_id,p.id as rnaseq_id,p.name as rnaseq_name, v.value
+                FROM phenotypedb_rnaseqvalue as v
+                LEFT JOIN phenotypedb_observationunit o ON v.obs_unit_id = o.id
+                LEFT JOIN phenotypedb_rnaseq as p ON p.id = v.rnaseq_id
+                LEFT JOIN phenotypedb_accession as a ON a.id = o.accession_id
+                LEFT JOIN phenotypedb_species as s ON s.id = a.species_id
+                WHERE p.study_id = %s ORDER BY o.accession_id,p.id ASC """ % self.id)
         data = pd.DataFrame(cursor.fetchall(),
                             columns=['id', 'obs_unit_id', 'accession_id', 'accession_name',
                                      'ncbi_id', 'phenotype_id', 'phenotype_name',
@@ -136,7 +164,8 @@ class Study(models.Model):
 
     def get_matrix_and_accession_map(self, column='phenotype_name'):
         """Returns both the dataframe and a matrix version of it"""
-        data = self.value_as_dataframe()
+        kind = 'rnaseq' if self.phenotype_set.count()==0 and self.rnaseq_set.count()>0 else 'phenotype'
+        data = self.value_as_dataframe(kind)
         data.set_index(['obs_unit_id'], inplace=True)
         df_pivot = data.pivot(columns=column, values='value')
         data.drop(['value', 'phenotype_id', 'phenotype_name'], axis=1, inplace=True)
@@ -164,6 +193,11 @@ class Study(models.Model):
             return reverse('submission_study_result', args=[str(self.submission.id)])
         else:
             return reverse('study_detail', args=[str(self.pk)])
+
+    @property
+    def name_link(self):
+        """Returns the name with empty string replaced by underscore"""
+        return self.name.replace(" ","_")
 
     @property
     def doi_link(self):
@@ -273,7 +307,7 @@ class Submission(models.Model):
             return '''
             Dear %(firstname)s %(lastname)s,
 
-            Curators have requested changes to your "%(study_name)s" study. 
+            Curators have requested changes to your "%(study_name)s" study.
             Please check the requested changes and update the missing/incomplete fields using following URL:
             http://%(submission_url)s/%(submission_id)s
 
@@ -290,7 +324,7 @@ class Submission(models.Model):
             Dear %(firstname)s %(lastname)s,
 
             Your "%(study_name)s" study has been successfully curated and we are happy to inform you
-            that the study is now publicly available under following URL: 
+            that the study is now publicly available under following URL:
             http://%(study_url)s/%(study_id)s
 
             Thank you for your submission
@@ -320,11 +354,10 @@ class Accession(models.Model):
     cs_number = models.CharField(max_length=255, blank=True, null=True) # Stock center number
     species = models.ForeignKey("Species") #species foreign key
 
+    def has_genotype(self, genotype_id):
+        return self.genotype_set.filter(pk=genotype_id).exists()
 
-    @property
-    def count_phenotypes(self):
-        """Returns number of phenotypes"""
-        return self.observationunit_set.values('phenotypevalue__phenotype').distinct().count()
+
 
     @property
     def cs_number_url(self):
@@ -335,6 +368,18 @@ class Accession(models.Model):
 
     def __unicode__(self):
         return u"%s (Accession)" % (mark_safe(self.name))
+
+class Genotype(models.Model):
+    """
+    Genotype models
+    """
+    name = models.CharField(max_length=255)
+    type = models.PositiveSmallIntegerField(choices=GENOTYPE_TYPE, db_index=True)
+    accessions = models.ManyToManyField("Accession", null=True, blank=True) #author link
+
+
+    def __unicode__(self):
+        return u"%s (Genotype)" % (mark_safe(self.name))
 
 
 class ObservationUnit(models.Model):
@@ -389,8 +434,7 @@ class Phenotype(models.Model):
     """
     name = models.CharField(max_length=255, db_index=True) #phenotype name
     scoring = models.TextField(blank=True, null=True) #how was the scoring of the phenotype done
-    source = models.TextField(blank=True, null=True) #person who colleted the phenotype. or from which website was the phenotype
-    type = models.CharField(max_length=255, blank=True, null=True) #type/category of the phenotype
+    type = models.PositiveSmallIntegerField(choices=PHENOTYPE_TYPE, blank=True, null=True,  db_index=True) #type/category of the phenotype
     growth_conditions = models.TextField(blank=True, null=True) #description of the growth conditions of the phenotype
     shapiro_test_statistic = models.FloatField(blank=True, null=True) #Shapiro Wilk test for normality
     shapiro_p_value = models.FloatField(blank=True, null=True) #p-value of Shapiro Wilk test
@@ -479,7 +523,7 @@ class Publication(models.Model):
     Publication model
     """
     author_order = models.TextField() #order of author names
-    publication_tag = models.CharField(max_length=255) #publication tag
+    publication_tag = models.CharField(max_length=255, null=True, blank=True) #publication tag
     pub_year = models.IntegerField(blank=True, null=True) #year of publication
     title = models.CharField(max_length=255, db_index=True) #title of publication
     journal = models.CharField(max_length=255) #journal of puplication
@@ -488,7 +532,18 @@ class Publication(models.Model):
     doi = models.CharField(max_length=255, db_index=True, blank=True, null=True) #doi
     pubmed_id = models.CharField(max_length=255, db_index=True, blank=True, null=True) #pubmed id
 
-    authors = models.ManyToManyField("Author") #author link
+    authors = models.ManyToManyField("Author", null=True, blank=True) #author link
+
+    @property
+    def author_order_as_list(self):
+        return self.author_order.split(",")
+
+    @property
+    def pages_as_list(self):
+        if self.pages:
+            return self.pages.split("-")
+        return []
+
 
     def __unicode__(self):
         return u'%s (%s, %s)' % (self.title, self.journal, self.pub_year)
@@ -548,3 +603,59 @@ class OntologySource(models.Model):
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.acronym)
+
+
+"""
+RNASeq related models
+"""
+class RNASeq(models.Model):
+    """
+    RNASeq model
+    """
+    name = models.CharField(max_length=255, db_index=True) #gene or RNA name
+    scoring = models.TextField(blank=True, null=True) #how was the scoring of the RNASeq done, most of the time this is transcripts per kilobase million (TPM)
+    shapiro_test_statistic = models.FloatField(blank=True, null=True) #Shapiro Wilk test for normality
+    shapiro_p_value = models.FloatField(blank=True, null=True) #p-value of Shapiro Wilk test
+    growth_conditions = models.TextField(blank=True, null=True) #description of the growth conditions of the phenotype
+    number_replicates = models.IntegerField(default=0) #number of replicates for this RNASeq
+    integration_date = models.DateTimeField(auto_now_add=True) #date of phenotype integration/submission
+
+    species = models.ForeignKey('Species')
+    study = models.ForeignKey('Study')
+    update_date = models.DateTimeField(default=None, null=True, blank=True)
+
+
+
+    def get_absolute_url(self):
+        """returns the rnaseq page"""
+        return reverse('rnaseq_detail', args=[str(self.id)])
+
+
+    @property
+    def doi_link(self):
+        """Returns the DOI link to datacite"""
+        return '%s/%s' % (settings.DATACITE_DOI_URL, self.doi)
+
+    def get_values_for_acc(self,accession_id):
+        """
+        Retrieves the RNASeq value for a specific accession
+        """
+        return self.rnaseqvalue_set.filter(obs_unit__accession_id=accession_id).values_list("value", flat=True)
+
+
+    @property
+    def doi(self):
+        """Returns the DOI"""
+        return '%s/rnaseq:%s' % (settings.DATACITE_PREFIX, self.id)
+
+    def __unicode__(self):
+        return u"%s (RNASeq score)" % (mark_safe(self.name))
+
+class RNASeqValue(models.Model):
+    """
+    RNASeqValue model
+    The indivudal RNASeq values. Connected to RNASeq and ObservationUnit
+    """
+    value = models.FloatField()
+    rnaseq = models.ForeignKey('RNASeq')
+    obs_unit = models.ForeignKey('ObservationUnit')

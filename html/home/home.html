@@ -2,10 +2,9 @@
 
 {% block content %}
 
-<div id="index-banner" class="parallax-container" style="height:420px">
+<div id="index-banner" class="parallax-container" style="height:370px">
     <div class="section no-pad-bot">
         <div class="container">
-            <br>
             <h1 class="header center white-text text-lighten-2">AraPheno</h1>
             <div class="row center">
                 <h5 class="header col s12 m12 l12 light">AraPheno is a public database collection of <em>Arabidopsis thaliana</em> phenotypes.</h5>
@@ -25,19 +24,70 @@
     </div>
     <div class="parallax"><img src="static/img/ara1.jpg" alt="Unsplashed background img 1"></div>
 </div>
+<div class="parallax-container" style="height:100px;height:auto;">
+<div class="right" style="margin-right:100px;margin-bottom:0px;">
+<div class="switch"> 
+    <label>
+	    <h6>
+      		AraPheno
+      		<input type="checkbox" id="rnaseq-input">
+      		<span id="rnaseq-lever" class="lever" ></span>
+		<span class="blue-text text-darken-3">RNASeq</span>
+	    </h6>
+    </label>
+  </div>
+</div>
+</div>
 
-<div class="container">
+<div class="container scale-transition" id="phenotype-container">
     <div class="section">
+
         <div class="row center">
-            <div class="col s12 m6 l3">
+            <!--<div class="col s12 m6 offset-m3 l4 offset-l4">-->
+
+        <div class="row center">
+            <div class="col s12 m6 l4">
                 <div class="icon-block">
                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">view_list</i></h3>
-                    <h5 class="center">Public Phenotypes</h5>
-                    <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> phenotypes and studies and rretrive additional information.</p>
+                    <h5 class="center">Public Studies</h5>
+                    <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> studies and retrive additional information.</p>
                 </div>
-                <a class="waves-effect waves-light btn-large brown" href="{% url 'phenotypes' %}" id="view_phenotypes_button"><i class="material-icons left">view_list</i>View Phenotypes</a>
+                <a class="waves-effect waves-light btn-large brown" href="{% url 'studies' %}" id="view_studies_button"><i class="material-icons left">view_list</i>View Studies</a>
             </div>
-            <div class="col s12 m6 l3">
+            <div class="col s12 m6 l4">
+                <div class="icon-block">
+                    <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">spa</i></h3>
+                    <h5 class="center">Public Phenotypes</h5>
+                    <p class="light justify">Browse through all available public <em>Arabidopsis thaliana</em> phenotypes and studies and retrive additional information.</p>
+                </div>
+                <a class="waves-effect waves-light btn-large brown" href="{% url 'phenotypes' %}" id="view_phenotypes_button"><i class="material-icons left">spa</i>View Phenotypes</a>
+            </div>
+            <div class="col s12 m6 l4 offset-m3">
+                <div class="icon-block">
+                    <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">bubble_chart</i></h3>
+                    <h5 class="center">Master Accession Table</h5>
+		    <p class="light">Browse through all <em>Arabidopsis thaliana</em> accessions and find out how many phenotypes are available for which accessions.</p>
+                </div>
+		<a class="waves-effect waves-light btn-large brown" id="view_accession_button" href="{% url 'accessions' %}"><i class="material-icons left">bubble_chart</i>View Accessions</a>
+            </div>
+        </div>
+            <div class="col s12 m6 l4">
+                 <div class="icon-block">
+                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">backup</i></h3>
+                     <h5 class="center">Submit Phenotypes</h5>
+                     <p class="light">Submit and publish your own studies and phenotypes in order to share it with the community</p>
+                 </div>
+                 <a class="waves-effect waves-light btn-large brown"  href="/submission/"><i class="material-icons left">backup</i>Submit Phenotypes</a>
+             </div>
+            <div class="col s12 m6 l4">
+                 <div class="icon-block">
+                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">cloud_download</i></h3>
+                     <h5 class="center">Download Database</h5>
+                     <p class="light">Here you can download the full database, including all phenotypes and meta-information</p>
+                 </div>
+                 <a class="waves-effect waves-light btn-large brown"  href="/rest/download/" onclick="window.alert('Your download is being prepared, this can take a few seconds. Please click OK.'); return true;"><i class="material-icons left">cloud_download</i>Download Database</a>
+             </div>
+            <div class="col s12 m6 l4 offset-m3">
                 <div class="icon-block">
                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">code</i></h3>
                     <h5 class="center">REST API</h5>
@@ -45,7 +95,10 @@
                 </div>
                 <a class="waves-effect waves-light btn-large brown" id="rest_button" href="/faq/rest/"><i class="material-icons left">code</i>REST API</a>
             </div>
-            <div class="col s12 m6 l3">
+	    </div>
+
+        <div class="row center">
+            <div class="col s12 m6 l4">
                 <div class="icon-block">
                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">rowing</i></h3>
                     <h5 class="center">Take a Tour</h5>
@@ -55,7 +108,7 @@
                 <a class="waves-effect waves-light btn-large brown" id="start_tour" ><i class="material-icons left">rowing</i>Take a Tour</a>
             </div>
 
-            <div class="col s12 m6 l3">
+            <div class="col s12 m6 l4">
                 <div class="icon-block">
                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">help_outline</i></h3>
                     <h5 class="center">FAQ & Tutorials</h5>
@@ -63,28 +116,29 @@
                 </div>
                 <a class="waves-effect waves-light btn-large brown modal-trigger" href="#faqmodal" id="faq_button"><i class="material-icons left">help_outline</i>FAQ</a>
             </div>
+
+            <div class="col s12 m6 l4 offset-m3">
+                    <div class="icon-block">
+                        <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">feedback</i></h3>
+                        <h5 class="center">Feedback & Issues</h5>
+                        <p class="light">Here, you can submit issues, feedback or any related questions regarding AraPheno.</p><br>
+                    </div>
+                    <a class="waves-effect waves-light btn-large brown modal-trigger" href="/feedback/" id="feedback_button"><i class="material-icons left">feedback</i>Feedback</a>
+                </div>
         </div>
-        <div class="row center">
-            <div class="col s12 m6 offset-m3 l3 l3 offset-l4">
-                 <div class="icon-block">
-                     <h3 class="center brown-text"><i class="material-icons" style="font-size:35px">backup</i></h3>
-                     <h5 class="center">Submit Phenotypes</h5>
-                     <p class="light">Submit and publish your own studies and phenotypes in order to share it with the community</p>
-                 </div>
-                 <a class="waves-effect waves-light btn-large brown"  href="/submission/"><i class="material-icons left">backup</i>Submit Phenotypes</a>
-             </div>
+
+
         </div>
-    </div>
 </div>
 
-<div class="parallax-container" style="height:300px">
-    <div class="parallax"><img src="static/img/ara3.jpg" alt="Unsplashed background img 2"></div>
+<div class="parallax-container" style="height:100px">
+    <div class="parallax"><img src="static/img/ara1.jpg" alt="Unsplashed background img 2"></div>
 </div>
 
 <div class="container">
     <div class="section">
         <div class="row">
-            <div class="col s12 l12 m12">
+            <div class="col s12 l7 m12">
                 <h5 class="light"><i class="material-icons brown-text" style="font-size=35px">fiber_new</i> News & Updates</h5><div class="card brown lighten-5">
                 <div class="card-content black-text">
                     <span class="card-title"><i class="material-icons brown-text" style="font-size=50px">library_books</i> AraGWAS Catalog paper published</span>
@@ -112,21 +166,45 @@
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="col s12 l5 m12">
+                <h5 class="light"><i class="material-icons brown-text" style="font-size=35px">insert_chart</i> Quick Stats</h5><div class="card brown lighten-5">
+                <div class="card-content black-text">
+			<span style="white-space:nowrap" class="card-title"><i class="material-icons brown-text" style="font-size=50px">view_list</i> {{stats.studies}} Studies</span><br>
+            <span style="white-space:nowrap" class="card-title"><i class="material-icons brown-text" style="font-size=50px">spa</i> {{stats.phenotypes}} Phenotypes total</span><br>
+            <span style="white-space:nowrap" class="card-title"><i class="material-icons brown-text" style="font-size=50px">spa</i> {{stats.phenotypes_published}} Phenotypes published</span><br>
+			<span style="white-space:nowrap" class="card-title"><i class="material-icons brown-text" style="font-size=50px">history</i> Last Update: {{stats.last_update}}</span>
+                </div>
+	    </div>
+	    </div>
+            <div class="col s12 l5 m12">
+                <h5 class="light"><i class="material-icons brown-text" style="font-size=35px">insert_chart</i> Twitter</h5><div class="card brown lighten-5">
+       	    <a class="twitter-timeline" href="https://twitter.com/aragwas?ref_src=twsrc%5Etfw" data-tweet-limit="3">Tweets by aragwas</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+		</div>
+	    </div>
+	</div>
     </div>
+</div>
+<div class="parallax-container" style="height:100px">
+    <div class="parallax"><img src="static/img/ara1.jpg" alt="Unsplashed background img 2"></div>
 </div>
 
 <script type="text/javascript">
     $(document).ready(function(){
         $('.parallax').parallax();
+        $('rnaseq-container').hide();
     });
 
     $('#id_global_search-autocomplete').yourlabsAutocomplete({
         choiceSelector: '[data-url]'
     });
 
+
     $('#submit_search').click(function(){
         document.forms['_search_form'].submit();
+    });
+
+    $('#rnaseq-input').click(function(){
+    	window.location = "/rnaseq";
     });
 
     $('#start_tour').click(function() {

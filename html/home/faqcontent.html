@@ -31,7 +31,7 @@
                     </li>
                     <li>
                         <div class="collapsible-header"><i class="material-icons">star</i>Which information is stored in AraPheno?</div>
-                        <div class="collapsible-body"><p>This database contains public phenotype data from different studies.</p></div>
+                        <div class="collapsible-body"><p>This database contains public phenotype data from different studies. RNASeq data was also added recently.</p></div>
                     </li>
                     <li>
                         <div class="collapsible-header"><i class="material-icons">star</i>Which data formats are supported?</div>
@@ -40,6 +40,10 @@
                     <li>
                         <div class="collapsible-header"><i class="material-icons">star</i>Is it possible to download the phenotype data?</div>
                         <div class="collapsible-body"><p>Yes phenotype data can be download at the individual phenotype views. You can choose if you like to download the phenotypic meta-information, or the actual phenotype values. For this purpose, you can choose different formats, including CSV, JSON and PLINK.</p></div>
+                    </li>
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">star</i>Can I download the full database?</div>
+                        <div class="collapsible-body"><p>Yes, if you click on the <a href='/rest/download' onclick="window.alert('Your download is being prepared, this can take a few seconds. Please click OK.'); return true;">download database</a> link in the home page. This will generate a zip file containing a csv file with a list of the studies (and their details) as well as one folder per study, with the study id as the folder name. Each folder contains information about the study's phenotypes as well as the values both in csv and plink format.</p></div>
                     </li>
                     <li>
                         <div class="collapsible-header"><i class="material-icons">star</i>Should I upload mean/average values or replicates?</div>
@@ -90,6 +94,10 @@
                         <div class="collapsible-header"><i class="material-icons">star</i>What do the terms TO, EO and UO mean?</div>
                         <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
                     </li>-->
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">star</i>Why is the RNASeq on a separate page?</div>
+                        <div class="collapsible-body"><p>RNASeq experiments usually generate a lot of data, hence treating each gene in an RNASeq experiment as a separate phenotype on AraPheno would completely overshadow the other reported phenotypes. Therefore, we report RNASeq data separately, but in a similar way.</p></div>
+                    </li>
                  </ul>
 
                 </li>

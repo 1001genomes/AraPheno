@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}AraPheno - Feedback{% endblock title %}
+
+{% block content %}
+<div id="index-banner" class="parallax-container" style="height:130px">
+    <div class="section no-pad-bot">
+        <div class="container">
+        </div>
+    </div>
+    <div class="parallax"><img src="/static/img/ara4.jpg" alt="Unsplashed background img 1"></div>
+</div>
+<div class="container">
+    <div class="section">
+        <div class="row">
+            <div class="s12">
+                <h3 class="center-align green-text text-ligthen-2">
+                    Thank you for your feedback!
+                </h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.parallax').parallax();
+    });
+</script>
+{% endblock content %}

@@ -9,17 +9,23 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import DetailView
 from django.views.generic.edit import DeleteView, UpdateView
+from django.views.decorators.http import require_http_methods
+from django.core.exceptions import PermissionDenied
 from django_tables2 import RequestConfig
+import django_tables2 as tables
 
 from phenotypedb.forms import (CorrelationWizardForm, PhenotypeUpdateForm,
-                               StudyUpdateForm, UploadFileForm)
+                               StudyUpdateForm, UploadFileForm, SubmitFeedbackForm,
+                               TransformationWizardForm)
 from phenotypedb.models import (Accession, OntologyTerm, Phenotype, Study,
-                                Submission, OntologySource)
+                                Submission, OntologySource, Genotype, RNASeq)
 from phenotypedb.tables import (AccessionTable, CurationPhenotypeTable,
                                 PhenotypeTable, ReducedPhenotypeTable,
-                                StudyTable, AccessionPhenotypeTable)
+                                StudyTable, AccessionPhenotypeTable,
+                                RNASeqTable, RNASeqStudyTable)
 from scipy.stats import shapiro
 import json, itertools
+from utils import calculate_phenotype_transformations, add_publication_to_study
 
 
 # Create your views here.
@@ -28,10 +34,29 @@ def list_phenotypes(request):
     """
     Displays table of all published phenotypes
     """
-    table = PhenotypeTable(Phenotype.objects.published(), order_by="-name")
+    table = PhenotypeTable(Phenotype.objects.annotate(num_values=Count('phenotypevalue')).published(), order_by="-name")
     RequestConfig(request, paginate={"per_page":20}).configure(table)
     return render(request, 'phenotypedb/phenotype_list.html', {"phenotype_table":table})
 
+def list_rnaseqs(request):
+    """
+    Displays table of all published RNASeq
+    """
+    table = RNASeqTable(RNASeq.objects.all(), order_by="-name")
+    RequestConfig(request, paginate={"per_page":50}).configure(table)
+    return render(request, 'phenotypedb/rnaseq_data_list.html', {"rnaseq_table":table})
+
+def list_rnaseq_studies(request):
+    """
+    Displays table of all published RNASeq
+    """
+    # Only keep rnaseq studies
+    # studies = Study.objects.filter(phenotype__count=0)
+    studies = Study.objects.annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
+    studies = studies.filter(pheno_count=0).filter(rna_count__gt=0)
+    table = RNASeqStudyTable(studies, order_by="-name")
+    RequestConfig(request, paginate={"per_page":50}).configure(table)
+    return render(request, 'phenotypedb/rnaseq_study_list.html', {"study_table":table})
 
 class PhenotypeDetail(DetailView):
     """
@@ -42,8 +67,22 @@ class PhenotypeDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(PhenotypeDetail, self).get_context_data(**kwargs)
         context['pheno_acc_infos'] = self.object.phenotypevalue_set.select_related('obs_unit__accession')
-        context['geo_chart_data'] = Accession.objects.filter(observationunit__phenotypevalue__phenotype_id=1).values('country').annotate(count=Count('country'))
+        context['geo_chart_data'] = Accession.objects.filter(observationunit__phenotypevalue__phenotype_id=self.object.pk).values('country').annotate(count=Count('country'))
         context['values'] = self.object.phenotypevalue_set.all().values_list("value", flat=True)
+        context['shapiro'] = "%.2e"%shapiro(context['values'])[1]
+        return context
+
+class RNASeqDetail(DetailView):
+    """
+    Detailed view for a single RNASeq
+    """
+    model = RNASeq
+
+    def get_context_data(self, **kwargs):
+        context = super(RNASeqDetail, self).get_context_data(**kwargs)
+        context['pheno_acc_infos'] = self.object.rnaseqvalue_set.select_related('obs_unit__accession')
+        context['geo_chart_data'] = Accession.objects.filter(observationunit__rnaseqvalue__rnaseq_id=self.object.pk).values('country').annotate(count=Count('country'))
+        context['values'] = self.object.rnaseqvalue_set.all().values_list("value", flat=True)
         context['shapiro'] = "%.2e"%shapiro(context['values'])[1]
         return context
 
@@ -51,7 +90,9 @@ def list_studies(request):
     """
     Displays table of all published studies
     """
-    table = StudyTable(Study.objects.published(), order_by="-name")
+    studies = Study.objects.published().annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
+    studies = studies.filter(pheno_count__gt=0).filter(rna_count=0)
+    table = StudyTable(studies, order_by="-update_date")
     RequestConfig(request, paginate={"per_page":20}).configure(table)
     return render(request, 'phenotypedb/study_list.html', {"study_table":table})
 
@@ -61,7 +102,11 @@ def detail_study(request, pk=None):
     Detailed view of a single study
     """
     study = Study.objects.published().get(id=pk)
-    phenotype_table = ReducedPhenotypeTable(Phenotype.objects.published().filter(study__id=pk), order_by="-name")
+    # Check if RNASeq or Phenotypes:
+    if len(Phenotype.objects.published().filter(study__id=pk)) > 0:
+        phenotype_table = ReducedPhenotypeTable(Phenotype.objects.published().filter(study__id=pk), order_by="-name")
+    else:
+        phenotype_table = RNASeqTable(RNASeq.objects.filter(study__id=pk), order_by="-name")
     RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
@@ -88,13 +133,51 @@ def correlation_results(request, ids=None):
     """
     return render(request, 'phenotypedb/correlation_results.html', {"phenotype_ids":ids})
 
+def transformation_wizard(request):
+    """
+    Shows the transformation wizard form
+    """
+    wizard_form = TransformationWizardForm()
+    if "phenotype_search" in request.POST:
+        query = request.POST.getlist("phenotype_search")
+        #query = ",".join(map(str,query))
+        return HttpResponseRedirect("/phenotype/" + str(query[0]) + "/transformation/")
+    return render(request, 'phenotypedb/transformation_wizard.html', {"transformation_wizard":wizard_form})
+
+def transformation_results(request, pk):
+    """
+    SHow transformation result
+    """
+    phenotype = Phenotype.objects.get(id=pk)
+    data = calculate_phenotype_transformations(phenotype)
+    data['object'] = phenotype
+    return render(request, 'phenotypedb/transformation_results.html', data)
+
+def rnaseq_transformation_results(request, pk):
+    """
+    SHow transformation result
+    """
+    rnaseq = RNASeq.objects.get(id=pk)
+    data = calculate_phenotype_transformations(rnaseq, rnaseq=True)
+    data['object'] = rnaseq
+    return render(request, 'phenotypedb/rnaseq_transformation_results.html', data)
+
 def list_accessions(request):
     """
     Displays table with all accessions
     """
-    table = AccessionTable(Accession.objects.all(), order_by="-name")
+    filtered_genotypes = set(map(int,request.POST.getlist('genotypes')))
+    if len(filtered_genotypes) > 0:
+        accessions = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).prefetch_related('genotype_set').filter(genotype__pk__in = filtered_genotypes)
+    else:
+        accessions = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).prefetch_related('genotype_set').all()
+
+    table = AccessionTable(accessions, order_by="-name")
+    genotypes = Genotype.objects.all()
+    for genotype in genotypes:
+        genotype.selected = genotype.pk in filtered_genotypes
     RequestConfig(request, paginate={"per_page":20}).configure(table)
-    return render(request, 'phenotypedb/accession_list.html', {"accession_table":table})
+    return render(request, 'phenotypedb/accession_list.html', {"accession_table":table, "genotypes": genotypes, "filtered_genotypes": list(filtered_genotypes)})
 
 
 def detail_accession(request, pk=None):
@@ -102,7 +185,7 @@ def detail_accession(request, pk=None):
     Detailed view of a single accession
     """
     accession = Accession.objects.get(id=pk)
-    phenotype_table = AccessionPhenotypeTable(pk,Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=pk), order_by="-id")
+    phenotype_table = AccessionPhenotypeTable(pk,Phenotype.objects.annotate(num_values=Count('phenotypevalue')).published().filter(phenotypevalue__obs_unit__accession_id=pk), order_by="-id")
     RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
@@ -297,3 +380,53 @@ def upload_file(request):
     else:
         form = UploadFileForm()
     return render(request, 'home/upload.html', {'form': form})
+
+
+def submit_feedback(request):
+    """
+    View to submit issues and feedback
+    """
+    if request.method == 'POST':
+        form = SubmitFeedbackForm(request.POST)
+        if form.is_valid():
+            try:
+                firstname = form.cleaned_data['firstname']
+                lastname = form.cleaned_data['lastname']
+                from_email = form.cleaned_data['email']
+                message = form.cleaned_data['message']
+                email = EmailMessage(
+                    subject='AraPheno-Feedback',
+                    from_email=from_email,
+                    to=['uemit.seren@gmi.oeaw.ac.at'],
+                    body=message,
+                    bcc=[settings.ADMINS[0][1]],
+                    reply_to=['uemit.seren@gmi.oeaw.ac.at']
+                )
+                email.send(True)
+                return HttpResponseRedirect('/feedback/success/')
+            except Exception as err:
+                form.add_error(None, str(err))
+    else:
+        form = SubmitFeedbackForm()
+    return render(request, 'home/feedback.html', {'form': form})
+
+
+def submit_feedback_success(request):
+    return render(request, 'home/feedback_success.html')
+
+def download(request):
+    """
+    Download data
+    """
+    return render(request, 'phenotypedb/download.html')
+
+@require_http_methods(["POST"])
+def add_doi(request, pk):
+    """
+    Adds publication to a study is a DOI
+    """
+    if not request.user.is_superuser:
+        raise PermissionDenied
+    study = Study.objects.get(pk=pk)
+    pub = add_publication_to_study(study, request.POST['doi'])
+    return HttpResponseRedirect('/study/%s/' % pk)

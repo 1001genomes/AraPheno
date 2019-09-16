@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.db.models import Q
+from django.db.models import Count
 from django.http import FileResponse
 from django.core.mail import EmailMessage
 
@@ -12,22 +13,25 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser, FileUploadParser, MultiPartParser, FormParser
 from rest_framework.views import APIView
 
-from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession, Submission, OntologyTerm, OntologySource
+from phenotypedb.models import Phenotype, Study, PhenotypeValue, Accession, Submission, OntologyTerm, OntologySource, RNASeq
 from phenotypedb.serializers import PhenotypeListSerializer, StudyListSerializer, OntologyTermListSerializer
 from phenotypedb.serializers import PhenotypeValueSerializer, ReducedPhenotypeValueSerializer
 from phenotypedb.serializers import AccessionListSerializer, SubmissionDetailSerializer, AccessionPhenotypesSerializer
 
 from phenotypedb.forms import UploadFileForm
-from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer
+from phenotypedb.renderer import PhenotypeListRenderer, StudyListRenderer, PhenotypeValueRenderer, PhenotypeMatrixRenderer, IsaTabFileRenderer, AccessionListRenderer, ZipFileRenderer, TransformationRenderer
 from phenotypedb.renderer import PLINKRenderer, PLINKMatrixRenderer
 from phenotypedb.parsers import AccessionTextParser
 from utils.isa_tab import export_isatab
+from utils import calculate_phenotype_transformations
 from django.views.decorators.csrf import csrf_exempt
 import scipy as sp
 import scipy.stats as stats
 from django.conf import settings
 
 import re,os,array
+import tempfile
+import shutil
 
 DOI_REGEX_STUDY = r"%s\/study:[\d]+" % settings.DATACITE_PREFIX
 DOI_REGEX_PHENOTYPE = r"%s\/phenotype:[\d]+" % settings.DATACITE_PREFIX
@@ -98,8 +102,7 @@ def phenotype_list(request,format=None):
         - text/csv
         - application/json
     """
-    phenotypes = Phenotype.objects.published().all()
-
+    phenotypes = Phenotype.objects.annotate(num_values=Count('phenotypevalue')).published()
     if request.method == "GET":
         serializer = PhenotypeListSerializer(phenotypes,many=True)
         return Response(serializer.data)
@@ -207,6 +210,42 @@ def phenotype_value(request,q,format=None):
 
     if request.method == "GET":
         pheno_acc_infos = phenotype.phenotypevalue_set.prefetch_related('obs_unit__accession')
+        value_serializer = PhenotypeValueSerializer(pheno_acc_infos,many=True)
+        return Response(value_serializer.data)
+
+'''
+Get all rnaseq values
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeValueRenderer,JSONRenderer,PLINKRenderer,))
+def rnaseq_value(request,q,format=None):
+    """
+    List of the rnaseq values
+    ---
+    parameters:
+        - name: q
+          description: the id or doi of the rnaseq
+          required: true
+          type: string
+          paramType: path
+
+    serializer: PhenotypeValueSerializer
+    omit_serializer: false
+
+    produces:
+        - text/csv
+        - application/json
+    """
+    doi = _is_doi(DOI_PATTERN_PHENOTYPE, q)
+    try:
+        id = doi if doi else int(q)
+        rnaseq = RNASeq.objects.get(pk=id)
+    except:
+        return HttpResponse(status=404)
+
+    if request.method == "GET":
+        pheno_acc_infos = rnaseq.rnaseqvalue_set.prefetch_related('obs_unit__accession')
         value_serializer = PhenotypeValueSerializer(pheno_acc_infos,many=True)
         return Response(value_serializer.data)
 
@@ -327,6 +366,41 @@ def study_phenotype_value_matrix(request,q,format=None):
         df,df_pivot = study.get_matrix_and_accession_map()
         data = _convert_dataframe_to_list(df,df_pivot)
         return Response(data)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((TransformationRenderer,JSONRenderer))
+def transformations(request,q,transformation=None, format=None):
+    """
+    Transformation of phenotypes
+    ---
+    parameters:
+        - name: q
+          description: the primary id or doi of the phenotype
+          required: true
+          type: string
+          paramType: path
+        - name: transformation
+          description: the transformation to be calculates (if omitted, all transformations are returned)
+          required: false
+          type: string
+          paramType: path
+
+    produces:
+        - text/csv
+        - application/json
+    """
+    doi = _is_doi(DOI_PATTERN_PHENOTYPE, q)
+    try:
+        id = doi if doi else int(q)
+        phenotype = Phenotype.objects.published().get(pk=id)
+    except:
+        return HttpResponse(status=404)
+
+    if request.method == "GET":
+        data = calculate_phenotype_transformations(phenotype, transformation)
+        return Response(data)
+
 
 '''
 Corrleation Matrix for selected phenotypes
@@ -452,6 +526,30 @@ def study_isatab(request,q,format=None):
     os.unlink(isa_tab_file)
     return response
 
+'''
+Returns AraPheno zip archive
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((ZipFileRenderer, JSONRenderer))
+def arapheno_db_archive(request,format=None):
+    """
+    Generate archive containing all studies in AraPheno
+    ---
+    produces:
+        - application/zip
+    """
+    # Get all published studies IDs
+    arapheno_db_file = _export_arapheno()
+
+    zip_file = open(arapheno_db_file, 'rb')
+    response = FileResponse(zip_file,content_type='application/zip')
+    #response = HttpResponse(FileWrapper(zip_file), content_type='application/zip',content_transfer_encoding='binary')
+    response.setdefault('Content-Transfer-Encoding','binary')
+    response['Content-Disposition'] = 'attachment; filename="arapheno.zip"'
+    os.unlink(arapheno_db_file)
+    return response
+
 
 '''
 List all studies
@@ -471,8 +569,12 @@ def accession_list(request,format=None):
         - text/csv
         - application/json
     """
-    accessions = Accession.objects.all().prefetch_related('species')
     if request.method == "GET":
+        if 'genotypes' in request.GET:
+            genotype_ids = map(int, request.GET['genotypes'].split(','))
+            accessions = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).select_related('species').prefetch_related('genotype_set').filter(genotype__pk__in = genotype_ids)
+        else:
+            accessions = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).select_related('species').prefetch_related('genotype_set').all()
         serializer = AccessionListSerializer(accessions,many=True)
         return Response(serializer.data)
 
@@ -682,3 +784,68 @@ def _is_doi(pattern, term):
         # can't use REGEX capture groups because "("" causes problems in Swagger
         return int(term.split(":")[1])
     return None
+
+def _export_arapheno():
+    """
+    Generate an archive of the full database
+    """
+    # create temorary folder
+    folder = tempfile.mkdtemp()
+    arapheno_filename = tempfile.mkstemp()[1]
+
+    # Get list of studies ids
+    studies = Study.objects.published().all()
+    # Create subfolders
+    for study in studies:
+        os.makedirs(os.path.join(folder, str(study.id)))
+
+    # create the isatab files
+    _create_value_files(studies, folder, fmt='csv')
+    _create_value_files(studies, folder, fmt='plink')
+    _create_study_list_file(studies, folder)
+    _create_phenotypes_files(studies, folder)
+
+    # zip it
+    output_filename = shutil.make_archive(arapheno_filename,"zip",folder)
+
+    # remove temporary folder
+    shutil.rmtree(folder)
+    os.unlink(arapheno_filename)
+    return output_filename
+
+
+def _create_value_files(studies, folder, fmt):
+    if fmt == 'csv':
+        renderer = PhenotypeMatrixRenderer()
+    elif fmt == 'plink':
+        renderer = PLINKMatrixRenderer()
+    else:
+        raise Warning('The format must be csv or plink.')
+
+    for study in studies:
+        df,df_pivot = study.get_matrix_and_accession_map()
+        data = _convert_dataframe_to_list(df,df_pivot)
+        content = renderer.render(data)
+        study_filename = os.path.join(folder,str(study.id),'study_%s_values.%s' % (study.id, fmt))
+        with open(study_filename,'w') as f:
+            f.write(content)
+    pass
+
+def _create_phenotypes_files(studies, folder):
+    renderer = PhenotypeListRenderer()
+    for study in studies:
+        serializer = PhenotypeListSerializer(study.phenotype_set.all(),many=True)
+        content = renderer.render(serializer.data)
+        study_filename = os.path.join(folder,str(study.id),'study_%s_phenotypes.csv' % study.id)
+        with open(study_filename,'w') as f:
+            f.write(content)
+    pass
+
+def _create_study_list_file(studies, folder):
+    renderer = StudyListRenderer()
+    serializer = StudyListSerializer(studies,many=True)
+    content = renderer.render(serializer.data)
+    study_list_filename = os.path.join(folder,'study_list.csv')
+    with open(study_list_filename,'w') as f:
+        f.write(content)
+    pass

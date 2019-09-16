@@ -5,11 +5,15 @@
 {% load render_table from django_tables2 %}
 
 {% block content %}
+<!-- Modal Structure -->
+{% with citation=study type='study' publications=study.publications submission=study.submission%}
+{% include 'phenotypedb/citation_box.html' %}
+{% endwith %}
 <div id="index-banner" class="parallax-container" style="height:80px">
     <div class="section no-pad-bot">
         <div class="container">
             <h5 class="white-text">Study: {{ study.name }}</h5>
-                <div style="position: relative;">
+                <div id="download" style="position: relative;">
                 <div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block; bottom: -4px; right: 0px;z-index:1;">
                     <a class="btn-floating btn-large white">
                         <i class="large material-icons brown-text" id="download_btn">file_download</i>
@@ -19,8 +23,20 @@
                         <li><a href="/rest/study/{{study.id}}/phenotypes.csv" class="btn-floating green black-text" style="font-size:10px;text-align:center;font-weight:bold">Pheno</a></li>
                         <li><a href="/rest/study/{{study.id}}/isatab" class="btn-floating blue black-text" style="font-size:10px;text-align:center;font-weight:bold">IsaTab</a></li>
                         <li><a href="/rest/study/{{study.id}}/values.plink" class="btn-floating pink white-text" style="font-size:10px;text-align:center;font-weight:bold">Plink</a></li>
+                        <li><a href="/rest/study/{{study.id}}/values.csv" class="btn-floating brown white-text" style="font-size:10px;text-align:center;font-weight:bold">CSV</a></li>
                     </ul>
                 </div>
+                </div>
+                <div id="rnaseq_download" hidden style="position: relative;">
+                    <div class="fixed-action-btn horizontal click-to-toggle" style="position: absolute; display: inline-block; bottom: -4px; right: 0px;z-index:1;">
+                        <a class="btn-floating btn-large white">
+                            <i class="large material-icons brown-text" id="download_btn">file_download</i>
+                        </a>
+                        <ul>
+                            <li><a href="/rest/study/{{study.id}}.csv" class="btn-floating yellow darken-3 black-text" style="font-size:10px;text-align:center;font-weight:bold">Study</a></li>
+                            <li><a href="/static/rnaseq/{{study.name_link}}.csv" class="btn-floating brown white-text" style="font-size:10px;text-align:center;font-weight:bold">CSV</a></li>
+                        </ul>
+                    </div>
                 </div>
         </div>
     </div>
@@ -33,23 +49,27 @@
             <div class="row">
                 <br>
                 <div class="col s12"><h5>DOI</h5></div>
-                <div class="col s12" id="description"><a href="{{ study.doi_link }}" target="_blank">{{ study.doi }}</a></div>
+                <div class="col s12" id="description"><a href="{{ study.doi_link }}" target="_blank">{{ study.doi }}</a> (<a  class="modal-trigger" href="#citationModal">
+                    <i class="material-icons">format_quote</i>Cite
+                </a>)</div>
                 <div class="col s12"><h5>Description</h5></div>
                 <div class="col s12" id="description">{{ study.description }}</div>
-                <div class="col s12"><h5>Statistics</h5></div>
-                <div class="col s12" id="statistics">
-                    <ul class="tabs">
-                        <li class="tab col s3"><a href="#to" id="to_link" class="active brown-text">Trait ontology</a></li>
-                        <li class="tab col s3"><a  href="#eo" id="eo_link" class="brown-text">Environment Ontology</a></li>
-                        <li class="tab col s3"><a href="#uo" id="uo_link" class="brown-text">Unit</a></li>
-                        <div class="indicator brown" style="z-index:1"></div>
-                    </ul>
+                <div id="statistics">
+                    <div class="col s12"><h5>Statistics</h5></div>
+                    <div class="col s12" >
+                        <ul class="tabs">
+                            <li class="tab col s3"><a href="#to" id="to_link" class="active brown-text">Trait ontology</a></li>
+                            <li class="tab col s3"><a  href="#eo" id="eo_link" class="brown-text">Environment Ontology</a></li>
+                            <li class="tab col s3"><a href="#uo" id="uo_link" class="brown-text">Unit</a></li>
+                            <div class="indicator brown" style="z-index:1"></div>
+                        </ul>
+                    </div>
+                    <div id="to" class="col s12">
+                    <div id="to_chart" class="chart"></div>
+                    </div>
+                    <div id="eo" class="col s12"><div class="chart" id="eo_chart"></div></div>
+                    <div id="uo" class="col s12"><div class="chart" id="uo_chart"></div></div>
                 </div>
-                <div id="to" class="col s12">
-                   <div id="to_chart" class="chart"></div>
-                </div>
-                <div id="eo" class="col s12"><div class="chart" id="eo_chart"></div></div>
-                <div id="uo" class="col s12"><div class="chart" id="uo_chart"></div></div>
             </div>
             <div class="row">
                 <div class="col s12"><h5>Publications</h5></div>
@@ -58,11 +78,7 @@
                         {% for p in study.publications.all %}
                             <li class="collection-item">
                                 <span class="title">
-                                    {% if p.pubmed_id %}
-                                    <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ p.pubmed_id }}" target="_blank">{{ p.title }}</a>
-                                    {% else %}
-                                    {{ p.title }}
-                                    {% endif %}
+                                   <a href="https://doi.org/{{ p.doi }}" target="_blank">{{ p.title }}</a>
                                 </span>
                                 <p class="author-list">
                                     {{ p.author_order }}
@@ -74,6 +90,23 @@
                         {% endfor %}
                     </ul>
                 </div>
+                {% if user.is_superuser %}
+                <div class="col s12">
+                    <form  action="{% url 'add_doi' study.pk %}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col s9">
+                                <input placeholder="DOI" id="doi" name="doi" type="text" class="validate">
+                            </div>
+                            <div class="col s3">
+                                <button class="btn waves-effect waves-light" type="submit" name="action">Add
+                                <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
             </div>
         </div>
         <div class="col s12 m6">
@@ -116,6 +149,10 @@
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawCharts);
 
+    function showCiteBox() {
+        alert('test');
+    }
+
     function drawCharts() {
         {% autoescape off %}
         dataTO = google.visualization.arrayToDataTable([
@@ -140,6 +177,31 @@
                 [ "{{ uo.uo_term__name }}", {{ uo.count }} ],
             {% endfor %}],
             false);
+        // if RNASeq data, no stats and download buttons
+        if (dataTO.wg.length==0 && dataEO.wg.length == 0 && dataUO.wg.length == 0) {
+            document.getElementById('statistics').hidden=true;
+            document.getElementById('rnaseq_download').hidden=false;
+            document.getElementById('download').hidden=true;
+
+            // change footer
+            var footer = document.getElementById('footer')
+            var footerdark = document.getElementById('footerdark')
+            footer.className = footer.className.replace("brown lighten-2", "blue");
+            footerdark.className = footerdark.className.replace("brown", "blue darken-3");
+            // change header
+            var title = document.getElementById('logo-container')
+            // title.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+            title.className = title.className.replace('black-text', 'grey-text text-lighten-1')
+            // title.href = '/rnaseq'
+
+            var other = document.getElementById('other-view')
+            other.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+            other.className = other.className.replace('blue-text text-lighten-4', 'black-text')
+            // other.href = '/'
+            // paginate color
+            var pag = document.getElementById('paginatebutton')
+            pag.className = pag.className.replace("brown", "blue darken-3");
+        }
         chartTO = new google.visualization.PieChart(document.getElementById('to_chart'));
         chartEO = new google.visualization.PieChart(document.getElementById('eo_chart'));
         chartUO = new google.visualization.PieChart(document.getElementById('uo_chart'));

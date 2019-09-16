@@ -4,28 +4,48 @@
 
 {% block submission_content %}
 <div class="row">
-    <div class="col s12">
+    <div class="col s6">
         <h4>Study</h4>
     </div>
+    <div class="col s6">
+        <h4>Phenotypes</h4>
+    </div>
 </div>
+<form  action="" method="post" enctype="multipart/form-data">
 <div class="row">
-    <form class="col s6" action="" method="post">
-         {% csrf_token %}
+    <div class="col s6">
+        {% csrf_token %}
+        <div class="row">
+            {% if form.non_field_errors %}
+            <h5 class="center-align red-text text-ligthen-2">
+                {{ form.non_field_errors }}
+            </h5>
+            {% endif %}
+        </div>
         <div class="row">
             <div class="input-field col s12">
                 {{ form.name }}
-                <label for="{{ form.name.id_for_label }}" data-error="{{ form.name.errors.0 }}" data-success="ok">Name</label>
+                <label for="{{ form.name.id_for_label }}" data-error="{{ form.name.errors.0 }}"
+                    data-success="ok">Name</label>
             </div>
         </div>
         <div class="row">
             <div class="input-field col s12">
                 {{ form.description }}
-                <label for="{{ form.description.id_for_label }}" data-error="{{ form.description.errors.0 }}" data-success="ok">Description</label>
+                <label for="{{ form.description.id_for_label }}" data-error="{{ form.description.errors.0 }}"
+                    data-success="ok">Description</label>
             </div>
         </div>
         <div class="row">
-            <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Submit
-                <i class="material-icons right">send</i>
+            <div class="input-field col s12">
+                {{ form.doi }}
+                <label for="{{ form.doi.id_for_label }}" data-error="{{ form.doi.errors.0 }}"
+                    data-success="ok">DOI</label>
+            </div>
+        </div>
+        <div class="row">
+            <button class="s12 btn waves-effect waves-light blue" type="submit" name="action">Save
+                <i class="material-icons right">save</i>
             </button>
             <div class="right">
                 <a href="{% url 'submission_delete' submission.id %} " class="s12  btn waves-effect waves-light red">
@@ -33,10 +53,30 @@
                 </a>
             </div>
         </div>
-    </form>
+    </div>
     <div class="col s6 submission-phenotypes">
-        <br>
+        <div class="row">
+            <div class="col s12">
+                <h5>Bulk-update (<a href="/faq/tutorials/" target='_blank'>more info</a>):</h5>
+                <div class="file-field input-field">
+                    <div class="btn" stye="float:clear">
+                        <span>Browse file</span>
+                        {{ form.file }}
+                    </div>
+
+                    <div class="file-path-wrapper input-field" style="height:70px">
+
+                        <input id="filename" class="file-path validate{% if form.file.errors %} invalid{% endif %}"
+                            value="{{ form.file.value | default_if_none:'' }}" name="Filename" type="text">
+                        <label for="filename" data-error="{{ form.file.errors.0 }}">Filename</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% render_table curation_phenotype_table %}
     </div>
+
 </div>
+</form>
 {% endblock submission_content %}
