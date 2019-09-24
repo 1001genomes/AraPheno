@@ -32,6 +32,9 @@ from django.conf import settings
 import re,os,array
 import tempfile
 import shutil
+import logging
+
+logger = logging.getLogger(__name__)
 
 DOI_REGEX_STUDY = r"%s\/study:[\d]+" % settings.DATACITE_PREFIX
 DOI_REGEX_PHENOTYPE = r"%s\/phenotype:[\d]+" % settings.DATACITE_PREFIX
@@ -771,7 +774,7 @@ def generate_database_dump():
     folder = tempfile.mkdtemp()
 
     # Get list of studies ids
-    studies = Study.objects.published().all()
+    studies = Study.objects.published().filter(rnaseq__isnull=True).all()
     # Create subfolders
     for study in studies:
         os.makedirs(os.path.join(folder, str(study.id)))
@@ -800,6 +803,7 @@ def _create_value_files(studies, folder, fmt):
         raise Warning('The format must be csv or plink.')
 
     for study in studies:
+        logger.info("Creating value files for %s" % study)
         df,df_pivot = study.get_matrix_and_accession_map()
         data = _convert_dataframe_to_list(df,df_pivot)
         content = renderer.render(data)
