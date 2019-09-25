@@ -185,12 +185,13 @@
     var geoChrt,geoChartData,histogramChart,histogramData,explorerChart,explorerData, tableChart;
     $(document).ready(function(){
         $('.parallax').parallax();
+        document.getElementById('rnaseq-input-base').checked=true;
         // change header
         var title = document.getElementById('logo-container')
         title.className = title.className.replace('black-text', 'grey-text text-lighten-1')
 
         var other = document.getElementById('other-view')
-        other.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+        other.innerHTML = 'Ara<b class="blue-text text-darken-3">RNASeq</b>'
         other.className = other.className.replace('blue-text text-lighten-4', 'black-text')
 
         // change footer

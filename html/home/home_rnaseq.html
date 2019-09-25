@@ -5,7 +5,7 @@
 <div id="index-banner" class="parallax-container" style="height:370px">
     <div class="section no-pad-bot">
         <div class="container">
-            <h1 class="header center white-text text-lighten-2">AraPheno <b class="blue-text text-darken-3">RNASeq</b></h1>
+            <h1 class="header center white-text text-lighten-2">Ara<b class="blue-text text-darken-3">RNASeq</b></h1>
             <div class="row center">
                 <h5 class="header col s12 m12 l12 light">AraPheno also contains <em>Arabidopsis thaliana</em> RNASeq measurements.</h5>
                 <br>
@@ -23,20 +23,6 @@
         </div>
     </div>
     <div class="parallax"><img src="/static/img/ara5.jpg" alt="Unsplashed background img 1"></div>
-</div>
-<div class="parallax-container" style="height:100px;height:auto;">
-<div class="right" style="margin-right:100px;margin-bottom:0px;">
-<div class="switch"> 
-    <label>
-	    <h6>
-      		AraPheno
-      		<input checked type="checkbox" id="rnaseq-input">
-      		<span id="rnaseq-lever" class="lever" ></span>
-		<span class="blue-text text-darken-3">RNASeq</span>
-	    </h6>
-    </label>
-  </div>
-</div>
 </div>
 
 <div class="container scale-transition scale-out" id="rnaseq-container">
@@ -66,6 +52,26 @@
                         <p class="light">Here, you can find detailed help about the functions of AraPheno, its integrated data and frequently asked questions.</p>
                     </div>
                     <a class="waves-effect waves-light btn-large blue darken-3 modal-trigger" href="#faqmodal" id="faq_button"><i class="material-icons left">help_outline</i>FAQ</a>
+                </div>
+        </div>
+        <div class="row center"></div>
+            <div class="col s12 m6 l4 center">
+                <div class="icon-block">
+                    <h3 class="center blue-text text-darken-3"><i class="material-icons" style="font-size:35px">backup</i></h3>
+                    <h5 class="center">Submit RNASeq</h5>
+                    <p class="light justify">Submit your own RNASeq data in order to share it with the community</p>
+                </div>
+                <a class="waves-effect waves-light btn-large blue darken-3 modal-trigger"  href="#modal1"><i class="material-icons left">backup</i>Submit RNASeq</a>
+            </div>
+        </div>
+          <!-- Modal Structure -->
+        <div id="modal1" class="modal">
+                <div class="modal-content">
+                <h4>Submit RNASeq</h4>
+                <p>To submit RNASeq data, which follow a different file structure as phenotype values, <a href='/about'>please contact us directly</a>.</p>
+                </div>
+                <div class="modal-footer">
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">Ok!</a>
                 </div>
         </div>
     </div>
@@ -144,9 +150,11 @@
         // change header
         var title = document.getElementById('logo-container')
         title.className = title.className.replace('black-text', 'grey-text text-lighten-1')
+        document.getElementById('rnaseq-input-base').checked=true;
+        // title.className = title.className.replace('black-text', 'grey-text text-lighten-1')
 
         var other = document.getElementById('other-view')
-        other.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+        other.innerHTML = 'Ara<b class="blue-text text-darken-3">RNASeq</b>'
         other.className = other.className.replace('blue-text text-lighten-4', 'black-text')
     });
 

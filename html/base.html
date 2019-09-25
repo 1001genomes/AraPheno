@@ -51,13 +51,22 @@
         <nav class="white">
             <div class="nav-wrapper row">
                 <div id="title-container" class="container">
-                    <div class="col s3">
-                        <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
+                    <div class="switch">
+                        <label>
+                            <div class="col s3">
+                            <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
+                        </div>
+                        <div class="col s1 hide-on-med-and-down">
+                                <input type="checkbox" id="rnaseq-input-base">
+                                <span id="rnaseq-lever" class="lever" ></span>
+                            </div>
+                            <div class="col s3 hide-on-med-and-down">
+                                    <a id="other-view" href="/rnaseq" class="brand-logo blue-text text-lighten-4">Ara<b>RNASeq</b></a>
+                                </div>
+                            
+                        </label>
                     </div>
-                    <div class="col s3 hide-on-med-and-down">
-                        <a id="other-view" href="/rnaseq" class="brand-logo blue-text text-lighten-4">AraPheno <b>RNASeq</b></a>
-                    </div>
-                    </div>
+                </div>
 
                 <!-- </div> -->
                 <ul class="right hide-on-med-and-down black-text">
@@ -110,7 +119,7 @@
 		    <li class="divider"></li>
                     <ul class="collapsible collapsible-accordion">
                     <li>
-                    <a class="collapsible-header waves-effect waves-grey"><strong>AraPheno RNASeq</strong></a>
+                    <a class="collapsible-header waves-effect waves-grey"><strong>AraRNASeq</strong></a>
                     <div class="collapsible-body" style="display: block;">
                         <ul>
                             <li><a class="black-text" href="/rnaseq_studies">View RNASeq Studies</a></li>
@@ -239,6 +248,16 @@ This website provides information about research at the GMI. GMI makes no guaran
                 dimissible:true,
                 in_duration: 300,
             });
+        });
+
+        $('#rnaseq-input-base').click(function(){
+            console.log($('#rnaseq-input-base').prop('checked'))
+            if($('#rnaseq-input-base').prop('checked')){
+                window.location = "/rnaseq";
+            }
+            else{
+                window.location = "/";
+            }
         });
     </script>
     </body>

@@ -179,6 +179,7 @@
             false);
         // if RNASeq data, no stats and download buttons
         if (dataTO.wg.length==0 && dataEO.wg.length == 0 && dataUO.wg.length == 0) {
+            document.getElementById('rnaseq-input-base').checked=true;
             document.getElementById('statistics').hidden=true;
             document.getElementById('rnaseq_download').hidden=false;
             document.getElementById('download').hidden=true;
@@ -195,7 +196,7 @@
             // title.href = '/rnaseq'
 
             var other = document.getElementById('other-view')
-            other.innerHTML = 'AraPheno <b class="blue-text text-darken-3">RNASeq</b>'
+            other.innerHTML = 'Ara<b class="blue-text text-darken-3">RNASeq</b>'
             other.className = other.className.replace('blue-text text-lighten-4', 'black-text')
             // other.href = '/'
             // paginate color
