@@ -17,7 +17,6 @@ from phenotypedb.models import (Accession, ObservationUnit, Phenotype,
 from utils.data_io import parse_plink_file, parse_csv_file, parse_meta_information_file
 from utils.isa_tab import parse_isatab, save_isatab
 from utils import statistics
-1
 logger = logging.getLogger(__name__)
 
 
