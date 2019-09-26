@@ -54,16 +54,15 @@
                     <div class="switch">
                         <label>
                             <div class="col s3">
-                            <a id="logo-container" href="/" class="brand-logo black-text">AraPheno</a>
+                            <a id="logo-container" href="/" class="brand-logo {{ is_rnaseq|yesno:'grey-text text-lighten-1,black-text' }}">AraPheno</a>
                         </div>
                         <div class="col s1 hide-on-med-and-down">
-                                <input type="checkbox" id="rnaseq-input-base">
+                                <input type="checkbox" {% if is_rnaseq %} checked {% endif %} }} id="rnaseq-input-base">
                                 <span id="rnaseq-lever" class="lever" ></span>
                             </div>
                             <div class="col s3 hide-on-med-and-down">
-                                    <a id="other-view" href="/rnaseq" class="brand-logo blue-text text-lighten-4">Ara<b>RNASeq</b></a>
+                                    <a id="other-view" href="/rnaseq" class="brand-logo {{ is_rnaseq|yesno:'black-text,blue-text text-lighten-4' }}">Ara<b class="{{ is_rnaseq|yesno:'blue-text text-darken-3,' }}">RNASeq</b></a>
                                 </div>
-                            
                         </label>
                     </div>
                 </div>
@@ -72,7 +71,7 @@
                 <ul class="right hide-on-med-and-down black-text">
                     <li>
                         <a class="dropdown-button black-text" href="#!" data-activates="datadropdown">Data<i class="material-icons right black-text">arrow_drop_down</i></a>
-                        <ul id="datadropdown" class="dropdown-content brown">
+                        <ul id="datadropdown" class="dropdown-content {{ is_rnaseq|yesno:'blue,brown' }}">
                             <li><a class="white-text" href="/studies">Studies</a></li>
                             <li class="divider"></li>
                             <li><a class="white-text" href="/phenotypes">Phenotypes</a></li>
@@ -87,7 +86,7 @@
                     </li>
                     <li>
                         <a class="dropdown-button black-text" href="#!" data-activates="toolsdropdown">Tools<i class="material-icons right black-text">arrow_drop_down</i></a>
-                        <ul id="toolsdropdown" class="dropdown-content brown">
+                        <ul id="toolsdropdown" class="dropdown-content {{ is_rnaseq|yesno:'blue,brown' }}">
                             <li><a class="white-text" href="/correlation">Phenotype Correlation</a></li>
                             <li class="divider"></li>
                             <li><a class="white-text" href="/transformation">Phenotype Transform</a></li>
@@ -115,7 +114,7 @@
                     </div>
                     </li>
                     </ul>
-                    
+
 		    <li class="divider"></li>
                     <ul class="collapsible collapsible-accordion">
                     <li>
@@ -158,11 +157,11 @@
         <main>
         {% block content %}{% endblock content %}
         </main>
-        <footer id="footer" class="page-footer brown lighten-2">
+        <footer id="footer" class="page-footer {{ is_rnaseq|yesno:'blue,brown lighten-2' }}">
             <div class="container">
 
             </div>
-            <div id="footerdark" class="footer-copyright brown">
+            <div id="footerdark" class="footer-copyright {{ is_rnaseq|yesno:'blue darken-3,brown' }}">
                 <div class="container">
             AraPheno is a public database for <em>Arabidopsis thaliana</em> phenotypes (&copy 2016-2019)
             <a class="modal-trigger waves-effect waves-light white-text text-lighten-4 right" href="#footermodal">Impressum</a>
@@ -251,7 +250,6 @@ This website provides information about research at the GMI. GMI makes no guaran
         });
 
         $('#rnaseq-input-base').click(function(){
-            console.log($('#rnaseq-input-base').prop('checked'))
             if($('#rnaseq-input-base').prop('checked')){
                 window.location = "/rnaseq";
             }

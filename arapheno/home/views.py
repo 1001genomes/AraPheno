@@ -24,7 +24,7 @@ def home(request):
     stats['phenotypes_published'] = Phenotype.objects.published().count()
     stats['phenotypes'] = Phenotype.objects.all().count()
     stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y')
-    return render(request,'home/home.html',{"search_form":search_form,"stats":stats})
+    return render(request,'home/home.html',{"search_form":search_form,"stats":stats, 'is_rnaseq': False})
 
 def home_rnaseq(request):
     search_form = RNASeqGlobalSearchForm()
@@ -37,7 +37,7 @@ def home_rnaseq(request):
     stats['studies'] = studies.filter(pheno_count=0).filter(rna_count__gt=0).count()
     stats['rnaseqs'] = RNASeq.objects.all().count()
     stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y')
-    return render(request,'home/home_rnaseq.html',{"search_form":search_form,"stats":stats})
+    return render(request,'home/home_rnaseq.html',{"search_form":search_form,"stats":stats, 'is_rnaseq': True})
 
 '''
 About Information View of AraPheno

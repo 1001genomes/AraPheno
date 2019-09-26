@@ -44,7 +44,7 @@ def list_rnaseqs(request):
     """
     table = RNASeqTable(RNASeq.objects.all(), order_by="-name")
     RequestConfig(request, paginate={"per_page":50}).configure(table)
-    return render(request, 'phenotypedb/rnaseq_data_list.html', {"rnaseq_table":table})
+    return render(request, 'phenotypedb/rnaseq_data_list.html', {"rnaseq_table":table, 'is_rnaseq': True})
 
 def list_rnaseq_studies(request):
     """
@@ -56,7 +56,7 @@ def list_rnaseq_studies(request):
     studies = studies.filter(pheno_count=0).filter(rna_count__gt=0)
     table = RNASeqStudyTable(studies, order_by="-name")
     RequestConfig(request, paginate={"per_page":50}).configure(table)
-    return render(request, 'phenotypedb/rnaseq_study_list.html', {"study_table":table})
+    return render(request, 'phenotypedb/rnaseq_study_list.html', {"study_table":table, 'is_rnaseq': True})
 
 class PhenotypeDetail(DetailView):
     """
@@ -84,6 +84,7 @@ class RNASeqDetail(DetailView):
         context['geo_chart_data'] = Accession.objects.filter(observationunit__rnaseqvalue__rnaseq_id=self.object.pk).values('country').annotate(count=Count('country'))
         context['values'] = self.object.rnaseqvalue_set.all().values_list("value", flat=True)
         context['shapiro'] = "%.2e"%shapiro(context['values'])[1]
+        context['is_rnaseq'] = True
         return context
 
 def list_studies(request):
@@ -103,10 +104,12 @@ def detail_study(request, pk=None):
     """
     study = Study.objects.published().get(id=pk)
     # Check if RNASeq or Phenotypes:
+    is_rnaseq = False
     if len(Phenotype.objects.published().filter(study__id=pk)) > 0:
         phenotype_table = ReducedPhenotypeTable(Phenotype.objects.published().filter(study__id=pk), order_by="-name")
     else:
         phenotype_table = RNASeqTable(RNASeq.objects.filter(study__id=pk), order_by="-name")
+        is_rnaseq = True
     RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
@@ -114,6 +117,7 @@ def detail_study(request, pk=None):
     variable_dict['to_data'] = study.phenotype_set.values('to_term__name').annotate(count=Count('to_term__name'))
     variable_dict['eo_data'] = study.phenotype_set.values('eo_term__name').annotate(count=Count('eo_term__name'))
     variable_dict['uo_data'] = study.phenotype_set.values('uo_term__name').annotate(count=Count('uo_term__name'))
+    variable_dict['is_rnaseq'] = is_rnaseq
     return render(request, 'phenotypedb/study_detail.html', variable_dict)
 
 def correlation_wizard(request):
@@ -160,6 +164,7 @@ def rnaseq_transformation_results(request, pk):
     rnaseq = RNASeq.objects.get(id=pk)
     data = calculate_phenotype_transformations(rnaseq, rnaseq=True)
     data['object'] = rnaseq
+    data['is_rnaseq'] = True
     return render(request, 'phenotypedb/rnaseq_transformation_results.html', data)
 
 def list_accessions(request):

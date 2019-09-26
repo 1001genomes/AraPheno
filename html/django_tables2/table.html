@@ -53,7 +53,7 @@
 {% block pagination %}
 {% if table.paginator.num_pages != 1 %}
 <ul class="pagination center-align">
-    
+
     {% if table.page.has_previous %}
     {% block pagination.previous %}
     <!--<li class="waves-effect"><a href="{% querystring table.prefixed_page_field=1%}">First</a></li>
@@ -62,7 +62,7 @@
     {% endblock pagination.previous %}
     {% endif %}
     {% block pagination.current %}
-	<li id="paginatebutton" class="active brown"><a href="#">{% blocktrans with current=table.page.number total=table.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</a></li>
+	<li id="paginatebutton" class="active {{ table.Meta.attrs.is_rnaseq|yesno:'blue darken-3,brown' }}"><a href="#">{% blocktrans with current=table.page.number total=table.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</a></li>
     {% endblock pagination.current %}
     {% if table.page.has_next %}
     {% block pagination.next %}
@@ -76,7 +76,6 @@
 </ul>
 {% endblock pagination %}
 {% endif %}
-
 </div>
 {% endif %}
 {% endspaceless %}

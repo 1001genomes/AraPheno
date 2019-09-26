@@ -74,16 +74,13 @@ class ReducedRNASeqTable(tables.Table):
     condition = tables.Column(accessor="growth_conditions", verbose_name="Growth conditions", order_by="growth_conditions")
 
     class Meta:
-        attrs = {"class": "striped"}
+        attrs = {"class": "striped", "is_rnaseq": True}
 
 class RNASeqTable(ReducedRNASeqTable):
     """
     Table that is displayed in the general RNASeq list view
     """
     study = tables.LinkColumn("study_detail", args=[A('study.id')], text=lambda record: record.study.name, verbose_name="Study", order_by="study.name")
-
-    class Meta:
-        attrs = {"class": "striped"}
 
 class StudyTable(tables.Table):
     """
@@ -106,8 +103,11 @@ class RNASeqStudyTable(tables.Table):
     phenotypes = tables.Column(accessor="rna_count", verbose_name="#RNASeqs", order_by="rnaseq")
     update_date = tables.DateTimeColumn(accessor="update_date", verbose_name="Date Added", order_by="update_date",format="M/d/Y")
 
+
     class Meta:
-        attrs = {"class": "striped"}
+        attrs = {"class": "striped",  "is_rnaseq": True}
+
+
 
 class PublicationTable(tables.Table):
     """
