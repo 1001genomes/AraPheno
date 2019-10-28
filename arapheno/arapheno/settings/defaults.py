@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://9a156862319542a88f13172b04a338cb@sentry.io/1798770",
+    integrations=[DjangoIntegration()]
+)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__+ "/../")))
@@ -24,7 +31,7 @@ ADMINS = [('Uemit', 'uemit.seren@gmi.oeaw.ac.at')]
 SECRET_KEY = '1g)fcq3@lg*lb^@ia#uw3&!)-a3__v(_oc56*%s82o16og*hg8'
 
 
-ALLOWED_HOSTS = ['arapheno.1001genomes.org','arapheno.sci.gmi.oeaw.ac.at', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','127.0.0.1').split()
 
 # Application definition
 
