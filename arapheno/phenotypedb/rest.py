@@ -41,6 +41,8 @@ DOI_REGEX_PHENOTYPE = r"%s\/phenotype:[\d]+" % settings.DATACITE_PREFIX
 
 DOI_PATTERN_STUDY = re.compile(DOI_REGEX_STUDY)
 DOI_PATTERN_PHENOTYPE = re.compile(DOI_REGEX_PHENOTYPE)
+GENEID_REGEX = r"AT[1-5|M|C]G[\d]*(\.[\d]){0,1}"
+GENEID_PATTERN =  re.compile(GENEID_REGEX)
 
 '''
 Search Endpoint
@@ -213,6 +215,47 @@ def phenotype_value(request,q,format=None):
 
     if request.method == "GET":
         pheno_acc_infos = phenotype.phenotypevalue_set.prefetch_related('obs_unit__accession')
+        value_serializer = PhenotypeValueSerializer(pheno_acc_infos,many=True)
+        return Response(value_serializer.data)
+
+'''
+Get all rnaseq values
+'''
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly,))
+@renderer_classes((PhenotypeValueRenderer,JSONRenderer,PLINKRenderer,))
+def rnaseq_value_by_gene_id(request,study_id,gene_id,format=None):
+    """
+    List of the rnaseq values
+    ---
+    parameters:
+        - name: study_id
+          description: the id of the study
+          required: true
+          type: int
+          paramType: path
+        - name: gene_id
+          description: the gene_id for the rnaseq values
+          required: true
+          type: string
+          paramType: path
+
+    serializer: PhenotypeValueSerializer
+    omit_serializer: false
+
+    produces:
+        - text/csv
+        - application/json
+    """
+    study_id = int(study_id)
+    gene_id = _is_geneid(gene_id)
+    try:
+        rnaseq = RNASeq.objects.filter(study__id=study_id,name=gene_id).first()
+    except:
+        return HttpResponse(status=404)
+
+    if request.method == "GET":
+        pheno_acc_infos = rnaseq.rnaseqvalue_set.prefetch_related('obs_unit__accession')
         value_serializer = PhenotypeValueSerializer(pheno_acc_infos,many=True)
         return Response(value_serializer.data)
 
@@ -761,6 +804,13 @@ def _is_doi(pattern, term):
     if doi:
         # can't use REGEX capture groups because "("" causes problems in Swagger
         return int(term.split(":")[1])
+    return None
+
+def _is_geneid(term):
+    gene_id = GENEID_PATTERN.match(term)
+    if gene_id:
+        # can't use REGEX capture groups because "("" causes problems in Swagger
+        return gene_id.group()
     return None
 
 def generate_database_dump():

@@ -155,6 +155,8 @@ restpatterns = [
     url(r'rest/terms/(?P<term_id>%s)/$' % ONTOLOGY_REGEX, rest.ontology_tree_data,name='ontology_tree_children'),
     #url(r'rest/ontology/(?P<pk>%s)/(?P<term_id>%s)' % ID_REGEX )
 
+    url(r'^rest/rnaseq/(?P<study_id>%s)/(?P<gene_id>%s)/values/$' % (ID_REGEX, rest.GENEID_REGEX), rest.rnaseq_value_by_gene_id),
+
     url(r'^rest/rnaseq/(?P<q>%s)/values/$' % REGEX_PHENOTYPE, rest.rnaseq_value),
 
 ]
