@@ -18,6 +18,7 @@ services:
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_USER=${EMAIL_USER}
       - DJANGO_SETTINGS_MODULE=arapheno.settings.prod
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     depends_on:
       - db
 volumes:
