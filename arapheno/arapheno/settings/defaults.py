@@ -21,7 +21,7 @@ ADMINS = [('Uemit', 'uemit.seren@gmi.oeaw.ac.at')]
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '1g)fcq3@lg*lb^@ia#uw3&!)-a3__v(_oc56*%s82o16og*hg8'
+SECRET_KEY = os.environ.get('SECRET_KEY','REPLACE_WITH_PROD_KEY')
 
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','127.0.0.1').split()
@@ -134,7 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/usr/share/nginx/html/static'
+STATIC_ROOT = '/srv/static'
 
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR,'../static'),]

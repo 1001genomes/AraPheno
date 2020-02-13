@@ -18,9 +18,10 @@ DATACITE_REST_URL='https://mds.datacite.org/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'HOST': 'db',
+        'NAME': os.environ.get('POSTGRES_DB','postgres'),
+        'USER': os.environ.get('POSTGRES_USER','postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', None), 
+        'HOST': os.environ.get('POSTGRES_HOST','db'),
         'PORT': 5432,
     }
 }
