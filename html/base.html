@@ -179,7 +179,7 @@
                     </li>
                     <li>
                         {% if version.github_url %}
-                            <a href="{{ version.github_url}}/{{ version.githash }}" target="_blank">{{version.githash}}</a>
+                            <a href="{{ version.github_url}}/{{ version.githash }}" target="_blank">{{version.githash |slice:"0:7"}}</a>
                         {% else %}
                             {{version.githash}}
                         {% endif %}
