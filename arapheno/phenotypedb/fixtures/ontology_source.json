@@ -5,7 +5,8 @@
     "fields": {
       "acronym": "PTO",
       "name": "Plant Trait Ontology",
-      "url":"https://bioportal.bioontology.org/ontologies/PTO"
+      "url":"https://bioportal.bioontology.org/ontologies/PTO",
+      "description": "A controlled vocabulary to describe phenotypic traits in plants. Each trait is a distinguishable feature, characteristic, quality or phenotypic feature of a developing or mature plant, or a plant part."
     }
   },
   {
@@ -14,7 +15,8 @@
     "fields": {
       "acronym": "PECO",
       "name": "Plant Environmental Conditions",
-      "url":"https://bioportal.bioontology.org/ontologies/PECO"
+      "url":"https://bioportal.bioontology.org/ontologies/PECO",
+      "description": "The Plant Environment Ontology describes the treatments,growing conditions, and/or study types used in various types of plant biology experiments. The subjects of the studies may also include in vitro plant structures (PO:0000004). A plant treatment is the most specific,and may be a component of a plant growing condition, and the plant study type. The broadest classes are the plant study types"
     }
   },
   {
@@ -23,7 +25,8 @@
     "fields": {
       "acronym": "UO",
       "name": "Units of Measurement",
-      "url":"https://bioportal.bioontology.org/ontologies/UO"
+      "url":"https://bioportal.bioontology.org/ontologies/UO",
+      "description": "Metrical units for use in conjunction with PATO"
     }
   }
 ]

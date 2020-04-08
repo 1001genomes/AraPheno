@@ -23,7 +23,7 @@ def home(request):
     stats['studies'] = studies.filter(pheno_count__gt=0).filter(rna_count=0).count()
     stats['phenotypes_published'] = Phenotype.objects.published().count()
     stats['phenotypes'] = Phenotype.objects.all().count()
-    stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y')
+    stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y') if stats['studies'] > 0 else 'N/A'
     return render(request,'home/home.html',{"search_form":search_form,"stats":stats, 'is_rnaseq': False})
 
 def home_rnaseq(request):
@@ -36,7 +36,7 @@ def home_rnaseq(request):
     studies = Study.objects.published().annotate(pheno_count=Count('phenotype')).annotate(rna_count=Count('rnaseq'))
     stats['studies'] = studies.filter(pheno_count=0).filter(rna_count__gt=0).count()
     stats['rnaseqs'] = RNASeq.objects.all().count()
-    stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y')
+    stats['last_update'] = Study.objects.all().order_by("-update_date")[0].update_date.strftime('%b/%d/%Y') if stats['studies'] > 0 else 'N/A'
     return render(request,'home/home_rnaseq.html',{"search_form":search_form,"stats":stats, 'is_rnaseq': True})
 
 '''

@@ -1,4 +1,4 @@
-version: '2'
+version: "3.7"
 services:
   db:
     restart: unless-stopped
@@ -7,9 +7,14 @@ services:
       - postgres_data:/var/lib/postgresql/data/
   web:
     restart: unless-stopped
-    image: "docker.artifactory.imp.ac.at/the1001genomes/arapheno:latest"
+    build: .
     volumes:
-      - /usr/share/nginx/html/static:/usr/share/nginx/html/static
+      - type: bind
+        source: /usr/share/nginx/html/static
+        target: /usr/share/nginx/html/static
+      - type: bind
+        source: ./arapheno/db.sqlite3
+        target: /srv/web/arapheno/db.sqlite3
     ports:
       - "8000:8000"
     environment:
