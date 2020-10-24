@@ -106,7 +106,7 @@ def detail_study(request, pk=None):
     # Check if RNASeq or Phenotypes:
     is_rnaseq = False
     if len(Phenotype.objects.published().filter(study__id=pk)) > 0:
-        phenotype_table = ReducedPhenotypeTable(Phenotype.objects.published().filter(study__id=pk), order_by="-name")
+        phenotype_table = ReducedPhenotypeTable(Phenotype.objects.published().filter(study__id=pk).annotate(num_values=Count('phenotypevalue')), order_by="-name")
     else:
         phenotype_table = RNASeqTable(RNASeq.objects.filter(study__id=pk), order_by="-name")
         is_rnaseq = True
@@ -190,7 +190,7 @@ def detail_accession(request, pk=None):
     Detailed view of a single accession
     """
     accession = Accession.objects.get(id=pk)
-    phenotype_table = AccessionPhenotypeTable(pk,Phenotype.objects.annotate(num_values=Count('phenotypevalue')).published().filter(phenotypevalue__obs_unit__accession_id=pk), order_by="-id")
+    phenotype_table = AccessionPhenotypeTable(pk,Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=pk).annotate(num_values=Count('phenotypevalue')), order_by="-id")
     RequestConfig(request, paginate={"per_page":20}).configure(phenotype_table)
     variable_dict = {}
     variable_dict["phenotype_table"] = phenotype_table
