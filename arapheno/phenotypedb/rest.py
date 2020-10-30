@@ -173,7 +173,7 @@ def phenotype_detail(request,q,format=None):
 
     try:
         id = doi if doi else int(q)
-        phenotype = Phenotype.objects.published().get(pk=id)
+        phenotype = Phenotype.objects.published().annotate(num_values=Count('phenotypevalue')).get(pk=id)
     except:
         return HttpResponse(status=404)
 
@@ -376,7 +376,7 @@ def study_all_pheno(request,q=None,format=None):
         return HttpResponse(status=404)
 
     if request.method == "GET":
-        serializer = PhenotypeListSerializer(study.phenotype_set.all(),many=True)
+        serializer = PhenotypeListSerializer(study.phenotype_set.all().annotate(num_values=Count('phenotypevalue')),many=True)
         return Response(serializer.data)
 
 '''
@@ -618,7 +618,7 @@ def accession_detail(request,pk,format=None):
         - application/json
     """
 
-    accession = Accession.objects.get(pk=pk)
+    accession = Accession.objects.annotate(count_phenotypes=Count('observationunit__phenotypevalue__phenotype', distinct=True)).get(pk=pk)
 
     if request.method == "GET":
         serializer = AccessionListSerializer(accession,many=False)
@@ -640,7 +640,7 @@ def accession_phenotypes(request,pk,format=None):
         - text/csv
         - application/json
     """
-    phenotypes = Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=pk)
+    phenotypes = Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=pk).annotate(num_values=Count('phenotypevalue'))
 
     if request.method == "GET":
         serializer = PhenotypeListSerializer(phenotypes,many=True)
@@ -666,7 +666,7 @@ def accessions_phenotypes(request,format=None):
     """
     acc_phenotype_list = {}
     for id in set(request.data):
-        acc_phenotype_list[id] = Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=id)
+        acc_phenotype_list[id] = Phenotype.objects.published().filter(phenotypevalue__obs_unit__accession_id=id).annotate(num_values=Count('phenotypevalue'))
     if request.method == "POST":
         serializer = AccessionPhenotypesSerializer(acc_phenotype_list)
         return Response(serializer.data)
