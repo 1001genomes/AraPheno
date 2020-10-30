@@ -9,9 +9,9 @@ class PhenotypeListRenderer(CSVRenderer):
               'source','type','growth_conditions',
               'integration_date','number_replicates',
               'to_term','to_name','to_definition','to_comment',
-              'to_source_acronym','to_source_name','to_source_url'
+              'to_source_acronym','to_source_name','to_source_url',
               'eo_term','eo_name','eo_definition','eo_comment',
-              'eo_source_acronym','eo_source_name','eo_source_url'
+              'eo_source_acronym','eo_source_name','eo_source_url',
               'uo_term','uo_name','uo_definition','uo_comment',
               'uo_source_acronym','uo_source_name','uo_source_url', 'num_values']
 
