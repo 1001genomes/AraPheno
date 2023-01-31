@@ -1,5 +1,5 @@
 six==1.9.0
-Django==1.11.29
+Django==2.2.28
 django-tables2==1.21.2
 django-autocomplete-light==2.3.6
 djangorestframework==3.9.4
