@@ -9,7 +9,7 @@ djangorestframework-csv==2.1.0
 django_rest_swagger==2.2.0
 pandas==0.18.1
 scipy==0.18.0
-numpy==1.11.1
+numpy==1.22.0
 django-widget-tweaks==1.4.5
 requests==2.22.0
 git+https://github.com/timeu/biopy-isatab#egg=biopy-isatab
