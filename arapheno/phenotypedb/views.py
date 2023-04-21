@@ -373,7 +373,7 @@ def upload_file(request):
                     submission.get_email_text(),
                     'uemit.seren@gmi.oeaw.ac.at',
                     [submission.email],
-                    [settings.ADMINS[0][1]],
+                    bcc=[admin[1] for admin in settings.ADMINS],
                     reply_to=['uemit.seren@gmi.oeaw.ac.at']
                 )
                 email.send(True)
@@ -404,7 +404,7 @@ def submit_feedback(request):
                     from_email=from_email,
                     to=['uemit.seren@gmi.oeaw.ac.at'],
                     body=message,
-                    bcc=[settings.ADMINS[0][1]],
+                    bcc=[admin[1] for admin in settings.ADMINS],
                     reply_to=['uemit.seren@gmi.oeaw.ac.at']
                 )
                 email.send(True)
