@@ -20,7 +20,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('POSTGRES_DB','postgres'),
         'USER': os.environ.get('POSTGRES_USER','postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', None), 
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', None),
         'HOST': os.environ.get('POSTGRES_HOST','db'),
         'PORT': 5432,
     }
@@ -29,3 +29,6 @@ DATABASES = {
 EMAIL_HOST = os.environ["EMAIL_HOST"]
 EMAIL_PORT = os.environ.get("EMAIL_PORT",25)
 EMAIL_HOST_USER = os.environ["EMAIL_USER"]
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD","")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS",False)
+SERVER_EMAIL = os.environ.get("SERVER_EMAIL","root@localhost")
